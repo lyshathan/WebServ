@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/ly-sha/Desktop/42/WebServ",
+      "program": "/Users/ly-sha/Desktop/42/WebServ/build/Debug/outDebug"
+    }
+  ]
+}
