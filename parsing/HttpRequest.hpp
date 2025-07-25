@@ -19,8 +19,14 @@ class HttpRequest {
 		std::string	_body;
 		int			_status;
 
-		void	parseFirstLine(std::string);
 		void	handleParsing(std::string);
+		bool	parseFirstLine(std::string);
+		bool	parseHeaders(std::string);
+		bool	parseBody(std::string);
+
+		bool extractUntil(std::string &, std::string &, const std::string &);
+
+		void	errorHandler(int);
 	public:
 		HttpRequest(std::string);
 		~HttpRequest();
