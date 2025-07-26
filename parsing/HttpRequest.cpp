@@ -10,9 +10,8 @@ HttpRequest::HttpRequest(std::string data) : _status(0) {
 
 HttpRequest::~HttpRequest() {};
 
-
 /******************************************************************************/
-/*							PARSE FUNCTIONS									  */
+/*						PARSE  HELPER FUNCTIONS								  */
 /******************************************************************************/
 
 void HttpRequest::errorHandler(int status) {
@@ -32,6 +31,47 @@ bool HttpRequest::extractUntil(std::string &line,
 	return true;
 }
 
+std::string HttpRequest::trim(const std::string &str) {
+	const std::string WHITESPACE = " \t\n\r\f\v";
+
+	size_t pos = str.find_first_not_of(WHITESPACE);
+	if (pos == std::string::npos)
+		return "";
+	size_t last_pos = str.find_last_not_of(WHITESPACE);
+	return str.substr(pos, last_pos - pos + 1);
+}
+
+bool HttpRequest::isValidTchar(char c) {
+	if (std::isalnum(c))
+		return true;
+	const std::string validSpecialChars = "!#$%&'*+-.^_`|~";
+	return validSpecialChars.find(c) != std::string::npos;
+}
+
+bool HttpRequest::mapHeaders(std::string &header) {
+	std::string key;
+	std::string value;
+
+	size_t pos = header.find(':');
+	if (pos == std::string::npos)
+		return false;
+	key = header.substr(0, pos);
+	if (key.empty())
+		return false;
+	value = header.substr(pos + 1);
+	for (int i = 0; i < key.length(); ++i) {
+		if (!isValidTchar(key[i]))
+			return false;
+	}
+	std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+	_headers[key] = trim(value);
+	return true;
+}
+
+/******************************************************************************/
+/*							PARSE FUNCTIONS									  */
+/******************************************************************************/
+
 void HttpRequest::handleParsing(std::string data) {
 	std::string	firstLine;
 	std::string	headers;
@@ -40,17 +80,8 @@ void HttpRequest::handleParsing(std::string data) {
 		return errorHandler(BAD_REQUEST);
 	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers))
 		return errorHandler(BAD_REQUEST);
-	if (!data.empty())
-		if (!parseBody(data))
-			return errorHandler(BAD_REQUEST);
-}
-
-bool HttpRequest::parseBody(std::string data) {
-	return true;
-}
-
-bool HttpRequest::parseHeaders(std::string data) {
-	return true;
+	if (!data.empty() && !parseBody(data))
+		return errorHandler(BAD_REQUEST);
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {
@@ -68,27 +99,27 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	}
 	if (ss.peek() != EOF || i < NUM_TOKENS)
 		return false;
-
 	_method = firstLineTokens[0];
 	_uri = firstLineTokens[1];
 	_version = firstLineTokens[2];
 	return true;
 }
 
-// "GET /index.html HTTP/1.1\r\nHost:localhost:8080\r\nUser-Agent:Mozilla/5.0\r\n\r\n"
+bool HttpRequest::parseHeaders(std::string data) {
+	std::string	header;
 
-// Request-Line = GET /index.html HTTP/1.1\r\n
+	while (extractUntil(header, data, "\r\n"))
+		if (!mapHeaders(header))
+			return false;
+	if (data.find('\r') != std::string::npos
+		|| data.find('\n') != std::string::npos)
+		return false;
+	if (!data.empty() && !mapHeaders(data))
+		return false;
+	return true;
+}
 
-// Headers = Host:localhost:8080\r\nUser-Agent:Mozilla/5.0
 
-// {
-// 	method:"GET"
-// 	path:"/index.html"
-// 	version:"HTTP/1.1"
-// 	headers: {
-// 		"Host":"localhost:8080",
-// 		"User-Agent":"Mozilla/5.0"
-// 	}
-// 	body:NULL
-// 	valid:true
-// }
+bool HttpRequest::parseBody(std::string data) {
+	return true;
+}

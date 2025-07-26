@@ -4,6 +4,8 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <vector>
+#include <algorithm>
 #include <map>
 
 #define BAD_REQUEST 400
@@ -24,16 +26,18 @@ class HttpRequest {
 		bool	parseHeaders(std::string);
 		bool	parseBody(std::string);
 
-		bool extractUntil(std::string &, std::string &, const std::string &);
-
-		void	errorHandler(int);
+		bool		extractUntil(std::string &, std::string &, const std::string &);
+		std::string	trim(const std::string &);
+		bool		mapHeaders(std::string &);
+		bool		isValidTchar(char c);
+		void		errorHandler(int);
 	public:
 		HttpRequest(std::string);
 		~HttpRequest();
 		const std::string& getMethod() const { return _method; }
 		const std::string& getUri() const { return _uri; }
 		const std::string& getVersion() const { return _version; }
-		const std::map<std::string, std::string>& getHeaders() const { return _headers; }
+		std::map<std::string, std::string>& getHeaders() { return _headers; }
 };
 
 #endif
