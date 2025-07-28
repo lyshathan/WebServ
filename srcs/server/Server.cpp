@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "../parsing/Client.hpp"
 
 Server::Server() : _port(4242), _address(INADDR_LOOPBACK), _status(0), _serverFd(-1), _listenBackLog(10)
 {
@@ -13,12 +14,15 @@ Server::Server() : _port(4242), _address(INADDR_LOOPBACK), _status(0), _serverFd
 		return ;
 
 	// Set server as the first element of PollFds
+	std::cout << GREEN << "Server fd  [" << _serverFd << "]" << std::endl;
 	struct pollfd	ServerPollFd;
 	ServerPollFd.fd = _serverFd;
 	ServerPollFd.events = POLLIN;
 	ServerPollFd.revents = 0;
 	_pollFds.push_back(ServerPollFd);
 	std::cout << BLUE << "[Server] Setup PollFds : " << _port << RESET << std::endl;
+	
+	std::cout << "Server fd = " << _serverFd << std::endl;
 
 	RunningServ();
 }
