@@ -1,6 +1,6 @@
 NAME = WebServ
-CC = c++
-FLAGS = -Wall -Wextra -Werror -Iincludes -std=c++98 -MMD -MP -g3
+CC = g++
+FLAGS = -Iincludes -MMD -MP -g3
 TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
 RM = rm -rf
 
@@ -9,9 +9,11 @@ RM = rm -rf
 SRCS_DIR = srcs
 MAIN = main
 SERVER = Server ServerRunner
+PARSING = Client HttpRequest HttpResponse
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/server/, $(SERVER))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING))) \
 
 # HEADERS = includes/Server.hpp includes/Includes.hpp
 
@@ -21,7 +23,8 @@ OBJDIR = objects
 OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJDIR)/%.o)
 OBJ_SUBDIRS = \
 	$(OBJDIR) \
-	$(OBJDIR)/server
+	$(OBJDIR)/server \
+	$(OBJDIR)/parsing
 
 DEPS = $($(OBJDIR)/%.o=.d)
 

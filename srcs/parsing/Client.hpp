@@ -8,6 +8,7 @@ class Client {
 	private:
 		int	_fd;
 	public:
+		Client();
 		Client(int);
 		~Client();
 
