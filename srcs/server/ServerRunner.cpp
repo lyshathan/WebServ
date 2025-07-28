@@ -77,6 +77,10 @@ int Server::AcceptNewConnection(void)
 	NewClientPollFd.events = POLLIN;
 	NewClientPollFd.revents = 0;
 	_pollFds.push_back(NewClientPollFd);
+
+	// Client newClient(clientFd);
+	// map[client_fd] = newClient;
+
 	std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << RESET << std::endl;
 
 	std::ostringstream Oss;

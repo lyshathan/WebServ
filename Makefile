@@ -6,41 +6,38 @@ RM = rm -rf
 
 #============== SOURCES ==============#
 
-SRCS_DIR = sources
-SRCS_FILES = main Server ServerRunner
+SRCS_DIR = srcs
+MAIN = main
+SERVER = Server ServerRunner
 
-SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(SRCS_FILES)))
+SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/server/, $(SERVER))) \
 
-
-#============== HEADERS ==============#
-
-INCLUDES = includes
+# HEADERS = includes/Server.hpp includes/Includes.hpp
 
 #====== OBJECTS & DEPENDENCIES ======#
 
 OBJDIR = objects
-
 OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJDIR)/%.o)
-TEST_OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJDIR)/test_%.o)
-DEPS = $(OBJS:.o=.d)
+OBJ_SUBDIRS = \
+	$(OBJDIR) \
+	$(OBJDIR)/server
+
+DEPS = $($(OBJDIR)/%.o=.d)
 
 #=============== RULES ===============#
 
-all : $(NAME)
+all:  $(NAME)
 
-test : $(TEST_OBJS) Makefile
-	$(CC) $(TEST_FLAGS) $(TEST_OBJS) -o $(NAME)
+$(NAME): $(OBJS)
+	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)
+	@echo "\n\033[1;32mWebServ compiled\033[0m 🔥🚀\n"
 
-$(OBJDIR)/test_%.o : $(SRCS_DIR)/%.cpp
-	@mkdir -p $(OBJDIR)
-	$(CC) $(TEST_FLAGS) -c $< -o $@
-	
-$(OBJDIR)/%.o : $(SRCS_DIR)/%.cpp
-	@mkdir -p $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp Makefile | $(OBJ_SUBDIRS) #$(HEADERS)
 	$(CC) $(FLAGS) -c $< -o $@
 
-$(NAME) : $(OBJS) Makefile
-	$(CC) $(FLAGS) $(OBJS) -o $(NAME)
+$(OBJ_SUBDIRS):
+	@mkdir -p $@
 
 #============== CLEANING ==============#
 clean:
