@@ -2,13 +2,11 @@
 
 void	Server::RunningServ(void)
 {
-	std::cout << "Server fd = " << _serverFd << std::endl;
 
 	int	status;
 	int	timeout = 3000;	// 3 seconds
 	while (1)
 	{
-		std::cout << "Server fd = " << _serverFd << std::endl;
 		// Check if any socket is ready, else wait
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
@@ -23,44 +21,9 @@ void	Server::RunningServ(void)
 			continue;
 		}
 
-		// Check for each socket
-		// if (ConnectAndRead() < 0)
-		// 	return;
-
-		for (std::vector<struct pollfd>::iterator it = _pollFds.begin() ; it != _pollFds.end() ; it++)
-		{
-			std::cout << "Checked socket fd [" << it->fd << "] - Server :" << _serverFd << std::endl;
-
-			if (! (it->revents & POLLIN)) // Socket i is not ready for now
-				continue;
-			
-			std::cout << BLUE << "[Server] Socket #" << it->fd << " is ready for I/O operation" << RESET << std::endl;
-
-			it->revents = 0; // Reset revents to 0 so we can see if it has changed next time
-
-			if (it->fd == _serverFd)
-			{
-				std::cout << "Accept new connection [" << it->fd << "]" << std::endl;
-				status = AcceptNewConnection();
-				if (status == -1)
-				{
-					_serverFd = -2;
-					return;
-				}
-				it = _pollFds.begin() + 1; // Restart the loop from the first client socket because of push back
-			}
-			else if (it->fd != _serverFd)
-			{
-				std::cout << "Read data [" << it->fd << "]" << std::endl;
-				status = ReadDataFromSocket(it);
-				if (status == -1)
-				{
-					_serverFd = -2;
-					return;
-				}
-			}
-			
-		}
+		// Loop check for each socket
+		if (ConnectAndRead() < 0)
+			return;
 	}
 }
 

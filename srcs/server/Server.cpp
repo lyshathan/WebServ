@@ -22,7 +22,6 @@ Server::Server() : _port(4242), _address(INADDR_LOOPBACK), _status(0), _serverFd
 	_pollFds.push_back(ServerPollFd);
 	std::cout << BLUE << "[Server] Setup PollFds : " << _port << RESET << std::endl;
 	
-	std::cout << "Server fd = " << _serverFd << std::endl;
 
 	RunningServ();
 }
