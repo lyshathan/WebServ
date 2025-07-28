@@ -1,0 +1,110 @@
+HTTP/1.1 Message Structure & Parsing Guide (RFC 7230)
+======================================================
+
+MESSAGE FORMAT OVERVIEW
+------------------------
+Structure: start-line + headers + CRLF + [message-body]
+- All lines MUST end with CRLF (\r\n), not just LF
+- Empty line (CRLF) separates headers from body
+- Host header is REQUIRED in all HTTP/1.1 requests
+
+REQUEST-LINE PARSING
+--------------------
+Format: method SP request-target SP HTTP-version CRLF
+
+┌─────────────────┬─────────────────────────────────────────────┐
+│ Component       │ Rules & Validation                          │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Method          │ Only GET, POST, DELETE supported            │
+│                 │ → 501 Not Implemented for others            │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Request-Target  │ Only origin-form (/resource) accepted       │
+│                 │ Max length: 8000 bytes (recommended)        │
+│                 │ → 414 URI Too Long if exceeded              │
+├─────────────────┼─────────────────────────────────────────────┤
+│ HTTP-Version    │ Must be "HTTP/1.1"                          │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Validation      │ Invalid request-line → 400 Bad Request      │
+└─────────────────┴─────────────────────────────────────────────┘
+
+STATUS-LINE PARSING (Response)
+-------------------------------
+Format: HTTP-version SP status-code SP reason-phrase CRLF
+
+┌─────────────┬───────────────────────────────────────────────────┐
+│ Status Code │ Class & Meaning                                   │
+├─────────────┼───────────────────────────────────────────────────┤
+│ 1xx         │ Informational (continuing process)                │
+│ 2xx         │ Successful (request accepted)                     │
+│ 3xx         │ Redirection (further action needed)               │
+│ 4xx         │ Client Error (bad syntax/cannot fulfill)          │
+│ 5xx         │ Server Error (server failed valid request)        │
+└─────────────┴───────────────────────────────────────────────────┘
+
+HEADER FIELD PARSING
+---------------------
+Format: field-name ":" OWS field-value OWS
+
+┌─────────────────┬─────────────────────────────────────────────┐
+│ Element         │ Rules & Validation                          │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Field Name      │ - Non-empty, case-insensitive               │
+│                 │ - Only tchar: letters, digits, !#$%&'*+-.^_`|~ │
+│                 │ - NO whitespace, control chars, separators  │
+│                 │ - NO whitespace before colon                │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Colon           │ - Single colon separates name/value         │
+│                 │ - Missing colon → 400 Bad Request           │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Field Value     │ - OWS allowed after colon & at ends         │
+│                 │ - Trim leading/trailing OWS                 │
+│                 │ - Preserve internal whitespace              │
+│                 │ - May be empty after trimming               │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Line Folding    │ - Obsolete multi-line headers REJECTED      │
+│                 │ - OR unfold to single line                  │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Duplicates      │ - Some can combine with commas              │
+│                 │ - Content-Length MUST NOT be duplicated     │
+│                 │ - Host MUST appear exactly once             │
+├─────────────────┼─────────────────────────────────────────────┤
+│ Error Handling  │ - Malformed headers → 400 Bad Request       │
+│                 │ - Unknown headers → IGNORE (don't error)    │
+└─────────────────┴─────────────────────────────────────────────┘
+
+MESSAGE BODY PARSING
+---------------------
+Body presence rules:
+- NO body for: 1xx, 204, 304 responses, GET/HEAD requests
+- Body length determined by: Transfer-Encoding > Content-Length > connection close
+
+┌──────────────────────┬───────────────────────────────────────────┐
+│ Header               │ Behavior                                  │
+├──────────────────────┼───────────────────────────────────────────┤
+│ Content-Length       │ - Must be valid non-negative integer      │
+│                      │ - If repeated, values MUST be identical   │
+│                      │ - Ignored if Transfer-Encoding present    │
+├──────────────────────┼───────────────────────────────────────────┤
+│ Transfer-Encoding    │ - Values: chunked, gzip, deflate, etc.    │
+│                      │ - Multiple encodings applied in order     │
+│                      │ - "chunked" most common for streaming     │
+│                      │ - Unknown encoding → 501 Not Implemented  │
+│                      │ - When present, IGNORE Content-Length     │
+└──────────────────────┴───────────────────────────────────────────┘
+
+CONNECTION MANAGEMENT
+---------------------
+- HTTP/1.1 uses persistent connections by default
+- Connection header controls behavior
+
+┌─────────────────────┬─────────────────────────────────────────────┐
+│ Connection Value    │ Action                                      │
+├─────────────────────┼─────────────────────────────────────────────┤
+│ close               │ Close connection after response             │
+│ keep-alive          │ Not required (default in HTTP/1.1)          │
+│ (absent)            │ Keep connection open (persistent)           │
+└─────────────────────┴─────────────────────────────────────────────┘
+
+Hop-by-hop headers (MUST NOT forward unless in Connection header):
+Connection, Keep-Alive, Proxy-Authenticate, Proxy-Authorization,
+TE, Trailer, Transfer-Encoding, Upgrade
