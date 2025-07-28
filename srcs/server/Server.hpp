@@ -7,8 +7,8 @@ class Client;
 
 class Server {
 	private :
+		std::map<int, Client*>		_clients;
 		std::vector<struct pollfd>	_pollFds;
-		std::map<int, Client>		_clients;
 		uint16_t					_port;
 		uint32_t					_address;
 		int							_status;
@@ -25,7 +25,7 @@ class Server {
 		int		AcceptNewConnection();
 		int		ReadDataFromSocket(std::vector<struct pollfd>::iterator & it);
 
-		
+
 	public :
 		Server();
 		~Server();

@@ -89,6 +89,14 @@ bool HttpRequest::validateVersion(std::string str){
 /******************************************************************************/
 
 bool HttpRequest::processRequest() {
+
+	DIR *dir = opendir("../../");
+	struct dirent *entry;
+	while ((entry = readdir(dir)) != NULL) {
+
+	}
+
+	std::cout << access(_uri.c_str(), R_OK) << "\n";
 	return true;
 }
 
@@ -96,6 +104,7 @@ void HttpRequest::handleRequest(std::string data) {
 	std::string	firstLine;
 	std::string	headers;
 
+	std::cout << "---- DATA STRUCTURE FROM HTTP REQUEST ----\n";
 	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine))
 		return errorHandler(BAD_REQUEST);
 	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers))
@@ -104,6 +113,16 @@ void HttpRequest::handleRequest(std::string data) {
 		return errorHandler(BAD_REQUEST);
 	if (!processRequest())
 		return errorHandler(BAD_REQUEST);
+
+	// std::map<std::string, std::string>::iterator it = _headers.begin();
+
+	// for (; it != _headers.end(); ++it) {
+	// 	std::cout << it->first << " : " << it->second << "\n";
+	// }
+
+	// std::cout << _method
+	// << "\n" << _uri
+	// << "\n" << _version << "\n";
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {

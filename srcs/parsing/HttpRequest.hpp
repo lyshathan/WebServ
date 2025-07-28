@@ -7,6 +7,8 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <dirent.h>
+#include <unistd.h>
 
 #define BAD_REQUEST 400
 #define NOT_FOUD 404

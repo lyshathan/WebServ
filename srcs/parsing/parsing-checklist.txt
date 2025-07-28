@@ -155,3 +155,28 @@ COMMON PARSING PITFALLS
 5. Forwarding hop-by-hop headers
 6. Not validating required headers (Host)
 7. Accepting invalid characters in field names
+
+For GET requests:
+
+Check if the requested file/resource exists on the server
+Verify read permissions for the file
+Check if the path contains any directory traversal attempts (../../../etc)
+Validate that the path points to a location within your server's allowed directories
+Additional validations:
+
+Check if the file size is within acceptable limits
+Verify the file type is allowed (if you have restrictions)
+Check if the resource requires authentication
+Verify if the client has proper access rights
+Response preparation:
+
+Set appropriate HTTP status code (200 OK, 404 Not Found, 403 Forbidden, etc.)
+Set proper Content-Type header based on the file extension
+Set Content-Length header
+Add any other required response headers
+Prepare the file content for sending
+Error handling:
+
+Handle cases where file doesn't exist (404)
+Handle permission denied cases (403)
+Handle internal server errors (500)
