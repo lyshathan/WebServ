@@ -58,7 +58,7 @@ bool HttpRequest::mapHeaders(std::string &header) {
 		return false;
 	value = header.substr(pos + 1);
 	std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-	for (int i = 0; i < key.length(); ++i) {
+	for (size_t i = 0; i < key.length(); ++i) {
 		if (!isValidTchar(key[i]))
 			return false;
 	}
@@ -112,14 +112,14 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	std::string firstLineTokens[NUM_TOKENS];
 	int i = 0;
 
-	if (data.empty() || data.back() == ' ')
+	if (data.empty() || data[data.size() - 1] == ' ')
 		return false;
-	for (; ss.peek() != EOF && i < NUM_TOKENS; ++i) {
+	for (; !ss.eof() && i < NUM_TOKENS; ++i) {
 		std::getline(ss, firstLineTokens[i], ' ');
 		if (firstLineTokens[i].empty())
 			return false;
 	}
-	if (ss.peek() != EOF || i < NUM_TOKENS)
+	if (!ss.eof() || i < NUM_TOKENS)
 		return false;
 	if (firstLineTokens[0] != "GET" && firstLineTokens[0] != "POST"
 		&& firstLineTokens[0] != "DELETE")
@@ -151,5 +151,6 @@ bool HttpRequest::parseHeaders(std::string data) {
 
 
 bool HttpRequest::parseBody(std::string data) {
+	(void)data;
 	return true;
 }
