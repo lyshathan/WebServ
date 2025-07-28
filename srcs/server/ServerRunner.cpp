@@ -1,6 +1,7 @@
 #include "Server.hpp"
+#include "../parsing/Client.hpp"
 
-void	Server::RunningServ(void)
+int	Server::RunningServ(void)
 {
 
 	int	status;
@@ -10,11 +11,7 @@ void	Server::RunningServ(void)
 		// Check if any socket is ready, else wait
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
-		{
-			std::cerr << RED << "[server] ERROR : Poll error ( " << strerror(errno) << " )" << RESET << std::endl;
-			_serverFd = -2;
-			return;
-		}
+			return (HandleFunctionError("Poll"));
 		else if (status == 0) // Is this condition util?
 		{
 			std::cout << "[Server] Waiting ..." << std::endl;
@@ -23,7 +20,7 @@ void	Server::RunningServ(void)
 
 		// Loop check for each socket
 		if (ConnectAndRead() < 0)
-			return;
+			return(1);
 	}
 }
 
@@ -73,18 +70,10 @@ int Server::AcceptNewConnection(void)
 
 	clientFd = accept(_serverFd, NULL, NULL); // Do we need to get the port and addresss of the new client socket ?
 	if (clientFd == -1)
-	{
-		std::cerr << RED << "[server] ERROR : Poll error ( " << strerror(errno) << " )" << RESET << std::endl;
-		_serverFd = -2;
-		return (-1);
-	}
+		return (HandleFunctionError("Accept"));
 
 	// Add new client to pollFds and to _client map
-	struct pollfd NewClientPollFd;
-	NewClientPollFd.fd = clientFd;
-	NewClientPollFd.events = POLLIN;
-	NewClientPollFd.revents = 0;
-	_pollFds.push_back(NewClientPollFd);
+	AddClient(clientFd);	
 
 	std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << RESET << std::endl;
 
@@ -94,11 +83,8 @@ int Server::AcceptNewConnection(void)
 	
 	status = send(clientFd, Message.c_str(), Message.length(), 0);
 	if (status == -1)
-	{
-		std::cerr << RED << "[server] ERROR : Send error ( " << strerror(errno) << " ) to client #" << clientFd << RESET << std::endl;
-		_serverFd = -2;
-		return (-1);
-	}
+		return (HandleFunctionError("Send"));
+
 	return (0);
 }
 
@@ -116,15 +102,10 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		if (bytesRead == 0)
 		{
 			std::cerr << YELLOW << "[server] Client #" << senderFd << " closed connection" << RESET << std::endl;
-			close(senderFd);
-			it = _pollFds.erase(it) - 1;
+			DeleteClient(senderFd, it);
 		}
 		else
-		{
-			std::cerr << RED << "[server] ERROR : Recv error ( " << strerror(errno) << " ) to client #" << senderFd << RESET << std::endl;
-			_serverFd = -2;
-			return (-1);
-		}
+			return (HandleFunctionError("Recv"));
 	}
 	else
 	{
@@ -138,6 +119,8 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		buffer[bytesRead] = 0;
 		std::cout << "Client #" << senderFd << " had a message [" << buffer << "]";
 
+		_clients[senderFd]->httpReq->handleRequest(buffer);
+
 		std::ostringstream Oss;
 		Oss << "--> Client #" << senderFd << " says " << buffer;
 		std::string MessageToSend = Oss.str();
@@ -149,11 +132,8 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			{
 				status = send(j->fd, MessageToSend.c_str(), MessageToSend.length(), 0);
 				if (status == -1)
-				{
-					std::cerr << RED << "[server] ERROR : Send error ( " << strerror(errno) << " ) to client #" << j->fd << RESET << std::endl;
-					_serverFd = -2;
-					return (-1);
-				}
+					return (HandleFunctionError("Send"));
+
 			}
 		}
 	}

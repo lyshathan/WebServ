@@ -21,7 +21,6 @@ Server::Server() : _port(4242), _address(INADDR_LOOPBACK), _status(0), _serverFd
 	ServerPollFd.revents = 0;
 	_pollFds.push_back(ServerPollFd);
 	std::cout << BLUE << "[Server] Setup PollFds : " << _port << RESET << std::endl;
-	
 
 	RunningServ();
 }
@@ -38,7 +37,7 @@ Server::~Server()
 	}
 }
 
-void Server::CreateServerSocket(void)
+int Server::CreateServerSocket(void)
 {
 	struct sockaddr_in	socketAddress;
 	int					status;
@@ -55,39 +54,33 @@ void Server::CreateServerSocket(void)
 	if (_serverFd == -1)
 	{
 		std::cerr << RED << "[Server] ERROR : function `socket` failed." << RESET << std::endl;
-		return;
+		return (-1);
 	}
 	std::cout << BLUE << "[Server] Server socket created, fd : " << _serverFd << RESET << std::endl;
 	
 	if (setsockopt(_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-	{
-		std::cerr << RED << "[Server] ERROR : setsockopt(SO_REUSEADDR) failed" << RESET << std::endl;
-		_serverFd = -2;
-		return;
-	}
+		return (HandleFunctionError("setsockopt(SO_REUSEADDR)"));
 
 	// Bind Server socket with address and port
 	status = bind(_serverFd, (struct sockaddr *)&socketAddress, sizeof(socketAddress));
 	if (status == -1)
-	{
-		std::cerr << RED << "[server] ERROR : Bind error ( " << strerror(errno) << " )" << RESET << std::endl;
-		_serverFd = -2;
-		return;
-	}
+		return (HandleFunctionError("Bind"));
+
+
 	std::cout << BLUE << "[Server] Bound Server socket to port : " << _port << RESET << std::endl;
+	return (1);
 }
 
-void Server::SetupListen(void)
+int Server::SetupListen(void)
 {
 	int	status;
 
 	status = listen(_serverFd, _listenBackLog);
 	if (status == -1)
-	{
-		std::cerr << RED << "[server] ERROR : Listen error ( " << strerror(errno) << " )" << RESET << std::endl;
-		_serverFd = -2;
-		return;
-	}
+		return (HandleFunctionError("Listen"));
+	
+
 	std::cout << BLUE << "[Server] Listening on port : " << _port << RESET << std::endl;
+	return (1);
 }
 

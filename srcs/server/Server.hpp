@@ -8,7 +8,7 @@ class Client;
 class Server {
 	private :
 		std::vector<struct pollfd>	_pollFds;
-		std::map<int, Client>		_clients;
+		std::map<int, Client*>		_clients;
 		uint16_t					_port;
 		uint32_t					_address;
 		int							_status;
@@ -18,12 +18,15 @@ class Server {
 		Server(const Server & OtherServer);
 		// Server & operator=(const Server & OtherServer);
 
-		void	CreateServerSocket();
-		void	SetupListen();
-		void	RunningServ();
+		int		HandleFunctionError(std::string errFunction);
+		int		CreateServerSocket();
+		int		SetupListen();
+		int		RunningServ();
 		int		ConnectAndRead();
 		int		AcceptNewConnection();
 		int		ReadDataFromSocket(std::vector<struct pollfd>::iterator & it);
+		void	AddClient(int newClientFd);
+		void	DeleteClient(int clientFd, std::vector<struct pollfd>::iterator & it);
 
 		
 	public :

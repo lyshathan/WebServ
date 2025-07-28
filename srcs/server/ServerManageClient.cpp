@@ -1,0 +1,27 @@
+#include "Server.hpp"
+#include "../parsing/Client.hpp"
+
+void Server::AddClient(int newClientFd)
+{
+	// Add to list of clients
+	_clients[newClientFd] = new Client(newClientFd);
+
+	// Add to pollFds
+	struct pollfd newClientPollFd;
+	newClientPollFd.fd = newClientFd;
+	newClientPollFd.events = POLLIN;
+	newClientPollFd.revents = 0;
+	_pollFds.push_back(newClientPollFd);
+}
+
+void Server::DeleteClient(int clientFd, std::vector<struct pollfd>::iterator & it)
+{
+	// Delete from list of clients
+	Client *clientToDelete = _clients[clientFd];
+	delete(clientToDelete);
+	_clients.erase(clientFd);
+
+	// Delete from pollFds
+	close(clientFd);
+	it = _pollFds.erase(it) - 1;
+}
