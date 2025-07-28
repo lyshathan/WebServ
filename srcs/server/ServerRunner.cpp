@@ -29,7 +29,7 @@ void	Server::RunningServ(void)
 				it++;
 				continue;
 			}
-			
+
 			std::cout << BLUE << "[Server] Socket #" << it->fd << " is ready for I/O operation" << RESET << std::endl;
 
 			it->revents = 0; // Reset revents to 0 so we can see if it has changed next time
@@ -53,7 +53,7 @@ void	Server::RunningServ(void)
 					return;
 				}
 			}
-			
+
 		}
 	}
 }
@@ -78,15 +78,15 @@ int Server::AcceptNewConnection(void)
 	NewClientPollFd.revents = 0;
 	_pollFds.push_back(NewClientPollFd);
 
-	// Client newClient(clientFd);
-	// map[client_fd] = newClient;
+	Client newClient(clientFd);
+	_clients[clientFd] = newClient;
 
 	std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << RESET << std::endl;
 
 	std::ostringstream Oss;
 	Oss << "Welcome. You are client fd (" << clientFd << ")" << std::endl;
 	std::string Message = Oss.str();
-	
+
 	status = send(clientFd, Message.c_str(), Message.length(), 0);
 	if (status == -1)
 	{
@@ -136,6 +136,7 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		std::ostringstream Oss;
 		Oss << "--> Client #" << senderFd << " says " << buffer;
 		std::string MessageToSend = Oss.str();
+
 
 		// Loop to send the message to all the clients
 		for (std::vector<struct pollfd>::iterator j = _pollFds.begin(); j != _pollFds.end() ; j++)

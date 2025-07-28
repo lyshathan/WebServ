@@ -4,6 +4,5 @@
 int main(void)
 {
 	Server();
-	Client();
 	return (0);
 }
