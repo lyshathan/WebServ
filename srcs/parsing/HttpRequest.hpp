@@ -11,7 +11,7 @@
 #include <unistd.h>
 
 #define BAD_REQUEST 400
-#define NOT_FOUD 404
+#define NOT_FOUND 404
 #define OK 200
 
 class HttpRequest {
@@ -26,8 +26,9 @@ class HttpRequest {
 		bool	parseFirstLine(std::string);
 		bool	parseHeaders(std::string);
 		bool	parseBody(std::string);
-		bool	processRequest();
 
+		bool		validateUri();
+		bool		validatePath();
 		bool		validateVersion(std::string);
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);

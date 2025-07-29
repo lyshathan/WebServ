@@ -17,6 +17,10 @@ void HttpRequest::errorHandler(int status) {
 		_status = BAD_REQUEST;
 		std::cout << "400 Bad request\n";
 	}
+	if (status == NOT_FOUND) {
+		_status = NOT_FOUND;
+		std::cout << "404 Not found\n";
+	}
 }
 
 bool HttpRequest::extractUntil(std::string &line,
@@ -88,15 +92,24 @@ bool HttpRequest::validateVersion(std::string str){
 /*							PARSE FUNCTIONS									  */
 /******************************************************************************/
 
-bool HttpRequest::processRequest() {
+bool HttpRequest::validatePath() {
+	std::string filepath = "../../www" + _uri;
+	if (_uri == "/") filepath = "../../www/index.html";
+	if (access(filepath.c_str(), F_OK | R_OK) != 0) return false;
+	return true;
+}
 
-	DIR *dir = opendir("../../");
-	struct dirent *entry;
-	while ((entry = readdir(dir)) != NULL) {
-
+bool HttpRequest::validateUri() {
+	if (_uri[0] != '/') return false;
+	if (_uri.find("..") != std::string::npos) return false;
+	if (_uri.find('\0') != std::string::npos) return false;
+	for (size_t i = 0; i < _uri.length(); ++i) {
+		if (!std::isalnum(_uri[i])) {
+			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
+				continue;
+			return false;
+		}
 	}
-
-	std::cout << access(_uri.c_str(), R_OK) << "\n";
 	return true;
 }
 
@@ -111,8 +124,10 @@ void HttpRequest::handleRequest(std::string data) {
 		return errorHandler(BAD_REQUEST);
 	if (!data.empty() && !parseBody(data))
 		return errorHandler(BAD_REQUEST);
-	if (!processRequest())
+	if (!validateUri())
 		return errorHandler(BAD_REQUEST);
+	if (!validatePath())
+		return errorHandler(NOT_FOUND);
 
 	// std::map<std::string, std::string>::iterator it = _headers.begin();
 
