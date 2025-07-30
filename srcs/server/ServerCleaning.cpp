@@ -6,6 +6,7 @@ void	Server::CleanServer(void)
 	// Close all fds
 	for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end() ; it++)
 	{
+		std::cout << "Close fd #" << it->fd << std::endl;
 		if (it->fd != - 1)
 		{
 			close(it->fd);

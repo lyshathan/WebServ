@@ -12,6 +12,7 @@ void Server::AddClient(int newClientFd)
 	newClientPollFd.events = POLLIN;
 	newClientPollFd.revents = 0;
 	_pollFds.push_back(newClientPollFd);
+	std::cout << "Validate client #" << newClientFd << std::endl;
 }
 
 void Server::DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it)
