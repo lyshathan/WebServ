@@ -20,12 +20,14 @@ Server::Server(): _listenBackLog(10)
 	conf2._conf_port = 6060;
 	conf2._conf_host = "localhost";
 	conf2._conf_address = INADDR_LOOPBACK; // = localhost
+	_serverConfigs.push_back(conf2);
+
+// For translate hostname to uint32 address format
 	// conf2._conf_host = "example.com";
 	// conf2._conf_address = FromHostToAddress(conf2._conf_host);
 	// struct in_addr addr_struct;
 	// addr_struct.s_addr = htonl(conf2._conf_address);
 	// printf("Address in good format: %s\n", inet_ntoa(addr_struct));
-	_serverConfigs.push_back(conf2);
 
 
 	if (CreateServerSocket() < 0)
