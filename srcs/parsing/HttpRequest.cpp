@@ -88,6 +88,16 @@ bool HttpRequest::validateVersion(std::string str){
 	return (version == VALID_VERSIONS[0] || version == VALID_VERSIONS[1]);
 }
 
+const std::string& HttpRequest::getMethod()const {return _method;}
+
+const std::string& HttpRequest::getUri() const {return _uri;}
+
+const std::string& HttpRequest::getVersion() const {return _version;}
+
+std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
+
+int	HttpRequest::getStatus() const {return _status;}
+
 /******************************************************************************/
 /*							PARSE FUNCTIONS									  */
 /******************************************************************************/
@@ -128,16 +138,6 @@ void HttpRequest::handleRequest(std::string data) {
 		return errorHandler(BAD_REQUEST);
 	if (!validatePath())
 		return errorHandler(NOT_FOUND);
-
-	// std::map<std::string, std::string>::iterator it = _headers.begin();
-
-	// for (; it != _headers.end(); ++it) {
-	// 	std::cout << it->first << " : " << it->second << "\n";
-	// }
-
-	// std::cout << _method
-	// << "\n" << _uri
-	// << "\n" << _version << "\n";
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {

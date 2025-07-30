@@ -109,7 +109,7 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	char	buffer[BUFSIZ + 1];
 	int 	senderFd;
 	int		bytesRead;
-	//int		status;
+	int		status;
 
 	senderFd = it->fd;
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
@@ -144,22 +144,24 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 
 		std::ostringstream Oss;
 		Oss << "--> Client #" << senderFd << " says " << buffer;
-		std::string MessageToSend = Oss.str();
+		//std::string MessageToSend = Oss.str();
 
-		// // Loop to send the message to all the clients
-		// for (std::vector<struct pollfd>::iterator j = _pollFds.begin(); j != _pollFds.end() ; j++)
-		// {
-		// 	if (j->fd != _serverFd && j->fd != senderFd)
-		// 	{
-		// 		status = send(j->fd, MessageToSend.c_str(), MessageToSend.length(), 0);
-		// 		if (status == -1)
-		// 		{
-		// 			std::cerr << RED << "[server] ERROR : Send error ( " << strerror(errno) << " ) to client #" << j->fd << RESET << std::endl;
-		// 			_serverFd = -2;
-		// 			return (-1);
-		// 		}
-		// 	}
-		// }
+		// Loop to send the message to all the clients
+		for (std::vector<struct pollfd>::iterator j = _pollFds.begin(); j != _pollFds.end() ; j++)
+		{
+			if (j->fd != _serverFd && j->fd != senderFd)
+			{
+				_clients[it->fd]->httpRes->parseResponse();
+				std::string res = _clients[it->fd]->httpRes->getRes().c_str();
+				status = send(j->fd, res.c_str(), res.length(), 0);
+				if (status == -1)
+				{
+					std::cerr << RED << "[server] ERROR : Send error ( " << strerror(errno) << " ) to client #" << j->fd << RESET << std::endl;
+					_serverFd = -2;
+					return (-1);
+				}
+			}
+		}
 	}
 	return (0);
 }

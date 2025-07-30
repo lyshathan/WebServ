@@ -6,6 +6,7 @@ int	main(int ac, char **av) {
 		Client a(5);
 
 		a.httpReq->handleRequest(request);
+		a.httpRes->parseResponse();
 
 		// std::map<std::string, std::string>::iterator it = a.httpReq->getHeaders().begin();
 

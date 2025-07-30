@@ -41,10 +41,11 @@ class HttpRequest {
 
 		void	handleRequest(std::string);
 
-		const std::string& getMethod() const { return _method; }
-		const std::string& getUri() const { return _uri; }
-		const std::string& getVersion() const { return _version; }
-		std::map<std::string, std::string>& getHeaders() { return _headers; }
+		const std::string& getMethod() const;
+		const std::string& getUri() const;
+		const std::string& getVersion() const;
+		int	getStatus() const;
+		std::map<std::string, std::string>& getHeaders();
 };
 
 #endif
