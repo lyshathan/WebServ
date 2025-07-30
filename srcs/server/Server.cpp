@@ -27,14 +27,7 @@ Server::Server() : _port(4242), _address(INADDR_LOOPBACK), _status(0), _serverFd
 
 Server::~Server()
 {
-	for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end() ; it++)
-	{
-		if (it->fd != - 1)
-		{
-			close(it->fd);
-			it->fd = -1;
-		}
-	}
+
 }
 
 int Server::CreateServerSocket(void)

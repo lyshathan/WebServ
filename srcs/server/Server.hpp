@@ -19,6 +19,7 @@ class Server {
 		// Server & operator=(const Server & OtherServer);
 
 		int		HandleFunctionError(std::string errFunction);
+		void	CleanServer();
 		int		CreateServerSocket();
 		int		SetupListen();
 		int		RunningServ();
@@ -26,8 +27,7 @@ class Server {
 		int		AcceptNewConnection();
 		int		ReadDataFromSocket(std::vector<struct pollfd>::iterator & it);
 		void	AddClient(int newClientFd);
-		void	DeleteClient(int clientFd, std::vector<struct pollfd>::iterator & it);
-
+		void 	DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
 		
 	public :
 		Server();

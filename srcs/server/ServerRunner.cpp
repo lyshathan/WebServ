@@ -52,11 +52,8 @@ int	Server::ConnectAndRead(void)
 		{
 			std::cout << "Read data [" << it->fd << "]" << std::endl;
 			status = ReadDataFromSocket(it);
-			if (status == -1)
-			{
-				_serverFd = -2;
+			if (status <= 0)
 				return (-1);
-			}
 		}
 		
 	}
@@ -102,7 +99,7 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		if (bytesRead == 0)
 		{
 			std::cerr << YELLOW << "[server] Client #" << senderFd << " closed connection" << RESET << std::endl;
-			DeleteClient(senderFd, it);
+			DeleteClient(it->fd, it);
 		}
 		else
 			return (HandleFunctionError("Recv"));
@@ -112,7 +109,8 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		if (!std::strncmp("stop", buffer, 4))
 		{
 			std::cout << GREEN << "Stopping server" << RESET << std::endl;
-			return(-1);
+			CleanServer();
+			return(0);
 		}
 
 
@@ -137,5 +135,5 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			}
 		}
 	}
-	return (0);
+	return (1);
 }

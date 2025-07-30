@@ -8,7 +8,7 @@ RM = rm -rf
 
 SRCS_DIR = srcs
 MAIN = main
-SERVER = Server ServerRunner ServerManageClient ServerErrors
+SERVER = Server ServerRunner ServerManageClient ServerCleaning
 PARSING = Client HttpRequest HttpResponse
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \

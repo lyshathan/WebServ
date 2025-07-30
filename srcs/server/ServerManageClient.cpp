@@ -14,7 +14,7 @@ void Server::AddClient(int newClientFd)
 	_pollFds.push_back(newClientPollFd);
 }
 
-void Server::DeleteClient(int clientFd, std::vector<struct pollfd>::iterator & it)
+void Server::DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it)
 {
 	// Delete from list of clients
 	Client *clientToDelete = _clients[clientFd];
@@ -23,5 +23,6 @@ void Server::DeleteClient(int clientFd, std::vector<struct pollfd>::iterator & i
 
 	// Delete from pollFds
 	close(clientFd);
+	clientFd = -1;
 	it = _pollFds.erase(it) - 1;
 }
