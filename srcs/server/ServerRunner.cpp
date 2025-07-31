@@ -72,15 +72,6 @@ int Server::AcceptNewConnection(int &serverFd)
 	AddClient(clientFd);
 
 	std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << "for server " << serverFd << RESET << std::endl;
-
-	std::ostringstream Oss;
-	Oss << "Welcome. You are client fd (" << clientFd << ")" << std::endl;
-	std::string Message = Oss.str();
-
-	status = send(clientFd, Message.c_str(), Message.length(), 0);
-	if (status == -1)
-		return (HandleFunctionError("Send"));
-
 	return (0);
 }
 
@@ -89,7 +80,7 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	char	buffer[BUFSIZ + 1];
 	int 	senderFd;
 	int		bytesRead;
-	// int		status;
+	int		status;
 
 	senderFd = it->fd;
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
@@ -111,35 +102,19 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			CleanServer();
 			return(0);
 		}
-
 		buffer[bytesRead] = 0;
-		std::cout << "Client #" << senderFd << " had a message --> " << buffer;
+		std::cout << "\n\n------- Client #" << senderFd << " sent a message ------\n" << buffer;
 
-		_clients[senderFd]->httpReq->handleRequest(buffer);
-
-		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
-		_clients[it->fd]->httpRes->parseResponse();
-		std::string res = _clients[it->fd]->httpRes->getRes().c_str();
-		std::cout << "Response : " << res << std::endl;
-		int status = send(it->fd, res.c_str(), res.length(), 0);
-		if (status == -1)
-			return (HandleFunctionError("Send"));
-
-		// Send the message to all the clients
-		// for (std::vector<struct pollfd>::iterator j = _pollFds.begin(); j != _pollFds.end() ; j++)
-		// {
-		// 	std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
-			// if (find == _serverFds.end() && j->fd != senderFd)
-			// {
-			// 	_clients[it->fd]->httpRes->parseResponse();
-			// 	std::string res = _clients[it->fd]->httpRes->getRes().c_str();
-			// 	std::cout << "Response : " << res << std::endl;
-				// int status = send(j->fd, res.c_str(), res.length(), 0);
-				// if (status == -1)
-				// 	return (HandleFunctionError("Send"));
-
-			// }
-		// }
+		_clients[it->fd]->appendBuffer(buffer, bytesRead);
+		if (_clients[senderFd]->isReqComplete()) {
+			std::cout << "Message finished\n";
+			_clients[senderFd]->httpReq->handleRequest(_clients[it->fd]->getRes());
+			_clients[it->fd]->httpRes->parseResponse();
+			std::string res = _clients[it->fd]->httpRes->getRes().c_str();
+			status = send(it->fd, res.c_str(), res.length(), 0);
+			if (status == -1)
+				return (HandleFunctionError("Send"));
+		}
 	}
 	return (1);
 }

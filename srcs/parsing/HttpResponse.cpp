@@ -35,7 +35,7 @@ void HttpResponse::notFound() {
 	headers["Date"] = "Wed, 30 Jul 2025 12:29:42 GMT";
 	headers["Server"] = "Webserv";
 	headers["Content-Type"] = "text/html";
-	headers["Content-Length"] = "127";
+	headers["Content-Length"] = "137";
 	headers["Connection"] = "keep-alive";
 
 	res << _request->getVersion() + " 404 Not Found\r\n";
@@ -44,7 +44,6 @@ void HttpResponse::notFound() {
 		res << it->first << ": " << it->second << "\r\n";
 	res << "\r\n";
 	res << htmlCode;
-	// std::cout << "Response: " << res.str();
 	_res = res.str();
 }
 
