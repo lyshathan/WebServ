@@ -4,7 +4,8 @@
 
 int main(void)
 {
-	// Config("example.conf");
-	Server();
+	Config config("simple.conf");
+	config.PrintTokens();
+	// Server server();
 	return (0);
 }
