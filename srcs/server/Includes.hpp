@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <algorithm>
 
 #include <errno.h>
 #include <netdb.h>
