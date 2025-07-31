@@ -6,16 +6,17 @@ int	main(int ac, char **av) {
 		Client a(5);
 
 		a.httpReq->handleRequest(request);
+		a.httpRes->parseResponse();
 
-		std::map<std::string, std::string>::iterator it = a.httpReq->getHeaders().begin();
+		// std::map<std::string, std::string>::iterator it = a.httpReq->getHeaders().begin();
 
-		for (; it != a.httpReq->getHeaders().end(); ++it) {
-			std::cout << it->first << " : " << it->second << "\n";
-		}
+		// for (; it != a.httpReq->getHeaders().end(); ++it) {
+		// 	std::cout << it->first << " : " << it->second << "\n";
+		// }
 
-		std::cout << a.httpReq->getMethod()
-		<< "\n" << a.httpReq->getUri()
-		<< "\n" << a.httpReq->getVersion() << "\n";
+		// std::cout << a.httpReq->getMethod()
+		// << "\n" << a.httpReq->getUri()
+		// << "\n" << a.httpReq->getVersion() << "\n";
 	}
 
 	return 0;
