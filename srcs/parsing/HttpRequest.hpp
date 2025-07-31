@@ -7,9 +7,11 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <dirent.h>
+#include <unistd.h>
 
 #define BAD_REQUEST 400
-#define NOT_FOUD 404
+#define NOT_FOUND 404
 #define OK 200
 
 class HttpRequest {
@@ -24,8 +26,9 @@ class HttpRequest {
 		bool	parseFirstLine(std::string);
 		bool	parseHeaders(std::string);
 		bool	parseBody(std::string);
-		bool	processRequest();
 
+		bool		validateUri();
+		bool		validatePath();
 		bool		validateVersion(std::string);
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);
@@ -38,10 +41,11 @@ class HttpRequest {
 
 		void	handleRequest(std::string);
 
-		const std::string& getMethod() const { return _method; }
-		const std::string& getUri() const { return _uri; }
-		const std::string& getVersion() const { return _version; }
-		std::map<std::string, std::string>& getHeaders() { return _headers; }
+		const std::string& getMethod() const;
+		const std::string& getUri() const;
+		const std::string& getVersion() const;
+		int	getStatus() const;
+		std::map<std::string, std::string>& getHeaders();
 };
 
 #endif

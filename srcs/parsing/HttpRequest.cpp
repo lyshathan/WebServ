@@ -17,6 +17,10 @@ void HttpRequest::errorHandler(int status) {
 		_status = BAD_REQUEST;
 		std::cout << "400 Bad request\n";
 	}
+	if (status == NOT_FOUND) {
+		_status = NOT_FOUND;
+		std::cout << "404 Not found\n";
+	}
 }
 
 bool HttpRequest::extractUntil(std::string &line,
@@ -84,11 +88,38 @@ bool HttpRequest::validateVersion(std::string str){
 	return (version == VALID_VERSIONS[0] || version == VALID_VERSIONS[1]);
 }
 
+const std::string& HttpRequest::getMethod()const {return _method;}
+
+const std::string& HttpRequest::getUri() const {return _uri;}
+
+const std::string& HttpRequest::getVersion() const {return _version;}
+
+std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
+
+int	HttpRequest::getStatus() const {return _status;}
+
 /******************************************************************************/
 /*							PARSE FUNCTIONS									  */
 /******************************************************************************/
 
-bool HttpRequest::processRequest() {
+bool HttpRequest::validatePath() {
+	std::string filepath = "../../www" + _uri;
+	if (_uri == "/") filepath = "../../www/index.html";
+	if (access(filepath.c_str(), F_OK | R_OK) != 0) return false;
+	return true;
+}
+
+bool HttpRequest::validateUri() {
+	if (_uri[0] != '/') return false;
+	if (_uri.find("..") != std::string::npos) return false;
+	if (_uri.find('\0') != std::string::npos) return false;
+	for (size_t i = 0; i < _uri.length(); ++i) {
+		if (!std::isalnum(_uri[i])) {
+			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
+				continue;
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -102,8 +133,10 @@ void HttpRequest::handleRequest(std::string data) {
 		return errorHandler(BAD_REQUEST);
 	if (!data.empty() && !parseBody(data))
 		return errorHandler(BAD_REQUEST);
-	if (!processRequest())
+	if (!validateUri())
 		return errorHandler(BAD_REQUEST);
+	if (!validatePath())
+		return errorHandler(NOT_FOUND);
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {
