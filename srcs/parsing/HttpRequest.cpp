@@ -127,7 +127,6 @@ void HttpRequest::handleRequest(std::string data) {
 	std::string	firstLine;
 	std::string	headers;
 
-	std::cout << "---- DATA STRUCTURE FROM HTTP REQUEST ----\n";
 	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine))
 		return errorHandler(BAD_REQUEST);
 	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers))

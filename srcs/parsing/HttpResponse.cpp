@@ -6,7 +6,7 @@
 
 HttpResponse::HttpResponse() {};
 
-HttpResponse::HttpResponse(HttpRequest *req) : _request(req), _res(NULL) {};
+HttpResponse::HttpResponse(HttpRequest *req) : _request(req), _res("") {};
 
 HttpResponse::~HttpResponse() {};
 
@@ -35,7 +35,7 @@ void HttpResponse::notFound() {
 	headers["Date"] = "Wed, 30 Jul 2025 12:29:42 GMT";
 	headers["Server"] = "Webserv";
 	headers["Content-Type"] = "text/html";
-	headers["Content-Length"] = std::to_string(htmlCode.length());
+	headers["Content-Length"] = "127";
 	headers["Connection"] = "keep-alive";
 
 	res << _request->getVersion() + " 404 Not Found\r\n";
@@ -58,7 +58,7 @@ void HttpResponse::badRequest() {
 	headers["Date"] = "Wed, 30 Jul 2025 12:29:42 GMT";
 	headers["Server"] = "Webserv";
 	headers["Content-Type"] = "text/html";
-	headers["Content-Length"] = std::to_string(htmlCode.length());
+	headers["Content-Length"] = "127";
 	headers["Connection"] = "close";
 
 	res << _request->getVersion() + " 400 Bad Request\r\n";
