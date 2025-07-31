@@ -44,7 +44,7 @@ void HttpResponse::notFound() {
 		res << it->first << ": " << it->second << "\r\n";
 	res << "\r\n";
 	res << htmlCode;
-	std::cout << "Response: " << res.str();
+	// std::cout << "Response: " << res.str();
 	_res = res.str();
 }
 

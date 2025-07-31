@@ -15,11 +15,11 @@ HttpRequest::~HttpRequest() {};
 void HttpRequest::errorHandler(int status) {
 	if (status == BAD_REQUEST) {
 		_status = BAD_REQUEST;
-		std::cout << "400 Bad request\n";
+		// std::cout << "400 Bad request\n";
 	}
 	if (status == NOT_FOUND) {
 		_status = NOT_FOUND;
-		std::cout << "404 Not found\n";
+		// std::cout << "404 Not found\n";
 	}
 }
 
