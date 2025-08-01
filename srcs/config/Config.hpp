@@ -30,6 +30,9 @@ class Config {
 		void	AnalyzeCaseSemicolon(t_token &token);
 		void	AnalyzeCaseDirOrValue(t_token &token);
 
+		// PARSER
+		void	Parser();
+
 		class ConfigException : public std::exception
 		{
 			public:

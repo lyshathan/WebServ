@@ -1,8 +1,8 @@
 #include "GlobalConfig.hpp"
 
-GlobalConfig::GlobalConfig(void)
+GlobalConfig::GlobalConfig(std::vector< t_token>::iterator &it)
 {
-
+	
 }
 
 GlobalConfig::~GlobalConfig(void)

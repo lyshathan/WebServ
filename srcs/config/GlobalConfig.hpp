@@ -2,6 +2,7 @@
 #define GLOBALCONFIG_HPP
 
 #include "ConfigIncludes.hpp"
+#include "Token.hpp"
 
 class GlobalConfig {
 	private :
@@ -9,7 +10,7 @@ class GlobalConfig {
 		size_t			client_max_body_size;
 
 	public :
-		GlobalConfig();
+		GlobalConfig(std::vector< t_token>::iterator &it);
 		~GlobalConfig();
 };
 

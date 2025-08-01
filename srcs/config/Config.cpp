@@ -11,6 +11,8 @@ Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLO
 
 	InitValidDirectives();
 	InitToken(configFile);
+
+	Parser();
 }
 
 Config::~Config(void)
