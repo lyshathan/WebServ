@@ -106,6 +106,7 @@ bool HttpRequest::validatePath() {
 	std::string filepath = "./www" + _uri;
 	if (_uri == "/") filepath = "./www/index.html";
 	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
+	_uri = filepath;
 	return true;
 }
 
@@ -137,6 +138,8 @@ void HttpRequest::handleRequest(std::string data) {
 		return errorHandler(BAD_REQUEST);
 	if (!validatePath())
 		return errorHandler(NOT_FOUND);
+	else
+		_status = OK;
 
 	// std::cout << "\n\n------- First Line ----- \n";
 	// std::cout << _method

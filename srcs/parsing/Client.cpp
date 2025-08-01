@@ -6,7 +6,7 @@
 
 Client::Client(int fd) : _fd(fd), httpReq(new HttpRequest()), httpRes(new HttpResponse(httpReq)),
 	_recvSize(0) {
-	std::cout << "Client created with fd: " << _fd << "\n";
+	//std::cout << "Client created with fd: " << _fd << "\n";
 }
 
 Client::~Client() {
@@ -30,6 +30,5 @@ bool Client::isReqComplete() const {
 	size_t pos = _reqBuffer.find("\r\n\r\n");
 	if (pos == std::string::npos)
 		return false;
-	std::cout << "FOUND at position: " << pos << std::endl;
 	return true;
 }
