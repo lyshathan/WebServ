@@ -92,7 +92,19 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			DeleteClient(it->fd, it);
 		}
 		else
-			return (HandleFunctionError("Recv"));
+		{
+			// Handle recv errors - most are client-side issues, not server fatal errors
+			if (errno == ECONNRESET)
+			{
+				std::cerr << YELLOW << "[server] Client #" << senderFd << " connection reset by peer" << RESET << std::endl;
+			}
+			else
+			{
+				// Other errors - log them but still don't crash the server
+				std::cerr << YELLOW << "[server] Client #" << senderFd << " recv error: " << strerror(errno) << RESET << std::endl;
+			}
+			DeleteClient(it->fd, it);
+		}
 	}
 	else
 	{
@@ -102,15 +114,15 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			CleanServer();
 			return(0);
 		}
-		//std::cout << "\n\n------- Client #" << senderFd << " sent a message ------\n" << buffer;
+		//std::cout << "\n\n------- Client #" << senderFd << " sent a message ------\n" << buffer << std::endl;
 
 		_clients[it->fd]->appendBuffer(buffer, bytesRead);
 		if (_clients[senderFd]->isReqComplete()) {
-			std::cout << "Message finished\n";
 			_clients[senderFd]->httpReq->handleRequest(_clients[it->fd]->getRes());
 			_clients[it->fd]->httpRes->parseResponse();
 			std::string res = _clients[it->fd]->httpRes->getRes().c_str();
 			status = send(it->fd, res.c_str(), res.length(), 0);
+			_clients[it->fd]->clearBuffer();
 			if (status == -1)
 				return (HandleFunctionError("Send"));
 		}

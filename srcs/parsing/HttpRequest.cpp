@@ -12,6 +12,14 @@ HttpRequest::~HttpRequest() {};
 /*						PARSE  HELPER FUNCTIONS								  */
 /******************************************************************************/
 
+void HttpRequest::cleanReqInfo() {
+	_method.clear();
+	_uri.clear();
+	_version.clear();
+	_headers.clear();
+	_status = 0;
+}
+
 void HttpRequest::errorHandler(int status) {
 	if (status == BAD_REQUEST) {
 		_status = BAD_REQUEST;
@@ -182,6 +190,7 @@ bool HttpRequest::parseFirstLine(std::string data) {
 bool HttpRequest::parseHeaders(std::string data) {
 	std::string	header;
 
+	//std::cout << "\n\n ---- Headers ----- \n" << data << "\n\n";
 	while (extractUntil(header, data, "\r\n"))
 		if (!mapHeaders(header))
 			return false;

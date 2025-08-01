@@ -20,6 +20,12 @@ Client::~Client() {
 
 const std::string &Client::getRes() const { return _reqBuffer;}
 
+void	Client::clearBuffer() {
+	_reqBuffer = "";
+	_recvSize = 0;
+	httpReq->cleanReqInfo();
+}
+
 bool	Client::appendBuffer(const char *data, size_t size) {
 	_reqBuffer += std::string(data, size);
 	_recvSize += size;

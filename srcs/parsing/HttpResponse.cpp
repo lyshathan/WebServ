@@ -29,11 +29,35 @@ std::string HttpResponse::getMimeType() const {
 	std::string uri = _request->getUri();
 
 	size_t pos = uri.find_last_of(".");
-	if (pos == std::string::npos)
+	if (pos == std::string::npos) {
 		return "text/html";
+	}
 	else {
-		if (uri.substr(pos + 1) == "html")
+		std::string extension = uri.substr(pos + 1);
+		if (extension == "html" || extension == "htm")
 			return "text/html";
+		else if (extension == "css")
+			return "text/css";
+		else if (extension == "js")
+			return "text/javascript";
+		else if (extension == "json")
+			return "application/json";
+		else if (extension == "png")
+			return "image/png";
+		else if (extension == "jpg" || extension == "jpeg")
+			return "image/jpeg";
+		else if (extension == "gif")
+			return "image/gif";
+		else if (extension == "svg")
+			return "image/svg+xml";
+		else if (extension == "ico")
+			return "image/x-icon";
+		else if (extension == "txt")
+			return "text/plain";
+		else if (extension == "xml")
+			return "text/xml";
+		else if (extension == "pdf")
+			return "application/pdf";
 	}
 	return "application/octet-stream";
 }
@@ -97,87 +121,55 @@ void HttpResponse::successfulRequest() {
 	_res = res.str();
 }
 
-// HTTP/1.1 200 OK
-// Server: nginx/1.29.0
-// Date: Fri, 01 Aug 2025 08:45:11 GMT
-// Content-Type: text/html
-// Content-Length: 193
-// Last-Modified: Fri, 25 Jul 2025 13:45:02 GMT
-// Connection: keep-alive
-// ETag: "68838a5e-c1"
-// Accept-Ranges: bytes
-
-// <!DOCTYPE html>
-// <html lang="en">
-// <head>
-//   <meta charset="UTF-8">
-//   <title>Welcome</title>
-// </head>
-// <body>
-//   <h1>Welcome to my Nginx server!</h1>
-//   <p>This is the index page.</p>
-// </body>
-// </html>
-
 void HttpResponse::notFound() {
 	std::ostringstream res;
-	std::map<std::string, std::string> headers;
+	std::ostringstream html;
 
-	std::string htmlCode = "<html><head><title>404 Not Found</title></head><body><center> \
-		<h1>404 Not Found</h1></center><hr><center>webserv</center></body></html>";
+	html << "<html><head><title>404 Not Found</title></head><body>"
+		<< "<center><h1>404 Not Found</h1></center>"
+		<< "<hr>"
+		<< "<p><strong>Requested URI:</strong> " << _request->getUri() << "</p>"
+		<< "<p><strong>Method:</strong> " << _request->getMethod() << "</p>"
+		<< "<p><strong>Time:</strong> " << getTime() << "</p>"
+		<< "<center>webserv</center>"
+		<< "</body></html>";
 
-	headers["Date"] = "Wed, 30 Jul 2025 12:29:42 GMT";
-	headers["Server"] = "Webserv";
-	headers["Content-Type"] = "text/html";
-	headers["Content-Length"] = "137";
-	headers["Connection"] = "keep-alive";
+	std::string htmlCode = html.str();
 
-	res << _request->getVersion() + " 404 Not Found\r\n";
-	std::map<std::string, std::string>::iterator it = headers.begin();
-	for (; it != headers.end(); it++)
-		res << it->first << ": " << it->second << "\r\n";
-	res << "\r\n";
-	res << htmlCode;
+	res << _request->getVersion() + " 404 Not Found\r\n"
+	<< "Server: webserv\r\n"
+	<< "Date: " << getTime() << "\r\n"
+	<< "Content-Type: " << getMimeType() << "\r\n"
+	<< "Content-Length: "<< htmlCode.size() << "\r\n"
+	<< "Connection: closed" << "\r\n\r\n"
+	<< htmlCode;
 	_res = res.str();
 }
 
 void HttpResponse::badRequest() {
 	std::ostringstream res;
-	std::map<std::string, std::string> headers;
+	std::ostringstream html;
 
-	std::string htmlCode = "<html><head><title>400 Bad Request</title></head><body><center> \
-		<h1>400 Bad Request</h1></center><hr><center>webserv</center></body></html>";
+	html << "<html><head><title>400 Bad Request</title></head><body>"
+	<< "<center><h1>400 Bad Request</h1></center>"
+	<< "<hr>"
+	<< "<p><strong>Requested URI:</strong> " << _request->getUri() << "</p>"
+	<< "<p><strong>Method:</strong> " << _request->getMethod() << "</p>"
+	<< "<p><strong>Time:</strong> " << getTime() << "</p>"
+	<< "<center>webserv</center>"
+	<< "</body></html>";
 
-	headers["Date"] = "Wed, 30 Jul 2025 12:29:42 GMT";
-	headers["Server"] = "Webserv";
-	headers["Content-Type"] = "text/html";
-	headers["Content-Length"] = "127";
-	headers["Connection"] = "close";
+	std::string htmlCode = html.str();
 
-	res << _request->getVersion() + " 400 Bad Request\r\n";
-	std::map<std::string, std::string>::iterator it = headers.begin();
-	for (; it != headers.end(); it++)
-		res << it->first << ": " << it->second << "\r\n";
-	res << "\r\n";
-	res << htmlCode;
-	//std::cout << "Response: " << res.str();
+	res << _request->getVersion() + " 400 Bad Request\r\n"
+	<< "Server: webserv\r\n"
+	<< "Date: " << getTime() << "\r\n"
+	<< "Content-Type: " << getMimeType() << "\r\n"
+	<< "Content-Length: "<< htmlCode.size() << "\r\n"
+	<< "Connection: closed" << "\r\n\r\n"
+	<< htmlCode;
 	_res = res.str();
 }
-
-// HTTP/1.1 400 Bad Request
-// Server: nginx/1.29.0
-// Date: Wed, 30 Jul 2025 12:29:42 GMT
-// Content-Type: text/html
-// Content-Length: 157
-// Connection: close
-
-// <html>
-// <head><title>400 Bad Request</title></head>
-// <body>
-// <center><h1>400 Bad Request</h1></center>
-// <hr><center>nginx/1.29.0</center>
-// </body>
-// </html>
 
 
 
