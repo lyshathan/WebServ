@@ -9,7 +9,7 @@ RM = rm -rf
 SRCS_DIR = srcs
 MAIN = main
 SERVER = Server ServerRunner ServerManageClient ServerCleaning
-CONFIG = Config GlobalConfig LocationConfig ServerConfig
+CONFIG = Config GlobalConfig LocationConfig ServerConfig ConfigUtils Tokenizer AnalyzeToken
 PARSING = Client HttpRequest HttpResponse
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \

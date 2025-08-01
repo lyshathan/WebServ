@@ -15,10 +15,20 @@ class Config {
 		int							_braceLevel;
 		std::vector<t_token>		_tokens;
 		size_t						_lineNumber;
-		std::vector<std::string>	_validDirective;
+		size_t						_level;
+		t_type						_expectedToken;
+		std::vector< std::vector<std::string> >	_validDir;
+		std::string					_configFileName;
 
-		void	AnalyseTokenContent(t_token &token);
-		void	CleanNewLine();
+		// TOKENIZER
+		void	InitValidDirectives();
+		void	InitToken(std::ifstream &configFile);
+		bool	IsValidDir(std::string content, size_t level);
+		bool	IsDir(std::string content);
+		void	AnalyzeTokenContent(t_token &token);
+		void	AnalyzeCaseBrace(t_token &token);
+		void	AnalyzeCaseSemicolon(t_token &token);
+		void	AnalyzeCaseDirOrValue(t_token &token);
 
 		class ConfigException : public std::exception
 		{
@@ -30,6 +40,10 @@ class Config {
 		Config(std::string filename);
 		~Config();
 		void	PrintTokens();
+
 };
 
 #endif
+
+
+
