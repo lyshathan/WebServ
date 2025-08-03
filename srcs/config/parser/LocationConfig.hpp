@@ -2,7 +2,7 @@
 #define LOCATIONCONFIG_HPP
 
 #include "ConfigIncludes.hpp"
-#include "Token.hpp"
+#include "../tokenizer/Token.hpp"
 
 class LocationConfig {
 	private :
@@ -19,6 +19,13 @@ class LocationConfig {
 
 		const size_t				_currentLevel;
 
+		void	LocationConfigParser(std::vector< t_token>::iterator &it);
+		void	CheckForSemicolon(std::string type, std::vector< t_token>::iterator &it);
+		void	AddToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it);
+		void	ParsePath(std::vector< t_token>::iterator &it);
+		void	ParseReturn(std::vector< t_token>::iterator &it);
+		void	ParseAutoIndex(std::vector< t_token>::iterator &it);
+		void	ParseClientMaxBodySize(std::vector< t_token>::iterator &it);
 
 	public :
 		LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it);

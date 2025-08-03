@@ -2,7 +2,7 @@
 #define GLOBALCONFIG_HPP
 
 #include "ConfigIncludes.hpp"
-#include "Token.hpp"
+#include "../tokenizer/Token.hpp"
 
 class GlobalConfig {
 	private :

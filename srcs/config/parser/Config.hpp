@@ -3,7 +3,7 @@
 
 #include "ConfigIncludes.hpp"
 #include "GlobalConfig.hpp"
-#include "Token.hpp"
+#include "../tokenizer/Token.hpp"
 
 class GlobalConfig;
 class ServerConfig;
@@ -32,12 +32,6 @@ class Config {
 
 		// PARSER
 		void	Parser();
-
-		class ConfigException : public std::exception
-		{
-			public:
-				const char* what() const throw();
-		};
 
 	public :
 		Config(std::string filename);
