@@ -10,8 +10,8 @@ class GlobalConfig {
 		size_t			client_max_body_size;
 
 	public :
-		GlobalConfig(std::vector< t_token>::iterator &it);
-		~GlobalConfig();
+		// GlobalConfig(std::vector< t_token>::iterator &it);
+		// ~GlobalConfig();
 };
 
 #endif
