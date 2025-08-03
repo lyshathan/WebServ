@@ -17,7 +17,13 @@ SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/, $(CONFIG))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING)))
 
-# HEADERS = includes/Server.hpp includes/Includes.hpp
+H_SERVER = Includes Server
+H_CONFIG = Config ConfigIncludes GlobalConfig LocationConfig ServerConfig Token
+H_PARSING = Client HttpRequest HttpResponse
+
+HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/server/, $(H_SERVER))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/, $(H_CONFIG))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING)))
 
 #====== OBJECTS & DEPENDENCIES ======#
 
@@ -39,7 +45,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 	@echo "\n\033[1;32mWebServ compiled\033[0m 🔥🚀\n"
 
-$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp Makefile | $(OBJ_SUBDIRS) #$(HEADERS)
+$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp $(HEADERS) Makefile | $(OBJ_SUBDIRS) 
 	$(CC) $(FLAGS) -c $< -o $@
 
 $(OBJ_SUBDIRS):

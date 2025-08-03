@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cctype>
 #include <sstream>
+#include <limits.h>
 
 #define RED		"\033[38;2;255;0;0m"
 #define BLUE	"\033[38;2;0;0;255m"

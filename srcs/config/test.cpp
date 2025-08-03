@@ -64,3 +64,33 @@ void Config::AnalyseTokenContent(t_token &token)
 	token.level = _level;
 	// std::cout << "Expected token type : " << _expectedToken << std::endl;
 }
+
+
+		// else if (it->type == DIRECTIVE && it->content == "root")	// root
+		// {
+		// 	_root = (++it)->content;
+		// 	it++;
+		// 	if (it == _tokens.end() || it->type != SEMICOLON)
+		// 		throw std::invalid_argument("[ServerConfig] Invalid root (semicolon)");
+		// }
+
+		// else if (it->type == DIRECTIVE && it->content == "index")	// index files
+		// {
+		// 	it++;
+		// 	while (it != _tokens.end() &&  it->type == VALUE)
+		// 	{
+		// 		_indexFiles.push_back(it->content);
+		// 		it++;
+		// 	}
+		// }
+
+		// else if (it->type == DIRECTIVE && it->content == "client_max_body_size")	// client_max_body_size
+		// {
+		// 	double bodySize = std::strtod((++it)->content.c_str(), &end);
+		// 	if (bodySize <= 0 || bodySize > INT_MAX)
+		// 		throw std::invalid_argument("[ServerConfig] Invalid client_max_body_size");
+		// 	_clientMaxBodySize = bodySize;
+		// 	it++;
+		// 	if (it == _tokens.end() || it->type != SEMICOLON)
+		// 		throw std::invalid_argument("[ServerConfig] Invalid client_max_body_size (semicolon)");
+		// }

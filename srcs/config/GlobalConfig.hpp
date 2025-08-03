@@ -6,12 +6,16 @@
 
 class GlobalConfig {
 	private :
-		std::string		error_log;
-		size_t			client_max_body_size;
+		std::string		_error_log;
+		size_t			_client_max_body_size;
 
 	public :
-		// GlobalConfig(std::vector< t_token>::iterator &it);
-		// ~GlobalConfig();
+		GlobalConfig();
+		~GlobalConfig();
+
+		void setErrorLog(std::string &errorLog);
+		void setClientMaxBodySize(std::string &size);
+		void printGlobal();
 };
 
 #endif
