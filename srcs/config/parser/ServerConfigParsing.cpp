@@ -1,35 +1,70 @@
 #include "ServerConfig.hpp"
-#include "LocationConfig.hpp"
-#include "../tokenizer/Token.hpp"
+#include "Utils.hpp"
 
 void	ServerConfig::ParseListenPort(std::vector< t_token>::iterator &it)
 {
 	char *end;
 
 	double port = std::strtod((++it)->content.c_str(), &end);
-	if (*end || port <= 0 || port > INT_MAX)
+	if (*end || port < 1 || port > 65535 || std::isinf(port))
 		throw std::invalid_argument("[ServerConfig] Invalid port");
-	_listenPorts.push_back(port);
-	CheckForSemicolon("listen", it);
+	for (std::vector< ServerConfig >::iterator itSC = _serversConfig.begin() ; itSC != _serversConfig.end() ; itSC++)
+	{
+		if (std::find((itSC->_listenPorts).begin(), (itSC->_listenPorts).end(), port) != (itSC->_listenPorts).end())
+		{
+			std::ostringstream errorMsg;
+			errorMsg << "[ServerConfig] Port already exists : " << port;
+			throw std::invalid_argument(errorMsg.str());
+		}
+	}
+	if (std::find(_listenPorts.begin(), _listenPorts.end(), port) == _listenPorts.end())
+		_listenPorts.push_back(port);
+	ACheckForSemicolon(it, _tokens);
 }
+
+void	ServerConfig::ParseRoot(std::vector< t_token>::iterator &it)
+{
+	size_t check = IsValidDirPath((++it)->content);
+	if (check != VALID)
+	{
+		std::ostringstream errorMsg;
+		errorMsg << "[ServerConfig] Error with root path : " << it->content;
+		if (check == NO_EXIST)
+		{
+			errorMsg << " : Path does not exist.";
+			throw std::invalid_argument(errorMsg.str());
+		}
+		else if  (check == NOT_A_DIRECTORY)
+		{
+			errorMsg << " : Directory does not exist.";
+			throw std::invalid_argument(errorMsg.str());
+		}
+		errorMsg << " : Directory permission denied.";
+		throw std::invalid_argument(errorMsg.str());
+	}
+	_root = it->content;
+	ACheckForSemicolon(it, _tokens);
+}
+
 
 void	ServerConfig::ParseClientMaxBodySize(std::vector< t_token>::iterator &it)
 {
 	char *end;
 
 	double bodySize = std::strtod((++it)->content.c_str(), &end);
-	if (bodySize <= 0 || bodySize > INT_MAX)
+	if (*end || bodySize <= 0 || bodySize > INT_MAX || std::isinf(bodySize))
 		throw std::invalid_argument("[ServerConfig] Invalid client_max_body_size");
 	_clientMaxBodySize = bodySize;
-	CheckForSemicolon("client_max_body_size", it);
+	ACheckForSemicolon(it, _tokens);
 }
 
 size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::iterator it)
 {
 	size_t	count = 0;
 
-	while (it != tokenList.end() && it->type != SEMICOLON)
+	while (it != tokenList.end() && it->type == VALUE)
 	{
+		// std::cout << it->content << std::endl;
 		it++;
 		count++;
 	}
@@ -39,10 +74,24 @@ size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::i
 void	ServerConfig::ParseErrorPage(std::vector< t_token>::iterator &it)
 {
 	char *end;
+	size_t	check;
 
 	it++;
 	size_t	nbOfErrorCode = CountErrorCodes(_tokens, it);
 	std::vector< t_token>::iterator itErrorPage = it + nbOfErrorCode - 1;
+	check = IsValidFile(itErrorPage->content);
+	if (check != VALID)
+	{
+		std::ostringstream errorMsg;
+		errorMsg << "[ServerConfig] Error with Error file : " << itErrorPage->content;
+		if (check == NO_EXIST)
+		{
+			errorMsg << " : Error file does not exist.";
+			throw std::invalid_argument(errorMsg.str());
+		}
+		errorMsg << " : Error file permission denied.";
+		throw std::invalid_argument(errorMsg.str());
+	}
 	while (it != itErrorPage)
 	{
 		double code = std::strtod(it->content.c_str(), &end);
@@ -51,7 +100,7 @@ void	ServerConfig::ParseErrorPage(std::vector< t_token>::iterator &it)
 		_errorPages[code] = itErrorPage->content;
 		it++;
 	}
-	CheckForSemicolon("error_page", it);
+	ACheckForSemicolon(it, _tokens);
 }
 
 
@@ -69,19 +118,6 @@ void	ServerConfig::AddToVector(std::vector< std::string > &vec, std::vector< t_t
 	if (it == _tokens.end() || it->type != SEMICOLON)
 	{
 		errorMsg << "[ServerConfig] Invalid " << tmp->content << "(semicolon)";
-		throw std::invalid_argument(errorMsg.str());
-	}
-}
-
-void	ServerConfig::CheckForSemicolon(std::string type, std::vector< t_token>::iterator &it)
-{
-	std::ostringstream				errorMsg;
-	std::vector< t_token>::iterator	tmp = it;
-
-	it++;
-	if (it == _tokens.end() || it->type != SEMICOLON)
-	{
-		errorMsg << "[ServerConfig] Invalid " << type << "(semicolon)";
 		throw std::invalid_argument(errorMsg.str());
 	}
 }

@@ -6,7 +6,7 @@ int main(void)
 {
 	try
 	{
-		Config config("example.conf");
+		Config config("simple.conf");
 		// config.PrintTokens();
 	}
 	catch(const std::exception& e)

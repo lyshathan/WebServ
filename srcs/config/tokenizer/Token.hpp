@@ -1,7 +1,8 @@
 #ifndef TOKEN_HPP
 #define TOKEN_HPP
 
-#include "../parser/ConfigIncludes.hpp"
+#include "../General.hpp"
+#include <string>
 
 typedef enum	e_level {
 	GLOBAL,

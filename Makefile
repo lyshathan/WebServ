@@ -9,22 +9,25 @@ RM = rm -rf
 SRCS_DIR = srcs
 MAIN = main
 SERVER = Server ServerRunner ServerManageClient ServerCleaning
-CONFIG_PARSER = Config GlobalConfig LocationConfig LocationConfigParsing ServerConfig ServerConfigParsing
+GENERAL = General
+CONFIG_PARSER = Config GlobalConfig LocationConfig LocationConfigParsing ServerConfig ServerConfigParsing Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 PARSING = Client HttpRequest HttpResponse
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/server/, $(SERVER))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/, $(GENERAL))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/parser/, $(CONFIG_PARSER))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(CONFIG_TOKENIZER))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING)))
 
 H_SERVER = Includes Server
-H_CONFIG_PARSER = Config ConfigIncludes GlobalConfig LocationConfig ServerConfig
+H_CONFIG_PARSER = Config GlobalConfig LocationConfig ServerConfig Utils
 H_CONFIG_TOKENIZER = Token
 H_PARSING = Client HttpRequest HttpResponse
 
 HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/server/, $(H_SERVER))) \
+		$(SRCS_DIR)/config/General.hpp \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/parser/, $(H_CONFIG_PARSER))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(H_CONFIG_TOKENIZER))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING)))

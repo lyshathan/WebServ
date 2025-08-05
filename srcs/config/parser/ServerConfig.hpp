@@ -1,13 +1,13 @@
 #ifndef SERVERCONFIG_HPP
 #define SERVERCONFIG_HPP
 
-#include "../tokenizer/Token.hpp"
-#include "ConfigIncludes.hpp"
 #include "LocationConfig.hpp"
 
 class ServerConfig {
 	private :
-		std::vector<t_token>			_tokens;
+		std::vector< ServerConfig >		&_serversConfig;
+		std::vector<t_token>			&_tokens;
+
 		std::vector<int>				_listenPorts;
 		std::vector<std::string>		_serverNames;
 		std::vector<std::string>		_indexFiles;
@@ -19,14 +19,14 @@ class ServerConfig {
 
 		void	ParseServerConfig(std::vector< t_token>::iterator &it);
 		void	ParseListenPort(std::vector< t_token>::iterator &it);
+		void	ParseRoot(std::vector< t_token>::iterator &it);
 		void	ParseClientMaxBodySize(std::vector< t_token>::iterator &it);
 		void	ParseErrorPage(std::vector< t_token>::iterator &it);
 		void	AddToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it);
-		void	CheckForSemicolon(std::string type, std::vector< t_token>::iterator &it);
 
 
 	public :
-		ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it);
+		ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< ServerConfig >	&serversConfig);
 		~ServerConfig();
 		void	PrintServer();
 };

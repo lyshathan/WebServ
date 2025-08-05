@@ -25,10 +25,7 @@ void	Config::AnalyzeCaseBrace(t_token &token)
 	if (token.content == "{")
 	{
 		if (_expectedToken != OPEN_BRACE)
-		{
-			std::cout << RED << "[Config] unexpected \"{\" in " << _configFileName << ": " << token.line << RESET << std::endl;
-			throw std::invalid_argument(errorMsg.str());
-		}
+			ThrowError(" Unexpected \"{\" ", token);
 		token.type = OPEN_BRACE;
 		_expectedToken = DIRECTIVE;
 		_level++;
@@ -37,10 +34,7 @@ void	Config::AnalyzeCaseBrace(t_token &token)
 	{
 		token.type = CLOSE_BRACE;
 		if (_level == 0)
-		{
-			std::cout << RED << "[Config] unexpected \"}\" in " << _configFileName << ": " << token.line << RESET << std::endl;
-			throw std::invalid_argument(errorMsg.str());
-		}
+			ThrowError(" Unexpected \"}\" ", token);
 		_expectedToken = DIRECTIVE;
 		_level--;
 	}
@@ -48,25 +42,18 @@ void	Config::AnalyzeCaseBrace(t_token &token)
 
 void	Config::AnalyzeCaseSemicolon(t_token &token)
 {
-	std::ostringstream	errorMsg;
 	if (_expectedToken != SEMICOLON_OR_VALUE)
-		{
-			std::cout << RED << "[Config] unexpected end of file, expecting \";\" or \"}\" in " << _configFileName << ": " << token.line << RESET << std::endl;
-			throw std::invalid_argument(errorMsg.str());
-		}
-		token.type = SEMICOLON;
+		ThrowError(" Unexpected end of file, expecting \";\" or \"}\"", token);
+	token.type = SEMICOLON;
+	_expectedToken = UNDEFINED;
 }
 
 void	Config::AnalyzeCaseDirOrValue(t_token &token)
 {
-	std::ostringstream	errorMsg;
-	if (_tokens.size() != 0 && (_tokens.back().type == DIRECTIVE || _tokens.back().type == VALUE))
+	if (_tokens.size() != 0 && (_tokens.back().type == DIRECTIVE || _tokens.back().type == VALUE) && token.content != "location")
 	{
 		if (_expectedToken != VALUE && _expectedToken != SEMICOLON_OR_VALUE && _expectedToken != PATH)
-		{
-			std::cout << RED << "[Config] missing value in " << _configFileName << ": " << token.line << RESET << std::endl;
-			throw std::invalid_argument(errorMsg.str());
-		}
+			ThrowError(" Missing value", token);
 		if (_tokens.back().content == "location")
 		{
 			token.type = PATH;
@@ -80,13 +67,14 @@ void	Config::AnalyzeCaseDirOrValue(t_token &token)
 	}
 	else
 	{
+		if (_expectedToken == SEMICOLON || _expectedToken == SEMICOLON_OR_VALUE)
+			ThrowError(" Unexpected end of file, expecting \";\" or \"}\"", token);
 		if (!IsValidDir(token.content, _level))
 		{
-			if (!IsDir(token.content))
-				std::cout << RED << "[Config] \"" << token.content << "\"directive is not allowed here in " << _configFileName << ": " << token.line << RESET << std::endl;
+			if (IsDir(token.content))
+				ThrowError(" Directive not allowed here", token);
 			else
-				std::cout << RED << "[Config] unknown directive \"" << token.content << "\" in " << _configFileName << ": " << token.line << RESET << std::endl;
-			throw std::invalid_argument(errorMsg.str());
+				ThrowError(" Unknown directive", token);
 		}
 		token.type = DIRECTIVE;
 		if (token.content == "location")

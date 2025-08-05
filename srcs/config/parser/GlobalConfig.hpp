@@ -1,8 +1,7 @@
 #ifndef GLOBALCONFIG_HPP
 #define GLOBALCONFIG_HPP
 
-#include "ConfigIncludes.hpp"
-#include "../tokenizer/Token.hpp"
+#include "../General.hpp"
 
 class GlobalConfig {
 	private :
@@ -14,7 +13,7 @@ class GlobalConfig {
 		~GlobalConfig();
 
 		void setErrorLog(std::string &errorLog);
-		void setClientMaxBodySize(std::string &size);
+		void setClientMaxBodySize(std::string &size, t_token &token);
 		void printGlobal();
 };
 

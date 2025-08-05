@@ -70,7 +70,9 @@ void Config::InitToken(std::ifstream &configFile)
 		}
 	}
 	if (_level != GLOBAL)
-		std::cout << RED << "[Config] Level error at line : " << token.line << " [" << token.content << "]" << RESET << std::endl;
+		ThrowError(" Level error ", token);
+	if (_tokens.back().type != SEMICOLON && _tokens.back().type != CLOSE_BRACE)
+		ThrowError(" Unexpected end of file ", token);
 }
 
 void	Config::PrintTokens()

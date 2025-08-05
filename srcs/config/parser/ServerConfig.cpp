@@ -1,13 +1,11 @@
 #include "ServerConfig.hpp"
-#include "LocationConfig.hpp"
-#include "../tokenizer/Token.hpp"
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-ServerConfig::ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it) : _tokens(tokenList), _clientMaxBodySize(0), _currentLevel(it->level)
+ServerConfig::ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< ServerConfig > &serversConfig)
+: _serversConfig(serversConfig), _tokens(tokenList), _clientMaxBodySize(0), _currentLevel(it->level)
 {
 	ParseServerConfig(it);
 }
@@ -26,9 +24,6 @@ ServerConfig::~ServerConfig(void)
 void	ServerConfig::ParseServerConfig(std::vector< t_token>::iterator &it)
 {
 	it++;
-
-	std::cout << PURPLE << "	-- CONFIGURING A NEW SERVER --" << RESET << std::endl;
-
 	if (it++->type != OPEN_BRACE)
 		throw std::invalid_argument("[ServerConfig] Missing open brace");
 
@@ -49,19 +44,16 @@ void	ServerConfig::ParseServerConfig(std::vector< t_token>::iterator &it)
 		else if (it->type == DIRECTIVE && it->content == "index")	// index files
 			AddToVector(_indexFiles, it);
 		else if (it->type == DIRECTIVE && it->content == "root")	// root
-		{
-			_root = (++it)->content;
-			CheckForSemicolon("root", it);
-		}
+			ParseRoot(it);
 		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")	// client_max_body_size
 			ParseClientMaxBodySize(it);
 		else if (it->type == DIRECTIVE && it->content == "error_page")	// error_page
 			ParseErrorPage(it);
 		else if (it->type == DIRECTIVE && it->content == "location")	// location
 		{
-			LocationConfig newLocation(_tokens, it);
+			LocationConfig newLocation(_tokens, it, _locations);
 			_locations.push_back(newLocation);
-			newLocation.PrintLocation();
+			// newLocation.PrintLocation();
 		}
 		else
 			throw std::invalid_argument("[ServerConfig] unknown directive");
@@ -70,31 +62,37 @@ void	ServerConfig::ParseServerConfig(std::vector< t_token>::iterator &it)
 
 void	ServerConfig::PrintServer(void)
 {
-	std::cout << PURPLE ;
-	std::cout << "		Listen ports :" << std::endl;
+	std::string indent = "|	|___ ";
+	std::string list = "|	|	- ";
+	
+	std::cout << "|" << std::endl;
+	std::cout << "|" << PURPLE << "==== SERVER ========" << RESET << std::endl;
+	std::cout << indent << "Listen ports :" << std::endl;
 	for (std::vector<int>::iterator it = _listenPorts.begin() ; it != _listenPorts.end() ; it++)
 	{
-		std::cout << "			- " << *it << std::endl;
+		std::cout << list << *it << std::endl;
 	}
-	std::cout << "		Server Names :" << std::endl;
+	std::cout << indent << "Server Names :" << std::endl;
 	for (std::vector<std::string>::iterator it = _serverNames.begin() ; it != _serverNames.end() ; it++)
 	{
-		std::cout << "			- " << *it << std::endl;
+		std::cout << list << *it << std::endl;
 	}
-	std::cout << "		Root : " << _root << std::endl;
-	std::cout << "		Index files : " << std::endl;
+	std::cout << indent << "Root : " << _root << std::endl;
+	std::cout << indent << "Index files : " << std::endl;
 	for (std::vector<std::string>::iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
 	{
-		std::cout << "			- " << *it << std::endl;
+		std::cout << list << *it << std::endl;
 	}
-	std::cout << "		Client max body size : " << _clientMaxBodySize << std::endl;
-	std::cout << "		Error pages : " << std::endl;
+	std::cout << indent << "Client max body size : " << _clientMaxBodySize << std::endl;
+	std::cout << indent << "Error pages : " << std::endl;
 	for (std::map< int , std::string >::iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
 	{
-		std::cout << "			- " << it->first << " | " << it->second << std::endl;
+		std::cout << list << it->first << " | " << it->second << std::endl;
 	}
-	std::cout << RESET ;
-
+	for (std::vector< LocationConfig >::iterator it = _locations.begin() ; it != _locations.end() ; it++)
+	{
+		it->PrintLocation();
+	}
 }
 
 

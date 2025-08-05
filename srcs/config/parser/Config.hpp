@@ -1,9 +1,8 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "ConfigIncludes.hpp"
+#include "../General.hpp"
 #include "GlobalConfig.hpp"
-#include "../tokenizer/Token.hpp"
 
 class GlobalConfig;
 class ServerConfig;
@@ -37,6 +36,7 @@ class Config {
 		Config(std::string filename);
 		~Config();
 		void	PrintTokens();
+		void	PrintConfig();
 
 };
 

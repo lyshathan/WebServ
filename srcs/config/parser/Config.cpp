@@ -1,7 +1,6 @@
-#include "ConfigIncludes.hpp"
 #include "Config.hpp"
-#include "GlobalConfig.hpp"
 #include "ServerConfig.hpp"
+#include "Utils.hpp"
 
 Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _configFileName(filename)
 {
@@ -30,30 +29,40 @@ void	Config::Parser()
 		{
 			if (it->content == "server")
 			{
-				ServerConfig newServer(_tokens, it);
+				ServerConfig newServer(_tokens, it, _serversConfig);
 				_serversConfig.push_back(newServer);
-				newServer.PrintServer();
+				// newServer.PrintServer();
 			}
 			else if (it->content == "error_log")
 			{
 				global.setErrorLog((++it)->content);
 				it++;
 				if (it == _tokens.end() || it->type != SEMICOLON)
-					throw std::invalid_argument("[GlobalConfig] Invalid error_log (semicolon)");
+					ThrowError(" Invalid error_log", *it);
 			}
 			else if (it->content == "client_max_body_size")
 			{
-				global.setClientMaxBodySize((++it)->content);
+				global.setClientMaxBodySize((++it)->content, *it);
 				it++;
 				if (it == _tokens.end() || it->type != SEMICOLON)
-					throw std::invalid_argument("[GlobalConfig] Invalid client_max_body_size (semicolon)");
+					ThrowError(" Invalid client_max_body_size", *it);
 			}
 		}
 		else
-			throw std::invalid_argument("[GlobalConfig] Invalid configuration file");
+			ThrowError(" Invalid configuration file", *it);
 	}
-
-	global.printGlobal();
+	_globalConfig = global;
+	PrintConfig();
 }
 
 
+void	Config::PrintConfig(void)
+{
+	std::cout << "================================================================" << std::endl;
+	_globalConfig.printGlobal();
+	for (std::vector< ServerConfig >::iterator itServer = _serversConfig.begin() ; itServer != _serversConfig.end() ; itServer++)
+	{
+		itServer->PrintServer();
+	}
+	std::cout << "================================================================" << std::endl << std::endl;
+}
