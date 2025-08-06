@@ -11,13 +11,14 @@ class Config {
 	private :
 		GlobalConfig				_globalConfig;
 		std::vector< ServerConfig >	_serversConfig;
+
 		int							_braceLevel;
-		std::vector<t_token>		_tokens;
 		size_t						_lineNumber;
 		size_t						_level;
 		t_type						_expectedToken;
-		std::vector< std::vector<std::string> >	_validDir;
 		std::string					_configFileName;
+		std::vector<t_token>		_tokens;
+		std::vector< std::vector<std::string> >	_validDir;
 
 		// TOKENIZER
 		void	InitValidDirectives();
@@ -31,6 +32,7 @@ class Config {
 
 		// PARSER
 		void	Parser();
+		void	CheckConfig();
 
 	public :
 		Config(std::string filename);

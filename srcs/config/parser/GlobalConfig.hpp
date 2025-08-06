@@ -6,15 +6,19 @@
 class GlobalConfig {
 	private :
 		std::string		_error_log;
-		size_t			_client_max_body_size;
+		size_t			_clientMaxBodySize;
+		bool			_sizeDefined;
 
 	public :
 		GlobalConfig();
 		~GlobalConfig();
 
-		void setErrorLog(std::string &errorLog);
-		void setClientMaxBodySize(std::string &size, t_token &token);
-		void printGlobal();
+		void	setSizeDefined(bool status);
+		void	setErrorLog(std::string &errorLog);
+		void	setClientMaxBodySize(std::string &size, t_token &token);
+		size_t	getClientMaxBodySize(void) const;
+		void	printGlobal();
+		void	Check();
 };
 
 #endif

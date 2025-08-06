@@ -2,23 +2,6 @@
 #include "LocationConfig.hpp"
 #include "Utils.hpp"
 
-void	LocationConfig::AddToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it)
-{
-	std::ostringstream				errorMsg;
-	std::vector< t_token>::iterator	tmp = it;
-
-	it++;
-	while (it != _tokens.end() &&  it->type == VALUE)
-	{
-		vec.push_back(it->content);
-		it++;
-	}
-	if (it == _tokens.end() || it->type != SEMICOLON)
-	{
-		errorMsg << "[LocationConfig] Invalid " << tmp->content << "(semicolon)";
-		throw std::invalid_argument(errorMsg.str());
-	}
-}
 
 void	LocationConfig::ParsePath(std::vector< t_token>::iterator &it)
 {
@@ -26,67 +9,50 @@ void	LocationConfig::ParsePath(std::vector< t_token>::iterator &it)
 	size_t check = IsValidDirPath(it->content);
 	if (check != VALID)
 	{
-		std::ostringstream errorMsg;
-		errorMsg << "[ServerConfig] Error with path : " << it->content;
 		if (check == NO_EXIST)
-		{
-			errorMsg << " : Path does not exist.";
-			throw std::invalid_argument(errorMsg.str());
-		}
+			ThrowErrorToken(" Path does not exist", *it);
 		else if  (check == NOT_A_DIRECTORY)
-		{
-			errorMsg << " : Directory does not exist.";
-			throw std::invalid_argument(errorMsg.str());
-		}
-		errorMsg << " : Directory permission denied.";
-		throw std::invalid_argument(errorMsg.str());
+			ThrowErrorToken(" Directory does not exist", *it);
+		ThrowErrorToken(" Directory permission denied", *it);
 	}
-
 	if (pathType == "upload_path")
-		_uploadPath = it->content;
+		setString(_uploadPath, it->content, *it);
 	else if (pathType == "cgi_extension")
-		_cgiExtension = it->content;
+		setString(_cgiExtension, it->content, *it);
 	else if (pathType == "cgi_path")
-		_cgiPath = it->content;
+		setString(_cgiPath, it->content, *it);
 	else if (pathType == "root")
-		_root = it->content;
+		setString(_root, it->content, *it);
 	ACheckForSemicolon(it, _tokens);
 }
 
-void	LocationConfig::ParseClientMaxBodySize(std::vector< t_token>::iterator &it)
-{
-	char *end;
-
-	double bodySize = std::strtod((++it)->content.c_str(), &end);
-	if (bodySize <= 0 || bodySize > INT_MAX)
-		throw std::invalid_argument("[LocationConfig] Invalid client_max_body_size");
-	_clientMaxBodySize = bodySize;
-	ACheckForSemicolon(it, _tokens);
-}
 
 void	LocationConfig::ParseReturn(std::vector< t_token>::iterator &it)
 {
 	it++;
 	char *end;
 
-	double code = std::strtod(it->content.c_str(), &end);
-	if (*end || code < 0 || code > INT_MAX)					// Need to validate the rules here ----------------
-		throw std::invalid_argument("[LocationConfig] Invalid return");
-	size_t check = IsValidFile((++it)->content);
-	if (check != VALID)
+	if (_return.first != 0)
+		ThrowErrorToken(" Return already defined", *it);
+	double code_d = std::strtod(it->content.c_str(), &end);
+	if (*end || code_d < 0 || code_d > INT_MAX)					// Need to validate the rules here ----------------
+		ThrowErrorToken(" Invalid return code", *it);
+	int code = static_cast<int>(code_d);
+	if ((++it)->type != SEMICOLON)
 	{
-		std::ostringstream errorMsg;
-		errorMsg << "[LocationConfig] Error with Error file : " << it->content;
-		if (check == NO_EXIST)
+		size_t check = IsValidFile(it->content);
+		if (check != VALID)
 		{
-			errorMsg << " : Error file does not exist.";
-			throw std::invalid_argument(errorMsg.str());
+			if (check == NO_EXIST)
+				ThrowErrorToken(" Error file does not exist", *it);
+			ThrowErrorToken(" Error file permission denied", *it);
 		}
-		errorMsg << " : Error file permission denied.";
-		throw std::invalid_argument(errorMsg.str());
+		_return.second = it->content;
+		ACheckForSemicolon(it, _tokens);
 	}
-	_return[code] = it->content;
-	ACheckForSemicolon(it, _tokens);
+	else
+		_return.second = "";
+	_return.first = code;
 }
 
 void	LocationConfig::ParseAutoIndex(std::vector< t_token>::iterator &it)
@@ -97,6 +63,7 @@ void	LocationConfig::ParseAutoIndex(std::vector< t_token>::iterator &it)
 	else if (it->content == "off")
 		_autoIndex = false;
 	else
-		throw std::invalid_argument("[LocationConfig] Invalid autoindex");
+		ThrowErrorToken(" Invalid autoindex", *it);
 	ACheckForSemicolon(it, _tokens);
 }
+

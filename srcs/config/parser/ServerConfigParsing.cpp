@@ -5,58 +5,38 @@ void	ServerConfig::ParseListenPort(std::vector< t_token>::iterator &it)
 {
 	char *end;
 
-	double port = std::strtod((++it)->content.c_str(), &end);
-	if (*end || port < 1 || port > 65535 || std::isinf(port))
-		throw std::invalid_argument("[ServerConfig] Invalid port");
-	for (std::vector< ServerConfig >::iterator itSC = _serversConfig.begin() ; itSC != _serversConfig.end() ; itSC++)
+	double port_d = std::strtod((++it)->content.c_str(), &end);
+	if (*end || port_d < 1 || port_d > 65535 || std::isinf(port_d))
+		ThrowErrorToken(" Invalid port", *it);
+	int port = static_cast<int>(port_d);
+	if (std::find(_listenPorts.begin(), _listenPorts.end(), port) != _listenPorts.end())
+		ThrowErrorToken(" Port already used", *it);
+	for (std::vector<ServerConfig>::iterator itSC = _serversConfig.begin(); itSC != _serversConfig.end(); ++itSC)
 	{
-		if (std::find((itSC->_listenPorts).begin(), (itSC->_listenPorts).end(), port) != (itSC->_listenPorts).end())
-		{
-			std::ostringstream errorMsg;
-			errorMsg << "[ServerConfig] Port already exists : " << port;
-			throw std::invalid_argument(errorMsg.str());
-		}
+		if (std::find(itSC->_listenPorts.begin(), itSC->_listenPorts.end(), port) != itSC->_listenPorts.end())
+			ThrowErrorToken(" Port already used", *it);
 	}
-	if (std::find(_listenPorts.begin(), _listenPorts.end(), port) == _listenPorts.end())
-		_listenPorts.push_back(port);
+	_listenPorts.push_back(port);
 	ACheckForSemicolon(it, _tokens);
 }
 
 void	ServerConfig::ParseRoot(std::vector< t_token>::iterator &it)
 {
+	if (!_root.empty())
+		ThrowErrorToken(" Root is already set", *it);
 	size_t check = IsValidDirPath((++it)->content);
 	if (check != VALID)
 	{
-		std::ostringstream errorMsg;
-		errorMsg << "[ServerConfig] Error with root path : " << it->content;
 		if (check == NO_EXIST)
-		{
-			errorMsg << " : Path does not exist.";
-			throw std::invalid_argument(errorMsg.str());
-		}
+			ThrowErrorToken(" Path does not exist", *it);
 		else if  (check == NOT_A_DIRECTORY)
-		{
-			errorMsg << " : Directory does not exist.";
-			throw std::invalid_argument(errorMsg.str());
-		}
-		errorMsg << " : Directory permission denied.";
-		throw std::invalid_argument(errorMsg.str());
+			ThrowErrorToken(" Directory does not exist", *it);
+		ThrowErrorToken(" Directory permission denied", *it);
 	}
 	_root = it->content;
 	ACheckForSemicolon(it, _tokens);
 }
 
-
-void	ServerConfig::ParseClientMaxBodySize(std::vector< t_token>::iterator &it)
-{
-	char *end;
-
-	double bodySize = std::strtod((++it)->content.c_str(), &end);
-	if (*end || bodySize <= 0 || bodySize > INT_MAX || std::isinf(bodySize))
-		throw std::invalid_argument("[ServerConfig] Invalid client_max_body_size");
-	_clientMaxBodySize = bodySize;
-	ACheckForSemicolon(it, _tokens);
-}
 
 size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::iterator it)
 {
@@ -82,42 +62,20 @@ void	ServerConfig::ParseErrorPage(std::vector< t_token>::iterator &it)
 	check = IsValidFile(itErrorPage->content);
 	if (check != VALID)
 	{
-		std::ostringstream errorMsg;
-		errorMsg << "[ServerConfig] Error with Error file : " << itErrorPage->content;
 		if (check == NO_EXIST)
-		{
-			errorMsg << " : Error file does not exist.";
-			throw std::invalid_argument(errorMsg.str());
-		}
-		errorMsg << " : Error file permission denied.";
-		throw std::invalid_argument(errorMsg.str());
+			ThrowErrorToken(" Error file does not exist", *it);
+		ThrowErrorToken(" Error file permission denied", *it);
 	}
 	while (it != itErrorPage)
 	{
-		double code = std::strtod(it->content.c_str(), &end);
-		if (*end || code < 0 || code > INT_MAX)					// Need to validate the rules here ----------------
-			throw std::invalid_argument("[ServerConfig] Invalid error_page");
+		double code_d = std::strtod(it->content.c_str(), &end);
+		if (*end || code_d < 0 || code_d > INT_MAX)					// Need to validate the rules here ----------------
+			ThrowErrorToken(" Invalid error code", *it);
+		int code = static_cast<int>(code_d);
+		if (_errorPages.find(code) != _errorPages.end())
+			ThrowErrorToken(" Already existing code", *it);
 		_errorPages[code] = itErrorPage->content;
 		it++;
 	}
 	ACheckForSemicolon(it, _tokens);
-}
-
-
-void	ServerConfig::AddToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it)
-{
-	std::ostringstream				errorMsg;
-	std::vector< t_token>::iterator	tmp = it;
-
-	it++;
-	while (it != _tokens.end() &&  it->type == VALUE)
-	{
-		vec.push_back(it->content);
-		it++;
-	}
-	if (it == _tokens.end() || it->type != SEMICOLON)
-	{
-		errorMsg << "[ServerConfig] Invalid " << tmp->content << "(semicolon)";
-		throw std::invalid_argument(errorMsg.str());
-	}
 }

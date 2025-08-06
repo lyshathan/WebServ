@@ -2,6 +2,7 @@
 #define SERVERCONFIG_HPP
 
 #include "LocationConfig.hpp"
+#include "GlobalConfig.hpp"
 
 class ServerConfig {
 	private :
@@ -20,15 +21,17 @@ class ServerConfig {
 		void	ParseServerConfig(std::vector< t_token>::iterator &it);
 		void	ParseListenPort(std::vector< t_token>::iterator &it);
 		void	ParseRoot(std::vector< t_token>::iterator &it);
-		void	ParseClientMaxBodySize(std::vector< t_token>::iterator &it);
 		void	ParseErrorPage(std::vector< t_token>::iterator &it);
-		void	AddToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it);
 
 
 	public :
 		ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< ServerConfig >	&serversConfig);
 		~ServerConfig();
 		void	PrintServer();
+		void	Check(GlobalConfig &global);
+		size_t	getClientMaxBodySize(void) const;
+		std::string	getRoot(void) const;
+
 };
 
 #endif

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <cstring>
 
 #define RED		"\033[38;2;255;0;0m"
 #define BLUE	"\033[38;2;0;0;255m"
@@ -25,7 +26,8 @@
 #define RESET	"\033[0m"
 
 
-void	ThrowError(const char* msg, t_token &token);
+void	ThrowErrorToken(const char* msg, t_token &token);
+void	ThrowError(const char* msg);
 
 
 #endif

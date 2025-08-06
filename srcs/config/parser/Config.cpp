@@ -12,6 +12,8 @@ Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLO
 	InitToken(configFile);
 
 	Parser();
+	CheckConfig();
+	PrintConfig();
 }
 
 Config::~Config(void)
@@ -38,23 +40,34 @@ void	Config::Parser()
 				global.setErrorLog((++it)->content);
 				it++;
 				if (it == _tokens.end() || it->type != SEMICOLON)
-					ThrowError(" Invalid error_log", *it);
+					ThrowErrorToken(" Invalid error_log", *it);
 			}
 			else if (it->content == "client_max_body_size")
 			{
 				global.setClientMaxBodySize((++it)->content, *it);
 				it++;
 				if (it == _tokens.end() || it->type != SEMICOLON)
-					ThrowError(" Invalid client_max_body_size", *it);
+					ThrowErrorToken(" Invalid client_max_body_size", *it);
 			}
 		}
 		else
-			ThrowError(" Invalid configuration file", *it);
+			ThrowErrorToken(" Invalid configuration file", *it);
 	}
 	_globalConfig = global;
 	PrintConfig();
 }
 
+
+void	Config::CheckConfig(void)
+{
+	_globalConfig.Check();
+	if (_serversConfig.empty())
+		ThrowError(" Need at least one server");
+	for (std::vector< ServerConfig >::iterator itServ = _serversConfig.begin() ; itServ != _serversConfig.end() ; itServ++)
+	{
+		itServ->Check(_globalConfig);
+	}
+}
 
 void	Config::PrintConfig(void)
 {
