@@ -4,7 +4,7 @@ void	ThrowErrorToken(const char* msg, t_token &token)
 {
 	std::ostringstream errorMsg;
 
-	errorMsg << RED << "[Config file] " << msg << " at line : " << token.line << RESET <<std::endl;
+	errorMsg << RED << "[Config file] " << msg << " at line : " << token.line << " \'" << token.content << "\'" << RESET <<std::endl;
 	throw std::invalid_argument(errorMsg.str());
 }
 

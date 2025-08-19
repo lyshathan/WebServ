@@ -1,5 +1,9 @@
 #include "GlobalConfig.hpp"
 
+////////////////////////////////////////////////////////////////////////////////////
+//								Constructor & Destructor
+////////////////////////////////////////////////////////////////////////////////////
+
 GlobalConfig::GlobalConfig(void) : _sizeDefined(false)
 {
 
@@ -9,6 +13,19 @@ GlobalConfig::~GlobalConfig(void)
 {
 
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+//										Methods
+////////////////////////////////////////////////////////////////////////////////////
+
+GlobalConfig &GlobalConfig::operator=(GlobalConfig const &otherGlobalConfig)
+{
+	this->_error_log = otherGlobalConfig._error_log;
+	this->_clientMaxBodySize = otherGlobalConfig._clientMaxBodySize;
+	this->_sizeDefined = otherGlobalConfig._sizeDefined;
+	return (*this);
+}
+
 
 void GlobalConfig::setSizeDefined(bool status)
 {

@@ -35,10 +35,14 @@ class Config {
 		void	CheckConfig();
 
 	public :
+		Config();
 		Config(std::string filename);
 		~Config();
+		Config & operator=(Config const &otherConfig);
+		
 		void	PrintTokens();
 		void	PrintConfig();
+		const std::vector< ServerConfig > & GetServerConfig() const;
 
 };
 

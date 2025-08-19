@@ -26,8 +26,6 @@ int	IsValidFile(std::string &dir)
 
 void	ACheckForSemicolon(std::vector< t_token>::iterator &it, std::vector< t_token> &tokens)
 {
-	std::vector< t_token>::iterator	tmp = it;
-
 	it++;
 	if (it == tokens.end() || it->type != SEMICOLON)
 		ThrowErrorToken(" Missing semicolon", *it);
@@ -43,8 +41,6 @@ void setString(std::string &element, std::string &value, t_token &token)
 
 void	AddListToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it, std::vector< t_token> &tokenList, std::vector<std::string> *validValue)
 {
-	std::vector< t_token>::iterator	tmp = it;
-
 	it++;
 	while (it != tokenList.end() &&  it->type == VALUE)
 	{

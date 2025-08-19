@@ -79,7 +79,7 @@ void	Config::PrintTokens()
 {
 	std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "UNDEFINED"};
 
-	for (int i = 0 ; i < _tokens.size() ; i++)
+	for (size_t i = 0 ; i < _tokens.size() ; i++)
 	{
 		std::cout << "#" << i
 			<< "	l:" << _tokens[i].line

@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 LocationConfig::LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations)
-: _locations(locations), _tokens(tokenList), _currentLevel(it->level), _autoIndex(false), _clientMaxBodySize(0)
+: _locations(locations), _tokens(tokenList), _autoIndex(false), _clientMaxBodySize(0), _currentLevel(it->level)
 {
 	_validMethod.push_back("GET");
 	_validMethod.push_back("POST");
@@ -26,6 +26,22 @@ LocationConfig::~LocationConfig(void)
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods
 ////////////////////////////////////////////////////////////////////////////////////
+
+LocationConfig & LocationConfig::operator=(LocationConfig const &otherLocationConfig)
+{
+	this->_autoIndex = otherLocationConfig._autoIndex;
+	this->_clientMaxBodySize = otherLocationConfig._clientMaxBodySize;
+	this->_path = otherLocationConfig._path;
+	this->_uploadPath = otherLocationConfig._uploadPath;
+	this->_cgiExtension = otherLocationConfig._cgiExtension;
+	this->_cgiPath = otherLocationConfig._cgiPath;
+	this->_root = otherLocationConfig._root;
+	this->_allowMethod = otherLocationConfig._allowMethod;
+	this->_validMethod = otherLocationConfig._validMethod;
+	this->_return = otherLocationConfig._return;
+	return (*this);
+}
+
 
 
 void	LocationConfig::LocationConfigParser(std::vector< t_token>::iterator &it)

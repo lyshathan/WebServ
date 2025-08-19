@@ -12,6 +12,7 @@ class GlobalConfig {
 	public :
 		GlobalConfig();
 		~GlobalConfig();
+		GlobalConfig &operator=(GlobalConfig const &otherGlobalConfig);
 
 		void	setSizeDefined(bool status);
 		void	setErrorLog(std::string &errorLog);

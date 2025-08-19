@@ -117,7 +117,7 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 
 		_clients[senderFd]->httpReq->handleRequest(buffer);
 
-		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
+		// std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
 		_clients[it->fd]->httpRes->parseResponse();
 		std::string res = _clients[it->fd]->httpRes->getRes().c_str();
 		std::cout << "Response : " << res << std::endl;

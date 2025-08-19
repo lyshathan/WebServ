@@ -2,6 +2,14 @@
 #include "ServerConfig.hpp"
 #include "Utils.hpp"
 
+////////////////////////////////////////////////////////////////////////////////////
+//								Constructor & Destructor
+////////////////////////////////////////////////////////////////////////////////////
+
+Config::Config(void): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE)
+{
+}
+
 Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _configFileName(filename)
 {
 	std::ifstream	configFile(filename.c_str());
@@ -13,13 +21,31 @@ Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLO
 
 	Parser();
 	CheckConfig();
-	PrintConfig();
 }
 
 Config::~Config(void)
 {
 	std::cout << RED << "Conf destructor called" << RESET <<std::endl;
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+//										Methods
+////////////////////////////////////////////////////////////////////////////////////
+
+Config & Config::operator=(Config const &otherConfig)
+{
+	this->_globalConfig = otherConfig._globalConfig;
+	this->_serversConfig = otherConfig._serversConfig;
+	this->_configFileName = otherConfig._configFileName;
+	this->_tokens = otherConfig._tokens;
+	return (*this);
+}
+
+const std::vector< ServerConfig > & Config::GetServerConfig() const
+{
+	return (_serversConfig);
+}
+
 
 
 void	Config::Parser()
@@ -54,7 +80,6 @@ void	Config::Parser()
 			ThrowErrorToken(" Invalid configuration file", *it);
 	}
 	_globalConfig = global;
-	PrintConfig();
 }
 
 

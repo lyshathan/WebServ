@@ -1,6 +1,6 @@
 NAME = WebServ
 CC = c++
-FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
+FLAGS = -Wall -Werror -Wextra -Iincludes -std=c++98 -MMD -MP -g3
 TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
 RM = rm -rf
 

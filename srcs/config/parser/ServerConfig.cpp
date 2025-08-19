@@ -20,6 +20,18 @@ ServerConfig::~ServerConfig(void)
 //										Methods
 ////////////////////////////////////////////////////////////////////////////////////
 
+ServerConfig & ServerConfig::operator=(ServerConfig const &otherServerConfig)
+{
+	this->_listenPorts = otherServerConfig._listenPorts;
+	this->_serverNames = otherServerConfig._serverNames;
+	this->_indexFiles = otherServerConfig._indexFiles;
+	this->_root = otherServerConfig._root;
+	this->_errorPages = otherServerConfig._errorPages;
+	this->_clientMaxBodySize = otherServerConfig._clientMaxBodySize;
+	this->_locations = otherServerConfig._locations;
+	return (*this);
+}
+
 
 
 void	ServerConfig::ParseServerConfig(std::vector< t_token>::iterator &it)
@@ -123,6 +135,16 @@ void	ServerConfig::PrintServer(void)
 size_t ServerConfig::getClientMaxBodySize(void) const
 {
 	return (_clientMaxBodySize);
+}
+
+std::vector<int> ServerConfig::getListenPort(void) const
+{
+	return (_listenPorts);
+}
+
+std::vector<std::string> ServerConfig::getServerName(void) const
+{
+	return (_serverNames);
 }
 
 std::string ServerConfig::getRoot(void) const

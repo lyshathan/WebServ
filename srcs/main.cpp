@@ -4,15 +4,17 @@
 
 int main(void)
 {
+	Config config;
 	try
 	{
-		Config config("simple.conf");
+		config = Config("simple.conf");
+		config.PrintConfig();
 		// config.PrintTokens();
 	}
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	// Server server();
+	Server server(config);
 	return (0);
 }
