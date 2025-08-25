@@ -95,7 +95,49 @@ void	ServerConfig::Check(GlobalConfig &global)
 	}
 	else
 		std::cout << "No location set ???" << std::endl;		// What to do if no location set?
+
+	SortLocation();
 }
+
+size_t	pathLenght(std::string path)
+{
+	size_t	count = 0;
+	size_t pos = 0;
+
+	pos = path.find("/", 0);
+
+	while ((pos = path.find('/', pos)) != std::string::npos)
+	{
+		pos++;
+		if (pos != path.size())
+			count++;
+	}
+	return count;
+}
+
+
+void	ServerConfig::SortLocation(void)
+{
+	size_t	i = 0;
+
+	while (i < (_locations.size() - 1))
+	{
+		size_t j = i + 1;
+		while (j < _locations.size())
+		{
+			if (pathLenght(_locations[i].getPath()) > pathLenght(_locations[j].getPath()))
+			{
+				std::string tmp = _locations[i].getPath();
+				_locations[i].setPath(_locations[j].getPath());
+				_locations[j].setPath(tmp);
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
+
 
 void	ServerConfig::PrintServer(void)
 {
@@ -132,22 +174,3 @@ void	ServerConfig::PrintServer(void)
 	}
 }
 
-size_t ServerConfig::getClientMaxBodySize(void) const
-{
-	return (_clientMaxBodySize);
-}
-
-std::vector<int> ServerConfig::getListenPort(void) const
-{
-	return (_listenPorts);
-}
-
-std::vector<std::string> ServerConfig::getServerName(void) const
-{
-	return (_serverNames);
-}
-
-std::string ServerConfig::getRoot(void) const
-{
-	return (_root);
-}

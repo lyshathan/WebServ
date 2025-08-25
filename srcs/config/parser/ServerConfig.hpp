@@ -22,11 +22,13 @@ class ServerConfig {
 		void	ParseListenPort(std::vector< t_token>::iterator &it);
 		void	ParseRoot(std::vector< t_token>::iterator &it);
 		void	ParseErrorPage(std::vector< t_token>::iterator &it);
+		void	SortLocation();
 
 
 	public :
 		ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< ServerConfig >	&serversConfig);
 		~ServerConfig();
+		
 		ServerConfig & operator=(ServerConfig const &otherServerConfig);
 		void	PrintServer();
 		void	Check(GlobalConfig &global);

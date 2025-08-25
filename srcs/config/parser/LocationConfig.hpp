@@ -35,6 +35,9 @@ class LocationConfig {
 		LocationConfig & operator=(LocationConfig const &otherLocationConfig);
 		void	PrintLocation(void);
 		void	Check(ServerConfig &server);
+
+		std::string	getPath(void) const;
+		void		setPath(std::string newPath);
 };
 
 #endif
