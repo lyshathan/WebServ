@@ -12,7 +12,7 @@ int	Server::RunningServ(void)
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
 			return (HandleFunctionError("poll"));
-		else if (status == 0) // Is this condition util?
+		else if (status == 0) // Is this condition useful?
 		{
 			std::cout << "[Server] Waiting ..." << std::endl;
 			continue;
@@ -89,7 +89,6 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	char	buffer[BUFSIZ + 1];
 	int 	senderFd;
 	int		bytesRead;
-	// int		status;
 
 	senderFd = it->fd;
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
@@ -117,29 +116,12 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 
 		_clients[senderFd]->httpReq->handleRequest(buffer);
 
-		// std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
 		_clients[it->fd]->httpRes->parseResponse();
 		std::string res = _clients[it->fd]->httpRes->getRes().c_str();
 		std::cout << "Response : " << res << std::endl;
 		int status = send(it->fd, res.c_str(), res.length(), 0);
 		if (status == -1)
 			return (HandleFunctionError("Send"));
-
-		// Send the message to all the clients
-		// for (std::vector<struct pollfd>::iterator j = _pollFds.begin(); j != _pollFds.end() ; j++)
-		// {
-		// 	std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
-			// if (find == _serverFds.end() && j->fd != senderFd)
-			// {
-			// 	_clients[it->fd]->httpRes->parseResponse();
-			// 	std::string res = _clients[it->fd]->httpRes->getRes().c_str();
-			// 	std::cout << "Response : " << res << std::endl;
-				// int status = send(j->fd, res.c_str(), res.length(), 0);
-				// if (status == -1)
-				// 	return (HandleFunctionError("Send"));
-
-			// }
-		// }
 	}
 	return (1);
 }
