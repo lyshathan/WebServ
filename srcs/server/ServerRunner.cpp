@@ -12,7 +12,7 @@ int	Server::RunningServ(void)
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
 			return (HandleFunctionError("poll"));
-		else if (status == 0) // Is this condition useful?
+		else if (status == 0) // Is this condition util?
 		{
 			//std::cout << "[Server] Waiting ..." << std::endl;
 			continue;
@@ -79,6 +79,7 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	char	buffer[BUFSIZ + 1];
 	int 	senderFd;
 	int		bytesRead;
+	int		status;
 
 	senderFd = it->fd;
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
@@ -112,18 +113,18 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			CleanServer();
 			return(0);
 		}
+		//std::cout << "\n\n------- Client #" << senderFd << " sent a message ------\n" << buffer << std::endl;
 
-		buffer[bytesRead] = 0;
-		std::cout << "Client #" << senderFd << " had a message --> " << buffer;
-
-		_clients[senderFd]->httpReq->handleRequest(buffer);
-
-		_clients[it->fd]->httpRes->parseResponse();
-		std::string res = _clients[it->fd]->httpRes->getRes().c_str();
-		std::cout << "Response : " << res << std::endl;
-		int status = send(it->fd, res.c_str(), res.length(), 0);
-		if (status == -1)
-			return (HandleFunctionError("Send"));
+		_clients[it->fd]->appendBuffer(buffer, bytesRead);
+		if (_clients[senderFd]->isReqComplete()) {
+			_clients[senderFd]->httpReq->handleRequest(_clients[it->fd]->getRes());
+			_clients[it->fd]->httpRes->parseResponse();
+			std::string res = _clients[it->fd]->httpRes->getRes().c_str();
+			status = send(it->fd, res.c_str(), res.length(), 0);
+			_clients[it->fd]->clearBuffer();
+			if (status == -1)
+				return (HandleFunctionError("Send"));
+		}
 	}
 	return (1);
 }
