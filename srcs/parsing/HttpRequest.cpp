@@ -132,9 +132,10 @@ bool HttpRequest::validateUri() {
 	return true;
 }
 
-void HttpRequest::handleRequest(std::string data) {
+void HttpRequest::handleRequest(std::string data, const ServerConfig &config) {
 	std::string	firstLine;
 	std::string	headers;
+	(void)config;
 
 	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine))
 		return errorHandler(BAD_REQUEST);

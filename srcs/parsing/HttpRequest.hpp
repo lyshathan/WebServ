@@ -10,9 +10,13 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include "../config/parser/ServerConfig.hpp"
+
 #define BAD_REQUEST 400
 #define NOT_FOUND 404
 #define OK 200
+
+class ServerConfig;
 
 class HttpRequest {
 	private:
@@ -39,7 +43,7 @@ class HttpRequest {
 		HttpRequest();
 		~HttpRequest();
 
-		void	handleRequest(std::string);
+		void	handleRequest(std::string, const ServerConfig &);
 
 		const std::string&	getMethod() const;
 		const std::string&	getUri() const;
