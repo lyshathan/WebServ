@@ -1,5 +1,5 @@
 #include "config/parser/Config.hpp"
-#include "server/Server.hpp"
+#include "webserv/Webserv.hpp"
 #include "parsing/Client.hpp"
 
 int main(void)
@@ -15,6 +15,6 @@ int main(void)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	// Server server(config);
+	// Webserv webserv(config);
 	return (0);
 }

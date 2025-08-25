@@ -1,7 +1,7 @@
-#include "Server.hpp"
+#include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-int	Server::RunningServ(void)
+int	Webserv::RunningServ(void)
 {
 
 	int	status;
@@ -25,7 +25,7 @@ int	Server::RunningServ(void)
 	}
 }
 
-int	Server::ConnectAndRead(void)
+int	Webserv::ConnectAndRead(void)
 {
 	int	status;
 
@@ -59,7 +59,7 @@ int	Server::ConnectAndRead(void)
 	return (1);
 }
 
-int Server::AcceptNewConnection(int &serverFd)
+int Webserv::AcceptNewConnection(int &serverFd)
 {
 	int			clientFd;
 
@@ -74,14 +74,14 @@ int Server::AcceptNewConnection(int &serverFd)
 	return (0);
 }
 
-const ServerConfig* Server::getConfigForPort(uint16_t port) {
+const ServerConfig* Webserv::getConfigForPort(uint16_t port) {
 	std::map<uint16_t, const ServerConfig*>::const_iterator it = _portToConfig.find(port);
 	if (it != _portToConfig.end())
 		return it->second;
 	return NULL;
 }
 
-int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
+int Webserv::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 {
 	char	buffer[BUFSIZ + 1];
 	int 	senderFd;

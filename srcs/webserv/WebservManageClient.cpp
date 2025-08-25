@@ -1,7 +1,7 @@
-#include "Server.hpp"
+#include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-void Server::AddClient(int newClientFd)
+void Webserv::AddClient(int newClientFd)
 {
 	// Add to list of clients
 	_clients[newClientFd] = new Client(newClientFd);
@@ -15,7 +15,7 @@ void Server::AddClient(int newClientFd)
 	//std::cout << "Validate client #" << newClientFd << std::endl;
 }
 
-void Server::DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it)
+void Webserv::DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it)
 {
 	// Delete from list of clients
 	Client *clientToDelete = _clients[clientFd];

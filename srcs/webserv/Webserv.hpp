@@ -1,5 +1,5 @@
-#ifndef Server_HPP
-# define Server_HPP
+#ifndef WEBSERV_HPP
+# define WEBSERV_HPP
 
 #include "Includes.hpp"
 #include "../config/parser/Config.hpp"
@@ -8,7 +8,7 @@
 class Client;
 class ServerConfig;
 
-class Server {
+class Webserv {
 	private :
 
 		std::vector<struct pollfd>	_pollFds;
@@ -35,8 +35,8 @@ class Server {
 		uint16_t	getPortFromFd(int fd) const;
 
 	public :
-		Server(Config const &config);
-		~Server();
+		Webserv(Config const &config);
+		~Webserv();
 } ;
 
 #endif

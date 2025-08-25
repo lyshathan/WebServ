@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
 
@@ -10,7 +10,7 @@
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-Server::Server(Config const &config): _listenBackLog(10)
+Webserv::Webserv(Config const &config): _listenBackLog(10)
 {
 	std::cout << "---- SERVER ----" << std::endl;
 
@@ -27,16 +27,16 @@ Server::Server(Config const &config): _listenBackLog(10)
 	RunningServ();
 }
 
-Server::~Server()
+Webserv::~Webserv()
 {
-	std::cout << RED << "Server destructor calling" << RESET << std::endl;
+	std::cout << RED << "Webserv destructor calling" << RESET << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods
 ////////////////////////////////////////////////////////////////////////////////////
 
-uint16_t	Server::getPortFromFd(int fd) const {
+uint16_t	Webserv::getPortFromFd(int fd) const {
 	for (size_t i = 0; i < _serverFds.size(); i++) {
 		std::cout << "Server Fds " << _serverFds[i] << "\n";
 		if (_serverFds[i] == fd) {
@@ -46,7 +46,7 @@ uint16_t	Server::getPortFromFd(int fd) const {
 	return 0;
 }
 
-void	Server::convertPorts(Config const &config)
+void	Webserv::convertPorts(Config const &config)
 {
 	const std::vector< ::ServerConfig >& serverConf = config.GetServerConfig();
 	for (std::vector< ::ServerConfig >::const_iterator it = serverConf.begin(); it != serverConf.end(); it++)
@@ -62,7 +62,7 @@ void	Server::convertPorts(Config const &config)
 
 }
 
-uint32_t	Server::FromHostToAddress(std::string hostname)
+uint32_t	Webserv::FromHostToAddress(std::string hostname)
 {
 	struct addrinfo		hints;
 	struct addrinfo		*result;
@@ -95,7 +95,7 @@ uint32_t	Server::FromHostToAddress(std::string hostname)
 	return(finalAddress);
 }
 
-int Server::CreateServerSocket()
+int Webserv::CreateServerSocket()
 {
 	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
 	{
@@ -128,7 +128,7 @@ int Server::CreateServerSocket()
 	return(1);
 }
 
-int Server::SetupListen(void)
+int Webserv::SetupListen(void)
 {
 	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
 	{
@@ -139,7 +139,7 @@ int Server::SetupListen(void)
 	return (1);
 }
 
-void Server::SetupPollServer(Config const &config)
+void Webserv::SetupPollServer(Config const &config)
 {
 	struct pollfd	ServerPollFd;
 
