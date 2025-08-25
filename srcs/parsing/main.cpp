@@ -8,6 +8,8 @@ int	main(int ac, char **av) {
 		a.httpReq->handleRequest(request);
 		a.httpRes->parseResponse();
 
+		std::cout << a.httpRes->getRes();
+
 		// std::map<std::string, std::string>::iterator it = a.httpReq->getHeaders().begin();
 
 		// for (; it != a.httpReq->getHeaders().end(); ++it) {

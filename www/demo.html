@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebServ Demo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Welcome to WebServ</h1>
+        <p>This page demonstrates CSS and JavaScript working with your web server.</p>
+
+        <div class="demo-section">
+            <button id="colorBtn">Change Background Color</button>
+            <button id="timeBtn">Show Current Time</button>
+            <button onclick="window.location.href='index.html'">Back to Home</button>
+            <div id="output"></div>
+        </div>
+
+        <div class="features">
+            <h2>Server Features</h2>
+            <ul>
+                <li>Static file serving</li>
+                <li>Proper MIME type detection</li>
+                <li>CSS styling support</li>
+                <li>JavaScript execution</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
