@@ -1,34 +1,20 @@
 #include "Server.hpp"
 #include "../parsing/Client.hpp"
 
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-Server::Server(): _listenBackLog(10)
+////////////////////////////////////////////////////////////////////////////////////
+//								Constructor & Destructor
+////////////////////////////////////////////////////////////////////////////////////
+
+Server::Server(Config const &config): _listenBackLog(10)
 {
 	std::cout << "---- SERVER ----" << std::endl;
 
-	struct ServerConfig		conf1;
-	conf1._conf_port = 4242;
-	conf1._conf_host = "localhost";
-	conf1._conf_address = INADDR_LOOPBACK; // = localhost
-	_serverConfigs.push_back(conf1);
-
-
-	struct ServerConfig		conf2;
-	conf2._conf_port = 6060;
-	conf2._conf_host = "localhost";
-	conf2._conf_address = INADDR_LOOPBACK; // = localhost
-	_serverConfigs.push_back(conf2);
-
-// For translate hostname to uint32 address format
-	// conf2._conf_host = "example.com";
-	// conf2._conf_address = FromHostToAddress(conf2._conf_host);
-	// struct in_addr addr_struct;
-	// addr_struct.s_addr = htonl(conf2._conf_address);
-	// printf("Address in good format: %s\n", inet_ntoa(addr_struct));
-
+	convertPorts(config);
 
 	if (CreateServerSocket() < 0)
 		return ;
@@ -44,6 +30,26 @@ Server::Server(): _listenBackLog(10)
 Server::~Server()
 {
 	std::cout << RED << "Server destructor calling" << RESET << std::endl;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+//										Methods
+////////////////////////////////////////////////////////////////////////////////////
+
+void	Server::convertPorts(Config const &config)
+{
+	const std::vector< ::ServerConfig >& serverConf = config.GetServerConfig();
+	for (std::vector< ::ServerConfig >::const_iterator it = serverConf.begin(); it != serverConf.end(); it++)
+	{
+		std::vector< int > intPorts = it->getListenPort();
+		for (std::vector< int >::iterator iter = intPorts.begin() ; iter != intPorts.end() ; iter++)
+		{
+			uint16_t port = static_cast<u_int32_t>(*iter);
+			_serverPorts.push_back(port);
+			std::cout << port << std::endl;
+		}
+	}
+
 }
 
 uint32_t	Server::FromHostToAddress(std::string hostname)
@@ -81,7 +87,7 @@ uint32_t	Server::FromHostToAddress(std::string hostname)
 
 int Server::CreateServerSocket()
 {
-	for (size_t i = 0 ; i < _serverConfigs.size() ; i++)
+	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
 	{
 		struct sockaddr_in	socketAddress;
 		int					opt = 1;
@@ -90,8 +96,8 @@ int Server::CreateServerSocket()
 		// Setup address and port of server socket
 		std::memset(&socketAddress, 0, sizeof(socketAddress));
 		socketAddress.sin_family = AF_INET; // IPv4
-		socketAddress.sin_addr.s_addr = htonl(_serverConfigs[i]._conf_address);
-		socketAddress.sin_port = htons(_serverConfigs[i]._conf_port);
+		socketAddress.sin_addr.s_addr = INADDR_ANY; //Accept connections from ANY IP address
+		socketAddress.sin_port = htons(_serverPorts[i]);
 
 		// Creation of socket
 		serverFd = socket(socketAddress.sin_family, SOCK_STREAM, 0);
@@ -105,7 +111,7 @@ int Server::CreateServerSocket()
 		if ( bind(serverFd, (struct sockaddr *)&socketAddress, sizeof(socketAddress)) == -1)
 			return (HandleFunctionError("'bind'"));
 
-		std::cout << BLUE << "[Server] Server socket #" << serverFd << " created and bound to port [" << _serverConfigs[i]._conf_port << "]" << RESET << std::endl;
+		std::cout << BLUE << "[Server] Server socket #" << serverFd << " created and bound to port [" << _serverPorts[i] << "]" << RESET << std::endl;
 
 		_serverFds.push_back(serverFd);
 	}
@@ -114,11 +120,11 @@ int Server::CreateServerSocket()
 
 int Server::SetupListen(void)
 {
-	for (size_t i = 0 ; i < _serverFds.size() ; i++)
+	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
 	{
 		if (listen(_serverFds[i], _listenBackLog) == -1)
 			return (HandleFunctionError("Listen"));
-		std::cout << BLUE << "[Server] Listening on port : " << _serverConfigs[i]._conf_port << RESET << std::endl;
+		std::cout << BLUE << "[Server] Listening on port : " << _serverPorts[i] << RESET << std::endl;
 	}
 	return (1);
 }
@@ -134,8 +140,8 @@ void Server::SetupPollServer(void)
 		ServerPollFd.revents = 0;
 		_pollFds.push_back(ServerPollFd);
 	}
-	for (size_t i = 0 ; i < _serverFds.size() ; i++)
+	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
 	{
-		std::cout << GREEN << "[Server] Setup PollFds : " << _pollFds[i].fd << " on port [" << _serverConfigs[i]._conf_port << "]" << RESET << std::endl;
+		std::cout << GREEN << "[Server] Setup PollFds : " << _pollFds[i].fd << " on port [" << _serverPorts[i] << "]" << RESET << std::endl;
 	}
 }

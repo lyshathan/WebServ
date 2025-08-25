@@ -1,6 +1,6 @@
 NAME = WebServ
 CC = c++
-FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
+FLAGS = -Wall -Werror -Wextra -Iincludes -std=c++98 -MMD -MP -g3
 TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
 RM = rm -rf
 
@@ -9,15 +9,28 @@ RM = rm -rf
 SRCS_DIR = srcs
 MAIN = main
 SERVER = Server ServerRunner ServerManageClient ServerCleaning
-CONFIG = Config GlobalConfig LocationConfig ServerConfig
+GENERAL = General
+CONFIG_PARSER = Config GlobalConfig LocationConfig LocationConfigParsing ServerConfig ServerConfigParsing Utils
+CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 PARSING = Client HttpRequest HttpResponse
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/server/, $(SERVER))) \
-		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/, $(CONFIG))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/, $(GENERAL))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/parser/, $(CONFIG_PARSER))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(CONFIG_TOKENIZER))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING)))
 
-# HEADERS = includes/Server.hpp includes/Includes.hpp
+H_SERVER = Includes Server
+H_CONFIG_PARSER = Config GlobalConfig LocationConfig ServerConfig Utils
+H_CONFIG_TOKENIZER = Token
+H_PARSING = Client HttpRequest HttpResponse
+
+HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/server/, $(H_SERVER))) \
+		$(SRCS_DIR)/config/General.hpp \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/parser/, $(H_CONFIG_PARSER))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(H_CONFIG_TOKENIZER))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING)))
 
 #====== OBJECTS & DEPENDENCIES ======#
 
@@ -26,7 +39,8 @@ OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJDIR)/%.o)
 OBJ_SUBDIRS = \
 	$(OBJDIR) \
 	$(OBJDIR)/server \
-	$(OBJDIR)/config \
+	$(OBJDIR)/config/parser \
+	$(OBJDIR)/config/tokenizer \
 	$(OBJDIR)/parsing
 
 DEPS = $($(OBJDIR)/%.o=.d)
@@ -39,7 +53,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 	@echo "\n\033[1;32mWebServ compiled\033[0m 🔥🚀\n"
 
-$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp Makefile | $(OBJ_SUBDIRS) #$(HEADERS)
+$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp $(HEADERS) Makefile | $(OBJ_SUBDIRS) 
 	$(CC) $(FLAGS) -c $< -o $@
 
 $(OBJ_SUBDIRS):

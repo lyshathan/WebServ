@@ -2,24 +2,22 @@
 # define Server_HPP
 
 #include "Includes.hpp"
+#include "../config/parser/Config.hpp"
+#include "../config/parser/ServerConfig.hpp"
 
 class Client;
 
 class Server {
 	private :
 
-		struct ServerConfig {
-				std::string				_conf_host;
-				uint32_t				_conf_address;
-				uint16_t				_conf_port;
-			};
-
-		std::vector<ServerConfig>	_serverConfigs;
 		std::vector<struct pollfd>	_pollFds;
 		std::map<int, Client*>		_clients;
 		std::vector<int>			_serverFds;
 		int							_listenBackLog;
+		std::vector<uint16_t>		_serverPorts;
 
+
+		void		convertPorts(Config const &config);
 		uint32_t	FromHostToAddress(std::string hostname);
 		int			HandleFunctionError(std::string errFunction);
 		void		CleanServer();
@@ -34,7 +32,7 @@ class Server {
 		void 		DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
 		
 	public :
-		Server();
+		Server(Config const &config);
 		~Server();
 } ;
 
