@@ -61,7 +61,6 @@ int	Server::ConnectAndRead(void)
 
 int Server::AcceptNewConnection(int &serverFd)
 {
-	int			status;
 	int			clientFd;
 
 	clientFd = accept(serverFd, NULL, NULL); // Do we need to get the port and addresss of the new client socket ?
