@@ -4,10 +4,7 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-Client::Client(int fd) : _fd(fd), httpReq(new HttpRequest()), httpRes(new HttpResponse(httpReq)),
-	_recvSize(0) {
-	//std::cout << "Client created with fd: " << _fd << "\n";
-}
+Client::Client(int fd) : _fd(fd), _recvSize(0), httpReq(new HttpRequest()), httpRes(new HttpResponse(httpReq)){}
 
 Client::~Client() {
 	delete httpReq;
