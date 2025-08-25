@@ -41,12 +41,6 @@ Config & Config::operator=(Config const &otherConfig)
 	return (*this);
 }
 
-const std::vector< ServerConfig > & Config::GetServerConfig() const
-{
-	return (_serversConfig);
-}
-
-
 
 void	Config::Parser()
 {
@@ -93,6 +87,12 @@ void	Config::CheckConfig(void)
 		itServ->Check(_globalConfig);
 	}
 }
+
+const std::vector< ServerConfig > & Config::GetServerConfig() const
+{
+	return (_serversConfig);
+}
+
 
 void	Config::PrintConfig(void)
 {

@@ -43,11 +43,12 @@ LocationConfig & LocationConfig::operator=(LocationConfig const &otherLocationCo
 }
 
 
-
 void	LocationConfig::LocationConfigParser(std::vector< t_token>::iterator &it)
 {
 	it++;
 	_path = (it++)->content;
+	if (std::strncmp(_path.c_str(), "/", 1))
+		ThrowErrorToken(" Wrong location path", *(it-1));
 	for (std::vector< LocationConfig >::iterator itLoc = _locations.begin() ; itLoc != _locations.end() ; itLoc++)
 	{
 		if (itLoc->_path == this->_path)
@@ -117,3 +118,4 @@ void	LocationConfig::PrintLocation(void)
 	std::cout << indent << "Client body size max : " << _clientMaxBodySize << std::endl;
 	std::cout << indent << "Return : " << _return.first << " | " << (_return.second == "" ? "UNDEFINED" : _return.second) << std::endl;
 }
+

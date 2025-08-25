@@ -1,6 +1,6 @@
 NAME = WebServ
 CC = c++
-FLAGS = -Wall -Werror -Wextra -Iincludes -std=c++98 -MMD -MP -g3
+FLAGS =  -Iincludes -std=c++98 -MMD -MP -g3
 TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
 RM = rm -rf
 
@@ -10,7 +10,11 @@ SRCS_DIR = srcs
 MAIN = main
 SERVER = Server ServerRunner ServerManageClient ServerCleaning
 GENERAL = General
-CONFIG_PARSER = Config GlobalConfig LocationConfig LocationConfigParsing ServerConfig ServerConfigParsing Utils
+CONFIG_PARSER = Config \
+				GlobalConfig GlobalConfig_Get_Set\
+				ServerConfig ServerConfigParsing ServerConfig_Get_Set\
+				LocationConfig LocationConfigParsing LocationConfig_Get_Set\
+				Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 PARSING = Client HttpRequest HttpResponse
 

@@ -15,6 +15,6 @@ int main(void)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	Server server(config);
+	// Server server(config);
 	return (0);
 }

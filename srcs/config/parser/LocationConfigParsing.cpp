@@ -67,3 +67,4 @@ void	LocationConfig::ParseAutoIndex(std::vector< t_token>::iterator &it)
 	ACheckForSemicolon(it, _tokens);
 }
 
+
