@@ -15,10 +15,10 @@ class Client {
 		Client(int);
 		~Client();
 
-		bool	appendBuffer(const char *, size_t);
-		bool	isReqComplete() const;
-		void	clearBuffer();
-		const std::string &getRes()const;
+		bool				appendBuffer(const char *, size_t);
+		bool				isReqComplete() const;
+		void				clearBuffer();
+		const std::string	&getRes()const;
 
 		HttpRequest		*httpReq;
 		HttpResponse	*httpRes;

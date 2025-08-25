@@ -63,7 +63,8 @@ std::string HttpResponse::getMimeType() const {
 }
 
 std::string HttpResponse::getContent() const {
-	std::fstream file (_request->getUri());
+	std::string uri = _request->getUri();
+	std::fstream file(uri.c_str());
 	if (!file.is_open())
 		return "";
 	std::ostringstream buffer;
