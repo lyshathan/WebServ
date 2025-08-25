@@ -69,7 +69,7 @@ uint32_t	Server::FromHostToAddress(std::string hostname)
 		std::cerr << "[server] ERROR : getaddrinfo error ( " << strerror(errno) << " )" << RESET << std::endl;
 		return (0);
 	}
-	
+
 	// Loop through results nested list until first IPv4
 	struct addrinfo		*ptr;
 	for (ptr = result ; ptr != NULL ; ptr=ptr->ai_next)
@@ -103,7 +103,7 @@ int Server::CreateServerSocket()
 		serverFd = socket(socketAddress.sin_family, SOCK_STREAM, 0);
 		if (serverFd == -1)
 			return (HandleFunctionError("'socket'"));
-		
+
 		if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 			return (HandleFunctionError("'setsockopt(SO_REUSEADDR)'"));
 

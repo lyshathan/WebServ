@@ -12,14 +12,22 @@ HttpRequest::~HttpRequest() {};
 /*						PARSE  HELPER FUNCTIONS								  */
 /******************************************************************************/
 
+void HttpRequest::cleanReqInfo() {
+	_method.clear();
+	_uri.clear();
+	_version.clear();
+	_headers.clear();
+	_status = 0;
+}
+
 void HttpRequest::errorHandler(int status) {
 	if (status == BAD_REQUEST) {
 		_status = BAD_REQUEST;
-		// std::cout << "400 Bad request\n";
+		std::cout << "400 Bad request\n";
 	}
 	if (status == NOT_FOUND) {
 		_status = NOT_FOUND;
-		// std::cout << "404 Not found\n";
+		std::cout << "404 Not found\n";
 	}
 }
 
@@ -103,9 +111,10 @@ int	HttpRequest::getStatus() const {return _status;}
 /******************************************************************************/
 
 bool HttpRequest::validatePath() {
-	std::string filepath = "../../www" + _uri;
-	if (_uri == "/") filepath = "../../www/index.html";
-	if (access(filepath.c_str(), F_OK | R_OK) != 0) return false;
+	std::string filepath = "./www" + _uri;
+	if (_uri == "/") filepath = "./www/index.html";
+	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
+	_uri = filepath;
 	return true;
 }
 
@@ -137,6 +146,18 @@ void HttpRequest::handleRequest(std::string data) {
 		return errorHandler(BAD_REQUEST);
 	if (!validatePath())
 		return errorHandler(NOT_FOUND);
+	else
+		_status = OK;
+
+	// std::cout << "\n\n------- First Line ----- \n";
+	// std::cout << _method
+	// << "\n" << _uri
+	// << "\n" << _version << "\n";
+
+	// std::cout << "\n\n------- Headers ----- \n";
+	// std::map<std::string, std::string>::iterator it = _headers.begin();
+	// for (; it != _headers.end(); ++it)
+	// 	std::cout << it->first << " : " << it->second << "\n";
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {
@@ -169,6 +190,7 @@ bool HttpRequest::parseFirstLine(std::string data) {
 bool HttpRequest::parseHeaders(std::string data) {
 	std::string	header;
 
+	//std::cout << "\n\n ---- Headers ----- \n" << data << "\n\n";
 	while (extractUntil(header, data, "\r\n"))
 		if (!mapHeaders(header))
 			return false;

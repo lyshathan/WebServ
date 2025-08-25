@@ -6,11 +6,19 @@
 
 class Client {
 	private:
-		int	_fd;
-	public:
+		int			_fd;
+		std::string	_reqBuffer;
+		size_t		_recvSize;
+
 		Client();
+	public:
 		Client(int);
 		~Client();
+
+		bool				appendBuffer(const char *, size_t);
+		bool				isReqComplete() const;
+		void				clearBuffer();
+		const std::string	&getRes()const;
 
 		HttpRequest		*httpReq;
 		HttpResponse	*httpRes;
