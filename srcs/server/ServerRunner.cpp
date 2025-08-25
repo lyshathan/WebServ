@@ -74,6 +74,13 @@ int Server::AcceptNewConnection(int &serverFd)
 	return (0);
 }
 
+const ServerConfig* Server::getConfigForPort(uint16_t port) {
+	std::map<uint16_t, const ServerConfig*>::const_iterator it = _portToConfig.find(port);
+	if (it != _portToConfig.end())
+		return it->second;
+	return NULL;
+}
+
 int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 {
 	char	buffer[BUFSIZ + 1];
@@ -117,7 +124,13 @@ int Server::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 
 		_clients[it->fd]->appendBuffer(buffer, bytesRead);
 		if (_clients[senderFd]->isReqComplete()) {
-			_clients[senderFd]->httpReq->handleRequest(_clients[it->fd]->getRes());
+			const ServerConfig* config = getConfigForPort(1024);
+			if (config) {
+				_clients[senderFd]->httpReq->handleRequest(_clients[senderFd]->getRes(), *config);
+			} else {
+				std::cerr << "[server] No configuration found for port " << std::endl;
+				return -1;
+			}
 			_clients[it->fd]->httpRes->parseResponse();
 			std::string res = _clients[it->fd]->httpRes->getRes().c_str();
 			status = send(it->fd, res.c_str(), res.length(), 0);

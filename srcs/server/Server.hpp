@@ -6,6 +6,7 @@
 #include "../config/parser/ServerConfig.hpp"
 
 class Client;
+class ServerConfig;
 
 class Server {
 	private :
@@ -15,7 +16,7 @@ class Server {
 		std::vector<int>			_serverFds;
 		int							_listenBackLog;
 		std::vector<uint16_t>		_serverPorts;
-
+		std::map<uint16_t, const ServerConfig*> _portToConfig;
 
 		void		convertPorts(Config const &config);
 		uint32_t	FromHostToAddress(std::string hostname);
@@ -23,14 +24,16 @@ class Server {
 		void		CleanServer();
 		int			CreateServerSocket();
 		int			SetupListen();
-		void		SetupPollServer();
+		void		SetupPollServer(Config const &config);
 		int			RunningServ();
 		int			ConnectAndRead();
 		int			AcceptNewConnection(int &serverFd);
 		int			ReadDataFromSocket(std::vector<struct pollfd>::iterator & it);
 		void		AddClient(int newClientFd);
-		void 		DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
-		
+		void		DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
+		const	ServerConfig* getConfigForPort(uint16_t port);
+		uint16_t	getPortFromFd(int fd) const;
+
 	public :
 		Server(Config const &config);
 		~Server();

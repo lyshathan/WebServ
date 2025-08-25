@@ -22,7 +22,7 @@ Server::Server(Config const &config): _listenBackLog(10)
 	if (SetupListen() < 0)
 		return ;
 
-	SetupPollServer();
+	SetupPollServer(config);
 
 	RunningServ();
 }
@@ -35,6 +35,16 @@ Server::~Server()
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods
 ////////////////////////////////////////////////////////////////////////////////////
+
+uint16_t	Server::getPortFromFd(int fd) const {
+	for (size_t i = 0; i < _serverFds.size(); i++) {
+		std::cout << "Server Fds " << _serverFds[i] << "\n";
+		if (_serverFds[i] == fd) {
+			return _serverPorts[i];
+		}
+	}
+	return 0;
+}
 
 void	Server::convertPorts(Config const &config)
 {
@@ -129,7 +139,7 @@ int Server::SetupListen(void)
 	return (1);
 }
 
-void Server::SetupPollServer(void)
+void Server::SetupPollServer(Config const &config)
 {
 	struct pollfd	ServerPollFd;
 
@@ -143,5 +153,16 @@ void Server::SetupPollServer(void)
 	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
 	{
 		std::cout << GREEN << "[Server] Setup PollFds : " << _pollFds[i].fd << " on port [" << _serverPorts[i] << "]" << RESET << std::endl;
+
+		// Find the ServerConfig for this port
+		for (std::vector<ServerConfig>::const_iterator itServer = config.GetServerConfig().begin(); itServer != config.GetServerConfig().end(); ++itServer) {
+			const std::vector<int>& ports = itServer->getListenPort();
+			for (std::vector<int>::const_iterator it = ports.begin(); it != ports.end(); ++it) {
+				if (*it == _serverPorts[i]) {
+					_portToConfig[_serverPorts[i]] = &(*itServer);
+					std::cout << GREEN << "[Server] Port " << *it << " associated with server config" << RESET << std::endl;
+				}
+			}
+		}
 	}
 }
