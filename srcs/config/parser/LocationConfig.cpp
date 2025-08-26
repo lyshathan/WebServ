@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 LocationConfig::LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations)
-: _locations(locations), _tokens(tokenList), _autoIndex(false), _clientMaxBodySize(0), _currentLevel(it->level)
+: _locations(locations), _tokens(tokenList), _autoIndex(false), _clientMaxBodySize(0), _currentLevel(it->level), _isExactPath(false)
 {
 	_validMethod.push_back("GET");
 	_validMethod.push_back("POST");
@@ -46,6 +46,11 @@ LocationConfig & LocationConfig::operator=(LocationConfig const &otherLocationCo
 void	LocationConfig::LocationConfigParser(std::vector< t_token>::iterator &it)
 {
 	it++;
+	if (it->type == EQUAL)
+	{
+		_isExactPath = true;
+		it++;
+	}
 	_path = (it++)->content;
 	if (std::strncmp(_path.c_str(), "/", 1))
 		ThrowErrorToken(" Wrong location path", *(it-1));

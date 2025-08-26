@@ -146,10 +146,15 @@ void	ServerConfig::PrintServer(void)
 
 	std::cout << "|" << std::endl;
 	std::cout << "|" << PURPLE << "==== SERVER ========" << RESET << std::endl;
-	std::cout << indent << "Listen ports :" << std::endl;
-	for (std::vector<int>::iterator it = _listenPorts.begin() ; it != _listenPorts.end() ; it++)
+	std::cout << indent << "Listen IP:port :" << std::endl;
+	// for (std::vector<int>::iterator it = _listenPorts.begin() ; it != _listenPorts.end() ; it++)
+	// {
+	// 	std::cout << list << *it << std::endl;
+	// }
+
+	for (std::map<uint16_t, std::string>::iterator it = _portAndIP.begin() ; it != _portAndIP.end() ; it++)
 	{
-		std::cout << list << *it << std::endl;
+		std::cout << list << it->second << ":" << it->first << std::endl;
 	}
 	std::cout << indent << "Server Names :" << std::endl;
 	for (std::vector<std::string>::iterator it = _serverNames.begin() ; it != _serverNames.end() ; it++)

@@ -12,6 +12,7 @@ void Config::InitValidDirectives(void)
 
 	std::vector<std::string> ServiceDir;
 	ServiceDir.push_back("listen");
+	ServiceDir.push_back("host");
 	ServiceDir.push_back("server_name");
 	ServiceDir.push_back("root");
 	ServiceDir.push_back("index");
@@ -73,11 +74,12 @@ void Config::InitToken(std::ifstream &configFile)
 		ThrowErrorToken(" Level error ", token);
 	if (_tokens.back().type != SEMICOLON && _tokens.back().type != CLOSE_BRACE)
 		ThrowErrorToken(" Unexpected end of file ", token);
+	// PrintTokens();
 }
 
 void	Config::PrintTokens()
 {
-	std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "UNDEFINED"};
+	std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "EQUAL" ,"UNDEFINED"};
 
 	for (size_t i = 0 ; i < _tokens.size() ; i++)
 	{

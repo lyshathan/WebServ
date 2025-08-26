@@ -9,6 +9,7 @@ class ServerConfig {
 		std::vector< ServerConfig >		&_serversConfig;
 		std::vector<t_token>			&_tokens;
 
+		std::map< uint16_t, std::string>_portAndIP;
 		std::vector<int>				_listenPorts;
 		std::vector<std::string>		_serverNames;
 		std::vector<std::string>		_indexFiles;
@@ -33,10 +34,13 @@ class ServerConfig {
 		void	PrintServer();
 		void	Check(GlobalConfig &global);
 
-	size_t						getClientMaxBodySize(void) const;
-	std::vector<int>			getListenPort(void) const;
-	const std::vector<LocationConfig>&	getLocations(void) const;
-	std::vector<std::string>	getServerName(void) const;
-	std::string					getRoot(void) const;};
+		size_t								getClientMaxBodySize(void) const;
+		std::vector<int>					getListenPort(void) const;
+		std::map< uint16_t, std::string>	getPortAndIP(void) const;
+		std::vector<std::string>			getServerName(void) const;
+		std::string							getRoot(void) const;
+		const std::vector<LocationConfig>&	getLocations(void) const;
+
+};
 
 #endif

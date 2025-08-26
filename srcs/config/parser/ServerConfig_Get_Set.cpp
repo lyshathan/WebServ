@@ -10,6 +10,12 @@ size_t ServerConfig::getClientMaxBodySize(void) const
 	return (_clientMaxBodySize);
 }
 
+std::map< uint16_t, std::string>	ServerConfig::getPortAndIP(void) const
+{
+	return (_portAndIP);
+}
+
+
 std::vector<int> ServerConfig::getListenPort(void) const
 {
 	return (_listenPorts);

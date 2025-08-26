@@ -18,6 +18,7 @@ typedef enum	e_type {
 	SEMICOLON,
 	SEMICOLON_OR_VALUE,
 	PATH,
+	EQUAL,
 	UNDEFINED
 }				t_type;
 

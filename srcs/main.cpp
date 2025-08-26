@@ -8,13 +8,14 @@ int main(void)
 	try
 	{
 		config = Config("simple.conf");
-		//config.PrintConfig();
+		config.PrintConfig();
 		// config.PrintTokens();
+		Webserv webserv(config);
 	}
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	Webserv webserv(config);
+	
 	return (0);
 }

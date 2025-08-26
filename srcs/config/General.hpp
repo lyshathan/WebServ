@@ -3,6 +3,7 @@
 
 #include "tokenizer/Token.hpp"
 
+#include <stdint.h> 
 #include <iomanip>
 #include <iostream>
 #include <string>

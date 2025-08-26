@@ -21,7 +21,8 @@ class LocationConfig {
 		std::vector< std::string >		_validMethod;
 		std::pair< int , std::string >	_return;
 
-		const size_t				_currentLevel;
+		const size_t					_currentLevel;
+		bool							_isExactPath;
 
 		void	LocationConfigParser(std::vector< t_token>::iterator &it);
 		void	ParsePath(std::vector< t_token>::iterator &it);

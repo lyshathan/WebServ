@@ -3,22 +3,40 @@
 
 void	ServerConfig::ParseListenPort(std::vector< t_token>::iterator &it)
 {
-	char *end;
+	char		*end = NULL;
+	std::string	IP;
+	uint16_t	port;
+	std::string	content;
 
-	double port_d = std::strtod((++it)->content.c_str(), &end);
+	size_t find = ((++it)->content).find(':', 0);
+	if (find <= it->content.size())
+	{
+		IP = it->content.substr(0, find);
+		content = it->content.substr(find + 1, it->content.size());
+	}
+	else
+	{
+		IP = "localhost";
+		content = it->content;
+	}
+
+	double port_d = std::strtod(content.c_str(), &end);
 	if (*end || port_d < 1 || port_d > 65535 || std::isinf(port_d))
 		ThrowErrorToken(" Invalid port", *it);
-	int port = static_cast<int>(port_d);
-	if (std::find(_listenPorts.begin(), _listenPorts.end(), port) != _listenPorts.end())
-		ThrowErrorToken(" Port already used", *it);
-	for (std::vector<ServerConfig>::iterator itSC = _serversConfig.begin(); itSC != _serversConfig.end(); ++itSC)
+	port = static_cast<int>(port_d);
+	for (std::vector<ServerConfig>::iterator itServ = _serversConfig.begin(); itServ != _serversConfig.end(); ++itServ)
 	{
-		if (std::find(itSC->_listenPorts.begin(), itSC->_listenPorts.end(), port) != itSC->_listenPorts.end())
-			ThrowErrorToken(" Port already used", *it);
+		for (std::map<uint16_t , std::string>::iterator itPort = itServ->_portAndIP.begin() ; itPort != itServ->_portAndIP.end() ; itPort++)
+		{
+			if (itPort->first == port && itPort->second == IP)
+				ThrowErrorToken(" Port already used", *it);
+		}
 	}
+	_portAndIP[port] = IP;
 	_listenPorts.push_back(port);
 	ACheckForSemicolon(it, _tokens);
 }
+
 
 void	ServerConfig::ParseRoot(std::vector< t_token>::iterator &it)
 {

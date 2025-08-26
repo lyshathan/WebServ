@@ -3,7 +3,7 @@
 void Config::AnalyzeTokenContent(t_token &token)
 {
 	// std::string level[] = {"global", "service", "location"};
-	// std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "UNDEFINED"};
+	// std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "EQUAL", "UNDEFINED"};
 
 	// std::cout << GREEN << token.content << RESET << "	" ;
 	std::ostringstream	errorMsg;
@@ -50,14 +50,24 @@ void	Config::AnalyzeCaseSemicolon(t_token &token)
 
 void	Config::AnalyzeCaseDirOrValue(t_token &token)
 {
-	if (_tokens.size() != 0 && (_tokens.back().type == DIRECTIVE || _tokens.back().type == VALUE) && token.content != "location")
+	if (_tokens.size() != 0 && (_tokens.back().type == DIRECTIVE || _tokens.back().type == VALUE  || _tokens.back().type == EQUAL) && token.content != "location")
 	{
 		if (_expectedToken != VALUE && _expectedToken != SEMICOLON_OR_VALUE && _expectedToken != PATH)
 			ThrowErrorToken(" Missing value", token);
-		if (_tokens.back().content == "location")
+		if (_tokens.back().content == "location" || _tokens.back().type == EQUAL)
 		{
-			token.type = PATH;
-			_expectedToken = OPEN_BRACE;
+			if (token.content == "=")
+			{
+				token.type = EQUAL;
+				_expectedToken = PATH;
+			}
+			else
+			{
+				if (_expectedToken != PATH)
+					ThrowErrorToken(" Expecting path", token);
+				token.type = PATH;
+				_expectedToken = OPEN_BRACE;
+			}
 		}
 		else
 		{
@@ -79,7 +89,7 @@ void	Config::AnalyzeCaseDirOrValue(t_token &token)
 		token.type = DIRECTIVE;
 		if (token.content == "location")
 			_expectedToken = PATH;
-		if (_level == GLOBAL && token.content == "server")
+		else if (_level == GLOBAL && token.content == "server")	////
 			_expectedToken = OPEN_BRACE;
 		else
 			_expectedToken = VALUE;

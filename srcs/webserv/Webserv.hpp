@@ -11,6 +11,9 @@ class ServerConfig;
 class Webserv {
 	private :
 
+		const Config						&_config;
+		const std::vector<ServerConfig>& _serverConfigs;
+
 		std::vector<struct pollfd>	_pollFds;
 		std::map<int, Client*>		_clients;
 		std::vector<int>			_serverFds;
