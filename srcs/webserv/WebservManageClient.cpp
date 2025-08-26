@@ -1,10 +1,16 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-void Webserv::AddClient(int newClientFd)
+
+void Webserv::AddClient(int newClientFd, int &serverFd)
 {
-	// Add to list of clients
-	_clients[newClientFd] = new Client(newClientFd);
+	const ServerConfig* config = getConfigForPort(serverFd);
+	if (config) {
+		// Add to list of clients
+		_clients[newClientFd] = new Client(newClientFd, config);
+	} else {
+		std::cerr << "[server] No configuration found for port " << std::endl;
+	}
 
 	// Add to pollFds
 	struct pollfd newClientPollFd;
