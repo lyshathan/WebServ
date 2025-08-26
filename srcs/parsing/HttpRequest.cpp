@@ -149,16 +149,6 @@ void HttpRequest::handleRequest(std::string data) {
 		return errorHandler(NOT_FOUND);
 	else
 		_status = OK;
-
-	// std::cout << "\n\n------- First Line ----- \n";
-	// std::cout << _method
-	// << "\n" << _uri
-	// << "\n" << _version << "\n";
-
-	// std::cout << "\n\n------- Headers ----- \n";
-	// std::map<std::string, std::string>::iterator it = _headers.begin();
-	// for (; it != _headers.end(); ++it)
-	// 	std::cout << it->first << " : " << it->second << "\n";
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {
@@ -191,7 +181,6 @@ bool HttpRequest::parseFirstLine(std::string data) {
 bool HttpRequest::parseHeaders(std::string data) {
 	std::string	header;
 
-	//std::cout << "\n\n ---- Headers ----- \n" << data << "\n\n";
 	while (extractUntil(header, data, "\r\n"))
 		if (!mapHeaders(header))
 			return false;
