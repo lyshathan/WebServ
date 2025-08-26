@@ -12,7 +12,7 @@ class Client {
 
 		Client();
 	public:
-		Client(int);
+		Client(int, const ServerConfig *);
 		~Client();
 
 		bool				appendBuffer(const char *, size_t);

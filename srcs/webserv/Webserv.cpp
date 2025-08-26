@@ -36,15 +36,6 @@ Webserv::~Webserv()
 //										Methods
 ////////////////////////////////////////////////////////////////////////////////////
 
-uint16_t	Webserv::getPortFromFd(int fd) const {
-	for (size_t i = 0; i < _serverFds.size(); i++) {
-		std::cout << "Server Fds " << _serverFds[i] << "\n";
-		if (_serverFds[i] == fd) {
-			return _serverPorts[i];
-		}
-	}
-	return 0;
-}
 
 void	Webserv::convertPorts(Config const &config)
 {
@@ -56,7 +47,6 @@ void	Webserv::convertPorts(Config const &config)
 		{
 			uint16_t port = static_cast<u_int32_t>(*iter);
 			_serverPorts.push_back(port);
-			std::cout << port << std::endl;
 		}
 	}
 
@@ -159,8 +149,8 @@ void Webserv::SetupPollServer(Config const &config)
 			const std::vector<int>& ports = itServer->getListenPort();
 			for (std::vector<int>::const_iterator it = ports.begin(); it != ports.end(); ++it) {
 				if (*it == _serverPorts[i]) {
-					_portToConfig[_serverPorts[i]] = &(*itServer);
-					std::cout << GREEN << "[Server] Port " << *it << " associated with server config" << RESET << std::endl;
+					_portToConfig[_pollFds[i].fd] = &(*itServer);
+					std::cout << GREEN << "[Server] Port " << *it << " associated with server config at " << _pollFds[i].fd << RESET << std::endl;
 				}
 			}
 		}

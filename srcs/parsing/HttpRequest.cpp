@@ -4,7 +4,7 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-HttpRequest::HttpRequest() : _status(0) {};
+HttpRequest::HttpRequest(const ServerConfig& config) : _config(&config), _status(0) {};
 
 HttpRequest::~HttpRequest() {};
 
@@ -132,11 +132,11 @@ bool HttpRequest::validateUri() {
 	return true;
 }
 
-void HttpRequest::handleRequest(std::string data, const ServerConfig &config) {
+void HttpRequest::handleRequest(std::string data) {
 	std::string	firstLine;
 	std::string	headers;
-	(void)config;
 
+	//std::cout << "Body size " <<_config->getClientMaxBodySize() << std::endl;
 	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine))
 		return errorHandler(BAD_REQUEST);
 	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers))

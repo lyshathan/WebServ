@@ -20,6 +20,7 @@ class ServerConfig;
 
 class HttpRequest {
 	private:
+		const ServerConfig	*_config;
 		std::string	_method;
 		std::string	_uri;
 		std::string	_version;
@@ -39,11 +40,13 @@ class HttpRequest {
 		bool		mapHeaders(std::string &);
 		bool		isValidTchar(char c);
 		void		errorHandler(int);
-	public:
+
 		HttpRequest();
+	public:
+		HttpRequest(const ServerConfig& config);
 		~HttpRequest();
 
-		void	handleRequest(std::string, const ServerConfig &);
+		void	handleRequest(std::string);
 
 		const std::string&	getMethod() const;
 		const std::string&	getUri() const;

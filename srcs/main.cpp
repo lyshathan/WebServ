@@ -15,6 +15,6 @@ int main(void)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	// Webserv webserv(config);
+	Webserv webserv(config);
 	return (0);
 }

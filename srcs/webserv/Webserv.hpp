@@ -16,7 +16,7 @@ class Webserv {
 		std::vector<int>			_serverFds;
 		int							_listenBackLog;
 		std::vector<uint16_t>		_serverPorts;
-		std::map<uint16_t, const ServerConfig*> _portToConfig;
+		std::map<int, const ServerConfig*> _portToConfig;
 
 		void		convertPorts(Config const &config);
 		uint32_t	FromHostToAddress(std::string hostname);
@@ -29,10 +29,9 @@ class Webserv {
 		int			ConnectAndRead();
 		int			AcceptNewConnection(int &serverFd);
 		int			ReadDataFromSocket(std::vector<struct pollfd>::iterator & it);
-		void		AddClient(int newClientFd);
+		void		AddClient(int newClientFd, int &);
 		void		DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
-		const	ServerConfig* getConfigForPort(uint16_t port);
-		uint16_t	getPortFromFd(int fd) const;
+		const	ServerConfig* getConfigForPort(int);
 
 	public :
 		Webserv(Config const &config);
