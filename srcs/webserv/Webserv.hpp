@@ -12,7 +12,7 @@ class Webserv {
 	private :
 
 		const Config						&_config;
-		const std::vector<ServerConfig>& _serverConfigs;
+		const std::vector<ServerConfig>		&_serverConfigs;
 
 		std::vector<struct pollfd>	_pollFds;
 		std::map<int, Client*>		_clients;
@@ -23,6 +23,7 @@ class Webserv {
 
 		void		convertPorts(Config const &config);
 		uint32_t	FromHostToAddress(std::string hostname);
+		uint32_t	FromIPToInt(const std::string &IPstr);
 		int			HandleFunctionError(std::string errFunction);
 		void		CleanServer();
 		int			CreateServerSocket();

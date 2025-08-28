@@ -1,11 +1,6 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
@@ -18,9 +13,6 @@ Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.G
 
 	if (CreateServerSocket() < 0)
 		return ;
-
-	std::cout << _serverFds.size() << std::endl;
-	std::cout << _serverPorts.size() << std::endl;
 
 
 	if (SetupListen() < 0)
@@ -56,38 +48,6 @@ void	Webserv::convertPorts(Config const &config)
 
 }
 
-uint32_t	Webserv::FromHostToAddress(std::string hostname)
-{
-	struct addrinfo		hints;
-	struct addrinfo		*result;
-	uint32_t			finalAddress = 0;
-
-	// Initialize hints
-	std::memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_INET;			// IPv4
-	hints.ai_socktype = SOCK_STREAM;	// TCP socket
-
-	int status = getaddrinfo(hostname.c_str(), NULL, &hints, &result);
-	if (status != 0)
-	{
-		std::cerr << "[server] ERROR : getaddrinfo error ( " << strerror(errno) << " )" << RESET << std::endl;
-		return (0);
-	}
-
-	// Loop through results nested list until first IPv4
-	struct addrinfo		*ptr;
-	for (ptr = result ; ptr != NULL ; ptr=ptr->ai_next)
-	{
-		if (ptr->ai_family == AF_INET)
-		{
-			struct sockaddr_in* validSocketAddr = (struct sockaddr_in*)ptr->ai_addr;
-			finalAddress = ntohl(validSocketAddr->sin_addr.s_addr);
-			break;
-		}
-	}
-	freeaddrinfo(result);
-	return(finalAddress);
-}
 
 int Webserv::CreateServerSocket()
 {
@@ -95,33 +55,36 @@ int Webserv::CreateServerSocket()
 	{
 		const std::map< uint16_t, std::string>& portAndIP = _serverConfigs[servIndex].getPortAndIP();
 		for (std::map< uint16_t, std::string>::const_iterator PortIt = portAndIP.begin() ; PortIt != portAndIP.end() ; PortIt++ )
-			{
-				struct sockaddr_in	socketAddress;
-				int					opt = 1;
-				int					serverFd;
+		{
+			struct sockaddr_in	socketAddress;
+			int					opt = 1;
+			int					serverFd;
 
-				// Setup address and port of server socket
-				std::memset(&socketAddress, 0, sizeof(socketAddress));
-				socketAddress.sin_family = AF_INET; // IPv4
-				socketAddress.sin_addr.s_addr = INADDR_ANY; //Accept connections from ANY IP address
-				socketAddress.sin_port = htons(PortIt->first);
+			// Setup address and port of server socket
+			std::memset(&socketAddress, 0, sizeof(socketAddress));
+			socketAddress.sin_family = AF_INET; // IPv4
+			if (PortIt->second == "localhost")
+				socketAddress.sin_addr.s_addr = INADDR_ANY; // Accept connections from ANY IP address
+			else
+				socketAddress.sin_addr.s_addr = FromIPToInt(PortIt->second); // Convert IP string to int address
+			socketAddress.sin_port = htons(PortIt->first);
 
-				// Creation of socket
-				serverFd = socket(socketAddress.sin_family, SOCK_STREAM, 0);
-				if (serverFd == -1)
-					return (HandleFunctionError("'socket'"));
+			// Creation of socket
+			serverFd = socket(socketAddress.sin_family, SOCK_STREAM, 0);
+			if (serverFd == -1)
+				return (HandleFunctionError("'socket'"));
 
-				if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-					return (HandleFunctionError("'setsockopt(SO_REUSEADDR)'"));
+			if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+				return (HandleFunctionError("'setsockopt(SO_REUSEADDR)'"));
 
-				// Bind Server socket with address and port
-				if ( bind(serverFd, (struct sockaddr *)&socketAddress, sizeof(socketAddress)) == -1)
-					return (HandleFunctionError("'bind'"));
+			// Bind Server socket with address and port
+			if ( bind(serverFd, (struct sockaddr *)&socketAddress, sizeof(socketAddress)) == -1)
+				return (HandleFunctionError("'bind'"));
 
-				std::cout << BLUE << "[Server] Server socket #" << serverFd << " created and bound to port [" << PortIt->first << "]" << RESET << std::endl;
+			std::cout << BLUE << "[Server] Server socket #" << serverFd << " created and bound to port [" << PortIt->first << "]" << RESET << std::endl;
 
-				_serverFds.push_back(serverFd);
-			}
+			_serverFds.push_back(serverFd);
+		}
 	}
 	return(1);
 }

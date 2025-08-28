@@ -2,13 +2,18 @@
 
 int	IsValidDirPath(std::string &dir)
 {
+	std::string str;
+	if (!dir.empty() && dir[0] == '/')
+		str = '.' + dir;
+	else
+		str = dir;
+		
 	struct stat sb;
-
-	if (stat(dir.c_str(), &sb) != 0)
+	if (stat(str.c_str(), &sb) != 0)
 		return (NO_EXIST);
 	if (!S_ISDIR(sb.st_mode))
 		return (NOT_A_DIRECTORY);
-	if (access(dir.c_str(), R_OK) != 0)
+	if (access(str.c_str(), R_OK) != 0)
 		return (NO_PERMISSION);
 	return (VALID);
 }
