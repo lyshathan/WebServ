@@ -37,6 +37,7 @@ class LocationConfig {
 		void	Check(ServerConfig &server);
 
 		std::string	getPath(void) const;
+		std::string	getRoot(void) const;
 		void		setPath(std::string newPath);
 };
 

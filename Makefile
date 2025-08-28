@@ -16,7 +16,7 @@ CONFIG_PARSER = Config \
 				LocationConfig LocationConfigParsing LocationConfig_Get_Set\
 				Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
-PARSING = Client HttpRequest HttpResponse
+PARSING = Client HttpRequest HttpRequestHelper HttpResponse
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/webserv/, $(WEBSERV))) \
@@ -57,7 +57,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 	@echo "\n\033[1;32mWebServ compiled\033[0m 🔥🚀\n"
 
-$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp $(HEADERS) Makefile | $(OBJ_SUBDIRS) 
+$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp $(HEADERS) Makefile | $(OBJ_SUBDIRS)
 	$(CC) $(FLAGS) -c $< -o $@
 
 $(OBJ_SUBDIRS):
