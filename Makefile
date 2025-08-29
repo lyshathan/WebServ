@@ -16,7 +16,7 @@ CONFIG_PARSER = Config \
 				LocationConfig LocationConfigParsing LocationConfig_Get_Set\
 				Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
-PARSING = Client HttpRequest HttpRequestHelper HttpResponse
+PARSING = Client HttpRequest HttpRequestHelper HttpResponse LocationConfig
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/webserv/, $(WEBSERV))) \

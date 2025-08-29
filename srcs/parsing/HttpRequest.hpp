@@ -14,32 +14,37 @@
 
 #define BAD_REQUEST 400
 #define NOT_FOUND 404
+#define MOVED_PERMANENTLY 301
 #define OK 200
 
 class ServerConfig;
 
 class HttpRequest {
 	private:
-		const ServerConfig	*_config;
-		std::string	_method;
-		std::string	_uri;
-		std::string	_version;
-		std::map<std::string, std::string> _headers;
-		std::string	_body;
+		const ServerConfig					*_config;
+		const LocationConfig				*_location;
+		std::string							_method;
+		std::string							_uri;
+		std::string							_version;
+		std::map<std::string, std::string>	_headers;
+		std::string							_body;
 		int			_status;
 
-		bool	parseFirstLine(std::string);
-		bool	parseHeaders(std::string);
-		bool	parseBody(std::string);
+		bool		parseFirstLine(std::string);
+		bool		parseHeaders(std::string);
+		bool		parseBody(std::string);
 
 		bool		validateUri();
 		bool		validatePath();
 		bool		validateVersion(std::string);
+		void		pickServerConfig();
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);
 		bool		mapHeaders(std::string &);
 		bool		isValidTchar(char c);
 		void		errorHandler(int);
+
+		bool		isLocationValid(std::string);
 
 		HttpRequest();
 	public:

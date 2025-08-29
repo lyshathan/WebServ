@@ -4,44 +4,13 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-HttpRequest::HttpRequest(const ServerConfig& config) : _config(&config), _status(0) {};
+HttpRequest::HttpRequest(const ServerConfig& config) : _config(&config), _location(NULL), _status(0) {};
 
 HttpRequest::~HttpRequest() {};
 
 /******************************************************************************/
 /*							PARSE FUNCTIONS									  */
 /******************************************************************************/
-
-bool HttpRequest::validatePath() {
-	std::string root = _config->getRoot();
-	std::vector<LocationConfig> locations = _config->getLocations();
-	std::vector<LocationConfig>::iterator it = locations.begin();
-	for (; it != locations.end(); ++it) {
-		if (_uri.compare(0, it->getPath().length(), it->getPath()) == 0)
-			root = it->getRoot();
-	}
-	//std::string filepath = "./www" + _uri;
-	std::string filepath = root + _uri;
-	std::cout << "Filepath " << filepath << "\n";
-	if (_uri == "/") filepath = "./www/index.html";
-	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
-	_uri = filepath;
-	return true;
-}
-
-bool HttpRequest::validateUri() {
-	if (_uri[0] != '/') return false;
-	if (_uri.find("..") != std::string::npos) return false;
-	if (_uri.find('\0') != std::string::npos) return false;
-	for (size_t i = 0; i < _uri.length(); ++i) {
-		if (!std::isalnum(_uri[i])) {
-			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
-				continue;
-			return false;
-		}
-	}
-	return true;
-}
 
 void HttpRequest::handleRequest(std::string data) {
 	std::string	firstLine;
