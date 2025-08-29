@@ -33,7 +33,7 @@ class LocationConfig {
 		LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations);
 		~LocationConfig();
 		LocationConfig & operator=(LocationConfig const &otherLocationConfig);
-		void	PrintLocation(void);
+		void	PrintLocation(void) const;
 		void	Check(ServerConfig &server);
 
 		std::string	getPath(void) const;

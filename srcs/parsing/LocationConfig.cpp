@@ -33,8 +33,12 @@ bool HttpRequest::isLocationValid(std::string uri) {
 bool HttpRequest::validatePath() {
 	std::string filepath;
 	pickServerConfig();
-	if (_location)
+	if (_location) {
 		filepath = _location->getRoot() + _uri;
+		_location->PrintLocation();
+	} else {
+		return false;
+	}
 	//if (_uri == "/") filepath = "./www/index.html";
 	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
 	_uri = filepath;
