@@ -126,11 +126,21 @@ int Webserv::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		if (_clients[senderFd]->isReqComplete()) {
 			_clients[senderFd]->httpReq->handleRequest(_clients[senderFd]->getRes());
 			_clients[it->fd]->httpRes->parseResponse();
-			std::string res = _clients[it->fd]->httpRes->getRes().c_str();
-			status = send(it->fd, res.c_str(), res.length(), 0);
+			std::string resHeaders = _clients[it->fd]->httpRes->getResHeaders().c_str();
+			status = send(it->fd, resHeaders.c_str(), resHeaders.length(), 0);
+			bool	isTextContent = _clients[it->fd]->httpRes->getIsTextContent();
+			if (!isTextContent) {
+				std::vector<char> binaryContent = _clients[it->fd]->httpRes->getBinRes();
+				status = send(it->fd, &binaryContent[0], binaryContent.size(), 0);
+				if (status == -1)
+					return (HandleFunctionError("Send"));
+			} else {
+				std::string textContent = _clients[it->fd]->httpRes->getRes().c_str();
+				status = send(it->fd, textContent.c_str(), textContent.size(), 0);
+				if (status == -1)
+					return (HandleFunctionError("Send"));
+			}
 			_clients[it->fd]->clearBuffer();
-			if (status == -1)
-				return (HandleFunctionError("Send"));
 		}
 	}
 	return (1);

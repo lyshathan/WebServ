@@ -24,3 +24,5 @@ std::string ServerConfig::getRoot(void) const
 {
 	return (_root);
 }
+
+const std::vector<LocationConfig>& ServerConfig::getLocations(void) const { return _locations; }

@@ -143,7 +143,7 @@ void	ServerConfig::PrintServer(void)
 {
 	std::string indent = "|	|___ ";
 	std::string list = "|	|	- ";
-	
+
 	std::cout << "|" << std::endl;
 	std::cout << "|" << PURPLE << "==== SERVER ========" << RESET << std::endl;
 	std::cout << indent << "Listen ports :" << std::endl;

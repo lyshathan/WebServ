@@ -97,7 +97,7 @@ void	LocationConfig::Check(ServerConfig &server)
 }
 
 
-void	LocationConfig::PrintLocation(void)
+void	LocationConfig::PrintLocation(void) const
 {
 	std::string indent = "|	|	|___ ";
 	std::string list = "|	|	|	- ";
@@ -106,7 +106,7 @@ void	LocationConfig::PrintLocation(void)
 	std::cout << "|	|" << YELLOW << "==== LOCATION ====" << RESET << std::endl;
 	std::cout << indent << "Path : " << _path << std::endl;
 	std::cout << indent << "Allowed method :" << std::endl;
-	for (std::vector<std::string>::iterator it = _allowMethod.begin() ; it != _allowMethod.end() ; it++)
+	for (std::vector<std::string>::const_iterator it = _allowMethod.begin() ; it != _allowMethod.end() ; it++)
 	{
 		std::cout << list << *it << std::endl;
 	}
