@@ -21,18 +21,18 @@ class Config {
 		std::vector< std::vector<std::string> >	_validDir;
 
 		// TOKENIZER
-		void	InitValidDirectives();
-		void	InitToken(std::ifstream &configFile);
-		bool	IsValidDir(std::string content, size_t level);
-		bool	IsDir(std::string content);
-		void	AnalyzeTokenContent(t_token &token);
-		void	AnalyzeCaseBrace(t_token &token);
-		void	AnalyzeCaseSemicolon(t_token &token);
-		void	AnalyzeCaseDirOrValue(t_token &token);
+		void	initValidDirectives();
+		void	initToken(std::ifstream &configFile);
+		bool	isValidDir(std::string content, size_t level);
+		bool	isDir(std::string content);
+		void	analyzeTokenContent(t_token &token);
+		void	analyzeCaseBrace(t_token &token);
+		void	analyzeCaseSemicolon(t_token &token);
+		void	analyzeCaseDirOrValue(t_token &token);
 
 		// PARSER
-		void	Parser();
-		void	CheckConfig();
+		void	parser();
+		void	checkConfig();
 
 	public :
 		Config();
@@ -40,9 +40,9 @@ class Config {
 		~Config();
 		Config & operator=(Config const &otherConfig);
 		
-		void	PrintTokens();
+		void	printTokens();
 		void	PrintConfig();
-		const std::vector< ServerConfig > & GetServerConfig() const;
+		const std::vector< ServerConfig > & getServerConfig() const;
 
 };
 

@@ -3,7 +3,7 @@
 bool myIsSpace(unsigned char c);
 bool isSpecialChar(unsigned char c);
 
-void Config::InitValidDirectives(void)
+void Config::initValidDirectives(void)
 {
 	std::vector<std::string> GlobalDir;
 	GlobalDir.push_back("error_log");
@@ -12,6 +12,7 @@ void Config::InitValidDirectives(void)
 
 	std::vector<std::string> ServiceDir;
 	ServiceDir.push_back("listen");
+	ServiceDir.push_back("host");
 	ServiceDir.push_back("server_name");
 	ServiceDir.push_back("root");
 	ServiceDir.push_back("index");
@@ -20,6 +21,7 @@ void Config::InitValidDirectives(void)
 	ServiceDir.push_back("location");
 
 	std::vector<std::string> LocationDir;
+	LocationDir.push_back("index");
 	LocationDir.push_back("allow_methods");
 	LocationDir.push_back("autoindex");
 	LocationDir.push_back("cgi_extension");
@@ -34,7 +36,7 @@ void Config::InitValidDirectives(void)
 	_validDir.push_back(LocationDir);
 }
 
-void Config::InitToken(std::ifstream &configFile)
+void Config::initToken(std::ifstream &configFile)
 {
 	std::string		line;
 	t_token			token;
@@ -52,7 +54,7 @@ void Config::InitToken(std::ifstream &configFile)
 			if (isSpecialChar(line[i]))
 			{
 				token.content = line[i];
-				AnalyzeTokenContent(token);
+				analyzeTokenContent(token);
 				_tokens.push_back(token);
 				i++;
 			}
@@ -64,20 +66,21 @@ void Config::InitToken(std::ifstream &configFile)
 			if (!word.empty())
 			{
 				token.content = word;
-				AnalyzeTokenContent(token);
+				analyzeTokenContent(token);
 				_tokens.push_back(token);
 			}
 		}
 	}
 	if (_level != GLOBAL)
-		ThrowErrorToken(" Level error ", token);
+		throwErrorToken(" Level error ", token);
 	if (_tokens.back().type != SEMICOLON && _tokens.back().type != CLOSE_BRACE)
-		ThrowErrorToken(" Unexpected end of file ", token);
+		throwErrorToken(" Unexpected end of file ", token);
+	// printTokens();
 }
 
-void	Config::PrintTokens()
+void	Config::printTokens()
 {
-	std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "UNDEFINED"};
+	std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "EQUAL" ,"UNDEFINED"};
 
 	for (size_t i = 0 ; i < _tokens.size() ; i++)
 	{

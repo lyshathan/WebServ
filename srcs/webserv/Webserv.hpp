@@ -11,6 +11,9 @@ class ServerConfig;
 class Webserv {
 	private :
 
+		const Config						&_config;
+		const std::vector<ServerConfig>		&_serverConfigs;
+
 		std::vector<struct pollfd>	_pollFds;
 		std::map<int, Client*>		_clients;
 		std::vector<int>			_serverFds;
@@ -19,18 +22,19 @@ class Webserv {
 		std::map<int, const ServerConfig*> _portToConfig;
 
 		void		convertPorts(Config const &config);
-		uint32_t	FromHostToAddress(std::string hostname);
-		int			HandleFunctionError(std::string errFunction);
-		void		CleanServer();
-		int			CreateServerSocket();
-		int			SetupListen();
-		void		SetupPollServer(Config const &config);
-		int			RunningServ();
-		int			ConnectAndRead();
-		int			AcceptNewConnection(int &serverFd);
-		int			ReadDataFromSocket(std::vector<struct pollfd>::iterator & it);
-		void		AddClient(int newClientFd, int &);
-		void		DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
+		uint32_t	fromHostToAddress(std::string hostname);
+		uint32_t	fromIPToInt(const std::string &IPstr);
+		int			handleFunctionError(std::string errFunction);
+		void		cleanServer();
+		int			createServerSocket();
+		int			setupListen();
+		void		setupPollServer(Config const &config);
+		int			runningServ();
+		int			connectAndRead();
+		int			acceptNewConnection(int &serverFd);
+		int			readDataFromSocket(std::vector<struct pollfd>::iterator & it);
+		void		addClient(int newClientFd, int &);
+		void		deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
 		const	ServerConfig* getConfigForPort(int);
 
 	public :

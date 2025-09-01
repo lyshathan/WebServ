@@ -8,7 +8,7 @@ RM = rm -rf
 
 SRCS_DIR = srcs
 MAIN = main
-WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning
+WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservConversion
 GENERAL = General
 CONFIG_PARSER = Config \
 				GlobalConfig GlobalConfig_Get_Set\

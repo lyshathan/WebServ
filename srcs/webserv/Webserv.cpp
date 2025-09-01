@@ -1,30 +1,26 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-Webserv::Webserv(Config const &config): _listenBackLog(10)
+Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.getServerConfig()), _listenBackLog(10)
 {
 	std::cout << "---- SERVER ----" << std::endl;
 
 	convertPorts(config);
 
-	if (CreateServerSocket() < 0)
+	if (createServerSocket() < 0)
 		return ;
 
-	if (SetupListen() < 0)
+
+	if (setupListen() < 0)
 		return ;
 
-	SetupPollServer(config);
+	setupPollServer(config);
 
-	RunningServ();
+	runningServ();
 }
 
 Webserv::~Webserv()
@@ -39,7 +35,7 @@ Webserv::~Webserv()
 
 void	Webserv::convertPorts(Config const &config)
 {
-	const std::vector< ::ServerConfig >& serverConf = config.GetServerConfig();
+	const std::vector< ::ServerConfig >& serverConf = config.getServerConfig();
 	for (std::vector< ::ServerConfig >::const_iterator it = serverConf.begin(); it != serverConf.end(); it++)
 	{
 		std::vector< int > intPorts = it->getListenPort();
@@ -52,84 +48,60 @@ void	Webserv::convertPorts(Config const &config)
 
 }
 
-uint32_t	Webserv::FromHostToAddress(std::string hostname)
+
+int Webserv::createServerSocket()
 {
-	struct addrinfo		hints;
-	struct addrinfo		*result;
-	uint32_t			finalAddress = 0;
-
-	// Initialize hints
-	std::memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_INET;			// IPv4
-	hints.ai_socktype = SOCK_STREAM;	// TCP socket
-
-	int status = getaddrinfo(hostname.c_str(), NULL, &hints, &result);
-	if (status != 0)
+	for (size_t servIndex = 0 ; servIndex < _serverConfigs.size() ; servIndex++)
 	{
-		std::cerr << "[server] ERROR : getaddrinfo error ( " << strerror(errno) << " )" << RESET << std::endl;
-		return (0);
-	}
-
-	// Loop through results nested list until first IPv4
-	struct addrinfo		*ptr;
-	for (ptr = result ; ptr != NULL ; ptr=ptr->ai_next)
-	{
-		if (ptr->ai_family == AF_INET)
+		const std::map< uint16_t, std::string>& portAndIP = _serverConfigs[servIndex].getPortAndIP();
+		for (std::map< uint16_t, std::string>::const_iterator PortIt = portAndIP.begin() ; PortIt != portAndIP.end() ; PortIt++ )
 		{
-			struct sockaddr_in* validSocketAddr = (struct sockaddr_in*)ptr->ai_addr;
-			finalAddress = ntohl(validSocketAddr->sin_addr.s_addr);
-			break;
+			struct sockaddr_in	socketAddress;
+			int					opt = 1;
+			int					serverFd;
+
+			// Setup address and port of server socket
+			std::memset(&socketAddress, 0, sizeof(socketAddress));
+			socketAddress.sin_family = AF_INET; // IPv4
+			if (PortIt->second == "localhost")
+				socketAddress.sin_addr.s_addr = INADDR_ANY; // Accept connections from ANY IP address
+			else
+				socketAddress.sin_addr.s_addr = fromIPToInt(PortIt->second); // Convert IP string to int address
+			socketAddress.sin_port = htons(PortIt->first);
+
+			// Creation of socket
+			serverFd = socket(socketAddress.sin_family, SOCK_STREAM, 0);
+			if (serverFd == -1)
+				return (handleFunctionError("'socket'"));
+
+			if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+				return (handleFunctionError("'setsockopt(SO_REUSEADDR)'"));
+
+			// Bind Server socket with address and port
+			if ( bind(serverFd, (struct sockaddr *)&socketAddress, sizeof(socketAddress)) == -1)
+				return (handleFunctionError("'bind'"));
+
+			std::cout << BLUE << "[Server] Server socket #" << serverFd << " created and bound to port [" << PortIt->first << "]" << RESET << std::endl;
+
+			_serverFds.push_back(serverFd);
 		}
-	}
-	freeaddrinfo(result);
-	return(finalAddress);
-}
-
-int Webserv::CreateServerSocket()
-{
-	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
-	{
-		struct sockaddr_in	socketAddress;
-		int					opt = 1;
-		int					serverFd;
-
-		// Setup address and port of server socket
-		std::memset(&socketAddress, 0, sizeof(socketAddress));
-		socketAddress.sin_family = AF_INET; // IPv4
-		socketAddress.sin_addr.s_addr = INADDR_ANY; //Accept connections from ANY IP address
-		socketAddress.sin_port = htons(_serverPorts[i]);
-
-		// Creation of socket
-		serverFd = socket(socketAddress.sin_family, SOCK_STREAM, 0);
-		if (serverFd == -1)
-			return (HandleFunctionError("'socket'"));
-
-		if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-			return (HandleFunctionError("'setsockopt(SO_REUSEADDR)'"));
-
-		// Bind Server socket with address and port
-		if ( bind(serverFd, (struct sockaddr *)&socketAddress, sizeof(socketAddress)) == -1)
-			return (HandleFunctionError("'bind'"));
-
-		std::cout << BLUE << "[Server] Server socket #" << serverFd << " created and bound to port [" << _serverPorts[i] << "]" << RESET << std::endl;
-
-		_serverFds.push_back(serverFd);
 	}
 	return(1);
 }
 
-int Webserv::SetupListen(void)
+
+int Webserv::setupListen(void)
 {
-	for (size_t i = 0 ; i < _serverPorts.size() ; i++)
+	for (size_t i = 0 ; i < _serverFds.size() ; i++)
 	{
 		if (listen(_serverFds[i], _listenBackLog) == -1)
-			return (HandleFunctionError("Listen"));
+			return (handleFunctionError("Listen"));
 		std::cout << BLUE << "[Server] Listening on port : " << _serverPorts[i] << RESET << std::endl;
 	}
 	return (1);
 }
 
-void Webserv::SetupPollServer(Config const &config)
+void Webserv::setupPollServer(Config const &config)
 {
 	struct pollfd	ServerPollFd;
 
@@ -145,7 +117,7 @@ void Webserv::SetupPollServer(Config const &config)
 		std::cout << GREEN << "[Server] Setup PollFds : " << _pollFds[i].fd << " on port [" << _serverPorts[i] << "]" << RESET << std::endl;
 
 		// Find the ServerConfig for this port
-		for (std::vector<ServerConfig>::const_iterator itServer = config.GetServerConfig().begin(); itServer != config.GetServerConfig().end(); ++itServer) {
+		for (std::vector<ServerConfig>::const_iterator itServer = config.getServerConfig().begin(); itServer != config.getServerConfig().end(); ++itServer) {
 			const std::vector<int>& ports = itServer->getListenPort();
 			for (std::vector<int>::const_iterator it = ports.begin(); it != ports.end(); ++it) {
 				if (*it == _serverPorts[i]) {

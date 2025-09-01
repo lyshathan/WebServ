@@ -6,8 +6,19 @@
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
+LocationConfig::LocationConfig(ServerConfig &server, std::vector< LocationConfig > &locations, std::vector<t_token> &tokenList) :
+_locations(locations), _tokens(tokenList), _currentLevel(0)
+{
+	this->_autoIndex = false;
+	this->_clientMaxBodySize = server.getClientMaxBodySize();
+	this->_path = "/";
+	this->_root = server.getRoot();
+	this->_indexFiles = server.getIndexFiles();
+	this->_allowMethod.push_back("GET");
+}
+
 LocationConfig::LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations)
-: _locations(locations), _tokens(tokenList), _autoIndex(false), _clientMaxBodySize(0), _currentLevel(it->level)
+: _locations(locations), _tokens(tokenList), _autoIndex(false), _clientMaxBodySize(0), _currentLevel(it->level), _isExactPath(false)
 {
 	_validMethod.push_back("GET");
 	_validMethod.push_back("POST");
@@ -15,7 +26,7 @@ LocationConfig::LocationConfig(std::vector<t_token> &tokenList, std::vector< t_t
 	_validMethod.push_back("PUT");
 	_validMethod.push_back("HEAD");
 
-	LocationConfigParser(it);
+	locationConfigParser(it);
 }
 
 LocationConfig::~LocationConfig(void)
@@ -43,21 +54,24 @@ LocationConfig & LocationConfig::operator=(LocationConfig const &otherLocationCo
 }
 
 
-void	LocationConfig::LocationConfigParser(std::vector< t_token>::iterator &it)
+void	LocationConfig::locationConfigParser(std::vector< t_token>::iterator &it)
 {
 	it++;
+	if (it->type == EQUAL)
+	{
+		_isExactPath = true;
+		it++;
+	}
 	_path = (it++)->content;
 	if (std::strncmp(_path.c_str(), "/", 1))
-		ThrowErrorToken(" Wrong location path", *(it-1));
+		throwErrorToken(" Wrong location path", *(it-1));
 	for (std::vector< LocationConfig >::iterator itLoc = _locations.begin() ; itLoc != _locations.end() ; itLoc++)
 	{
 		if (itLoc->_path == this->_path)
-			ThrowErrorToken(" Already existing location path", *it);
+			throwErrorToken(" Already existing location path", *it);
 	}
-
 	if (it++->type != OPEN_BRACE)
-		ThrowErrorToken(" Missing open brace", *it);
-
+		throwErrorToken(" Missing open brace", *it);
 	while (!(it->type == CLOSE_BRACE && it->level == _currentLevel))
 	{
 		// std::cout << "	[LocationConfig] it->content : " << it->content << RESET << std::endl;
@@ -67,37 +81,41 @@ void	LocationConfig::LocationConfigParser(std::vector< t_token>::iterator &it)
 			continue;
 		}
 		else if (it->type == DIRECTIVE && it->content == "allow_methods")	// allowed Method
-			AddListToVector(_allowMethod, it, _tokens, &_validMethod);
+			addListToVector(_allowMethod, it, _tokens, &_validMethod);
 		else if (it->type == DIRECTIVE && it->content == "autoindex")	// auto index
-			ParseAutoIndex(it);
+			parseAutoIndex(it);
+		else if (it->type == DIRECTIVE && it->content == "index")	// index files
+			addListToVector(_indexFiles, it, _tokens, NULL);
 		else if (it->type == DIRECTIVE				// paths
 			&& (it->content == "upload_path" || it->content == "cgi_extension" || it->content == "cgi_path" || it->content == "root"))
-				ParsePath(it);
+				parsePath(it);
 		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")	// client_max_body_size
-			ParseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
+			parseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
 		else if (it->type == DIRECTIVE && it->content == "return")	// return
-			ParseReturn(it);
+			parseReturn(it);
 	}
 	if (it->type == CLOSE_BRACE && it->level == _currentLevel)
 		it++;
 }
 
-void	LocationConfig::Check(ServerConfig &server)
+void	LocationConfig::check(ServerConfig &server)
 {
 	if (_clientMaxBodySize == 0)
 		_clientMaxBodySize = server.getClientMaxBodySize(); // Set size inherited
 	if (_root.empty())
-		_root = server.getRoot();					// Set root inherited
+		_root = server.getRoot();							// Set root inherited
 	if (_allowMethod.empty())
-		_allowMethod.push_back("GET");				// Set GET as default method
+		_allowMethod.push_back("GET");						// Set GET as default method
+	if (_indexFiles.empty())
+		_indexFiles = server.getIndexFiles();				// Set index inherited
 	if (std::find(_allowMethod.begin(), _allowMethod.end(), "POST") != _allowMethod.end() && _uploadPath.empty())
-		ThrowError(" Missing upload path for POST method");
+		throwError(" Missing upload path for POST method");
 	if (!_cgiExtension.empty() && _cgiPath.empty())
-		ThrowError(" Missing CGI path for CGI extension");
+		throwError(" Missing CGI path for CGI extension");
 }
 
 
-void	LocationConfig::PrintLocation(void) const
+void	LocationConfig::printLocation(void)
 {
 	std::string indent = "|	|	|___ ";
 	std::string list = "|	|	|	- ";
@@ -107,6 +125,11 @@ void	LocationConfig::PrintLocation(void) const
 	std::cout << indent << "Path : " << _path << std::endl;
 	std::cout << indent << "Allowed method :" << std::endl;
 	for (std::vector<std::string>::const_iterator it = _allowMethod.begin() ; it != _allowMethod.end() ; it++)
+	{
+		std::cout << list << *it << std::endl;
+	}
+	std::cout << indent << "Index files : " << std::endl;
+	for (std::vector<std::string>::iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
 	{
 		std::cout << list << *it << std::endl;
 	}

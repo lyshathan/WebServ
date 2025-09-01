@@ -1,6 +1,6 @@
 #include "General.hpp"
 
-void	ThrowErrorToken(const char* msg, t_token &token)
+void	throwErrorToken(const char* msg, t_token &token)
 {
 	std::ostringstream errorMsg;
 
@@ -8,7 +8,7 @@ void	ThrowErrorToken(const char* msg, t_token &token)
 	throw std::invalid_argument(errorMsg.str());
 }
 
-void	ThrowError(const char* msg)
+void	throwError(const char* msg)
 {
 	std::ostringstream errorMsg;
 

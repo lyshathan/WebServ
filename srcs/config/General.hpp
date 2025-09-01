@@ -3,6 +3,7 @@
 
 #include "tokenizer/Token.hpp"
 
+#include <stdint.h> 
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -26,8 +27,8 @@
 #define RESET	"\033[0m"
 
 
-void	ThrowErrorToken(const char* msg, t_token &token);
-void	ThrowError(const char* msg);
+void	throwErrorToken(const char* msg, t_token &token);
+void	throwError(const char* msg);
 
 
 #endif
