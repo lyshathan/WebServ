@@ -35,7 +35,7 @@ bool HttpRequest::validatePath() {
 	pickServerConfig();
 	if (_location) {
 		filepath = _location->getRoot() + _uri;
-		_location->PrintLocation();
+		// _location->printLocation();
 	} else {
 		return false;
 	}

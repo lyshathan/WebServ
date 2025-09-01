@@ -111,19 +111,16 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 				std::vector<char> binaryContent = _clients[it->fd]->httpRes->getBinRes();
 				status = send(it->fd, &binaryContent[0], binaryContent.size(), 0);
 				if (status == -1)
-					return (HandleFunctionError("Send"));
+					return (handleFunctionError("Send"));
 			} else {
 				std::string textContent = _clients[it->fd]->httpRes->getRes().c_str();
 				status = send(it->fd, textContent.c_str(), textContent.size(), 0);
 				if (status == -1)
-					return (HandleFunctionError("Send"));
+					return (handleFunctionError("Send"));
 			}
 			_clients[it->fd]->clearBuffer();
-<<<<<<< HEAD
-=======
 			if (status == -1)
 				return (handleFunctionError("Send"));
->>>>>>> a0ad5d4 (FIX : multiple IP adress possible and add index files to location config)
 		}
 	}
 	return (1);
