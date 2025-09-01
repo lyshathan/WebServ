@@ -41,6 +41,7 @@ class LocationConfig {
 
 		std::string	getPath(void) const;
 		std::string	getRoot(void) const;
+		std::vector<std::string> getIndex(void) const;
 		void		setPath(std::string newPath);
 };
 
