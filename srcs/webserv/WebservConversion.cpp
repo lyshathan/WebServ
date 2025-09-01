@@ -2,7 +2,7 @@
 
 #include <arpa/inet.h>
 
-uint32_t	Webserv::FromIPToInt(const std::string &IPstr)
+uint32_t	Webserv::fromIPToInt(const std::string &IPstr)
 {
 	// std::string test = "127.0.0.1";
     std::istringstream iss( IPstr );
@@ -19,7 +19,7 @@ uint32_t	Webserv::FromIPToInt(const std::string &IPstr)
 		// Shifts the octet to its correct position in the 32-bit integer (host byte order)
         IPint |= part << ( 8 * ( 3 - i ) );
 
-        // Check for delimiter except on last iteration
+        // check for delimiter except on last iteration
         if ( i != 3 ) {
             char delimiter;
             iss >> delimiter;
@@ -37,7 +37,7 @@ uint32_t	Webserv::FromIPToInt(const std::string &IPstr)
 
 
 
-uint32_t	Webserv::FromHostToAddress(std::string hostname)
+uint32_t	Webserv::fromHostToAddress(std::string hostname)
 {
 	struct addrinfo		hints;
 	struct addrinfo		*result;

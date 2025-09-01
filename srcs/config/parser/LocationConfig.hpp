@@ -17,6 +17,7 @@ class LocationConfig {
 		std::string						_cgiExtension;
 		std::string						_cgiPath;
 		std::string						_root;
+		std::vector< std::string >		_indexFiles;
 		std::vector< std::string >		_allowMethod;
 		std::vector< std::string >		_validMethod;
 		std::pair< int , std::string >	_return;
@@ -24,18 +25,19 @@ class LocationConfig {
 		const size_t					_currentLevel;
 		bool							_isExactPath;
 
-		void	LocationConfigParser(std::vector< t_token>::iterator &it);
-		void	ParsePath(std::vector< t_token>::iterator &it);
-		void	ParseReturn(std::vector< t_token>::iterator &it);
-		void	ParseAutoIndex(std::vector< t_token>::iterator &it);
+		void	locationConfigParser(std::vector< t_token>::iterator &it);
+		void	parsePath(std::vector< t_token>::iterator &it);
+		void	parseReturn(std::vector< t_token>::iterator &it);
+		void	parseAutoIndex(std::vector< t_token>::iterator &it);
 
 
 	public :
+		LocationConfig(ServerConfig &server, std::vector< LocationConfig > &locations, std::vector<t_token> &tokenList);
 		LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations);
 		~LocationConfig();
 		LocationConfig & operator=(LocationConfig const &otherLocationConfig);
-		void	PrintLocation(void) const;
-		void	Check(ServerConfig &server);
+		void	printLocation(void);
+		void	check(ServerConfig &server);
 
 		std::string	getPath(void) const;
 		std::string	getRoot(void) const;

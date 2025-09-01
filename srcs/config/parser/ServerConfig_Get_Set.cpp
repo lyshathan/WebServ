@@ -26,6 +26,11 @@ std::vector<std::string> ServerConfig::getServerName(void) const
 	return (_serverNames);
 }
 
+std::vector<std::string> ServerConfig::getIndexFiles(void) const
+{
+	return (_indexFiles);
+}
+
 std::string ServerConfig::getRoot(void) const
 {
 	return (_root);

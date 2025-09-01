@@ -19,11 +19,13 @@ class ServerConfig {
 		std::vector< LocationConfig >	_locations;
 		const size_t					_currentLevel;
 
-		void	ParseServerConfig(std::vector< t_token>::iterator &it);
-		void	ParseListenPort(std::vector< t_token>::iterator &it);
-		void	ParseRoot(std::vector< t_token>::iterator &it);
-		void	ParseErrorPage(std::vector< t_token>::iterator &it);
-		void	SortLocation();
+		void	parseServerConfig(std::vector< t_token>::iterator &it);
+		void	parseListenPort(std::vector< t_token>::iterator &it);
+		void	parseRoot(std::vector< t_token>::iterator &it);
+		void	parseErrorPage(std::vector< t_token>::iterator &it);
+		void	setDefaultLocation(void);
+		void	sortLocation();
+
 
 
 	public :
@@ -31,15 +33,17 @@ class ServerConfig {
 		~ServerConfig();
 
 		ServerConfig & operator=(ServerConfig const &otherServerConfig);
-		void	PrintServer();
-		void	Check(GlobalConfig &global);
+		void	printServer();
+		void	check(GlobalConfig &global);
 
 		size_t								getClientMaxBodySize(void) const;
 		std::vector<int>					getListenPort(void) const;
 		std::map< uint16_t, std::string>	getPortAndIP(void) const;
 		std::vector<std::string>			getServerName(void) const;
+		std::vector<std::string>			getIndexFiles(void) const;
 		std::string							getRoot(void) const;
 		const std::vector<LocationConfig>&	getLocations(void) const;
+		bool								getAutoIndex(void) const;
 
 };
 

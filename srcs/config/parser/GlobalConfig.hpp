@@ -19,7 +19,7 @@ class GlobalConfig {
 		void	setClientMaxBodySize(std::string &size, t_token &token);
 		size_t	getClientMaxBodySize(void) const;
 		void	printGlobal();
-		void	Check();
+		void	check();
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-void	Webserv::CleanServer(void)
+void	Webserv::cleanServer(void)
 {
 	// Close all fds
 	for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end() ; it++)
@@ -26,9 +26,9 @@ void	Webserv::CleanServer(void)
 	}
 }
 
-int	Webserv::HandleFunctionError(std::string errFunction)
+int	Webserv::handleFunctionError(std::string errFunction)
 {
 	std::cerr << RED << "[server] ERROR : " << errFunction << " error ( " << strerror(errno) << " )" << RESET << std::endl;
-	CleanServer();
+	cleanServer();
 	return (-1);
 }

@@ -107,7 +107,7 @@ PARSING IMPLEMENTATION CHECKLIST
 Request-Line:
 □ Validate method (GET/POST/DELETE only) → 501 if unsupported
 	Checked but sending 400 - Bad Request
-□ Check URI length (max 8000 bytes) → 414 if too long
+□ check URI length (max 8000 bytes) → 414 if too long
 	Checked but sending 400 - Bad Request
 □ Validate HTTP version format
 	Only accepts HTTP/1.0 or HTTP/1.0
@@ -116,7 +116,7 @@ Request-Line:
 Headers:
 □ Validate field name characters (tchar only)
 	Done
-□ Check for colon separator
+□ check for colon separator
 	Done
 □ Trim OWS from field values
 	Done
@@ -130,14 +130,14 @@ Headers:
 	Done
 
 Message Body:
-□ Check if body allowed for this message type
+□ check if body allowed for this message type
 □ Process Transfer-Encoding before Content-Length
 □ Validate Content-Length format and consistency
 □ Handle unsupported Transfer-Encoding → 501
 □ Implement chunked transfer decoding
 
 Connection:
-□ Check Connection header for "close"
+□ check Connection header for "close"
 □ Filter hop-by-hop headers
 □ Handle connection timeouts/interruptions
 
@@ -158,15 +158,15 @@ COMMON PARSING PITFALLS
 
 For GET requests:
 
-Check if the requested file/resource exists on the server
+check if the requested file/resource exists on the server
 Verify read permissions for the file
-Check if the path contains any directory traversal attempts (../../../etc)
+check if the path contains any directory traversal attempts (../../../etc)
 Validate that the path points to a location within your server's allowed directories
 Additional validations:
 
-Check if the file size is within acceptable limits
+check if the file size is within acceptable limits
 Verify the file type is allowed (if you have restrictions)
-Check if the resource requires authentication
+check if the resource requires authentication
 Verify if the client has proper access rights
 Response preparation:
 

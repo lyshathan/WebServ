@@ -2,7 +2,7 @@
 #include "../parsing/Client.hpp"
 
 
-void Webserv::AddClient(int newClientFd, int &serverFd)
+void Webserv::addClient(int newClientFd, int &serverFd)
 {
 	const ServerConfig* config = getConfigForPort(serverFd);
 	if (config) {
@@ -21,7 +21,7 @@ void Webserv::AddClient(int newClientFd, int &serverFd)
 	//std::cout << "Validate client #" << newClientFd << std::endl;
 }
 
-void Webserv::DeleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it)
+void Webserv::deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it)
 {
 	// Delete from list of clients
 	Client *clientToDelete = _clients[clientFd];

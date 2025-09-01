@@ -9,8 +9,8 @@ int main(void)
 	{
 		config = Config("simple.conf");
 		config.PrintConfig();
-		// config.PrintTokens();
-		Webserv webserv(config);
+		// config.printTokens();
+		// Webserv webserv(config);
 	}
 	catch(const std::exception& e)
 	{

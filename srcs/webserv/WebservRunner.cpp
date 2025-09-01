@@ -1,17 +1,17 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-int	Webserv::RunningServ(void)
+int	Webserv::runningServ(void)
 {
 
 	int	status;
 	int	timeout = 3000;	// 3 seconds
 	while (1)
 	{
-		// Check if any socket is ready, else wait
+		// check if any socket is ready, else wait
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
-			return (HandleFunctionError("poll"));
+			return (handleFunctionError("poll"));
 		else if (status == 0) // Is this condition util?
 		{
 			//std::cout << "[Server] Waiting ..." << std::endl;
@@ -20,12 +20,12 @@ int	Webserv::RunningServ(void)
 
 		//std::cout << "Sockets are ready" << std::endl;
 		// Loop check for each socket
-		if (ConnectAndRead() < 0)
+		if (connectAndRead() < 0)
 			return(1);
 	}
 }
 
-int	Webserv::ConnectAndRead(void)
+int	Webserv::connectAndRead(void)
 {
 	int	status;
 
@@ -42,7 +42,7 @@ int	Webserv::ConnectAndRead(void)
 		if (find != _serverFds.end())
 		{
 			//std::cout << "Accept new connection [" << it->fd << "]" << std::endl;
-			status = AcceptNewConnection(*find);
+			status = acceptNewConnection(*find);
 			if (status == -1)
 				return (-1);
 			it = _pollFds.begin() + 1; // Restart the loop from the first client socket because of push back
@@ -50,7 +50,7 @@ int	Webserv::ConnectAndRead(void)
 		else
 		{
 			//std::cout << "Read data [" << it->fd << "]" << std::endl;
-			status = ReadDataFromSocket(it);
+			status = readDataFromSocket(it);
 			if (status <= 0)
 				return (-1);
 		}
@@ -59,16 +59,16 @@ int	Webserv::ConnectAndRead(void)
 	return (1);
 }
 
-int Webserv::AcceptNewConnection(int &serverFd)
+int Webserv::acceptNewConnection(int &serverFd)
 {
 	int			clientFd;
 
 	clientFd = accept(serverFd, NULL, NULL); // Do we need to get the port and addresss of the new client socket ?
 	if (clientFd == -1)
-		return (HandleFunctionError("Accept"));
+		return (handleFunctionError("Accept"));
 
 	// Add new client to pollFds and to _client map
-	AddClient(clientFd, serverFd);
+	addClient(clientFd, serverFd);
 
 	//std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << "for server " << serverFd << RESET << std::endl;
 	return (0);
@@ -81,7 +81,7 @@ const ServerConfig* Webserv::getConfigForPort(int serverFd) {
 	return NULL;
 }
 
-int Webserv::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
+int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 {
 	char	buffer[BUFSIZ + 1];
 	int 	senderFd;
@@ -93,35 +93,13 @@ int Webserv::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
-		{
 			std::cerr << YELLOW << "[server] Client #" << senderFd << " closed connection" << RESET << std::endl;
-			DeleteClient(it->fd, it);
-		}
 		else
-		{
-			// Handle recv errors - most are client-side issues, not server fatal errors
-			if (errno == ECONNRESET)
-			{
-				std::cerr << YELLOW << "[server] Client #" << senderFd << " connection reset by peer" << RESET << std::endl;
-			}
-			else
-			{
-				// Other errors - log them but still don't crash the server
-				std::cerr << YELLOW << "[server] Client #" << senderFd << " recv error: " << strerror(errno) << RESET << std::endl;
-			}
-			DeleteClient(it->fd, it);
-		}
+			std::cerr << YELLOW << "[server] Client #" << senderFd << " recv error: " << strerror(errno) << RESET << std::endl;
+		deleteClient(it->fd, it);
 	}
 	else
 	{
-		if (!std::strncmp("stop", buffer, 4))
-		{
-			//std::cout << GREEN << "Stopping server" << RESET << std::endl;
-			CleanServer();
-			return(0);
-		}
-		//std::cout << "\n\n------- Client #" << senderFd << " sent a message ------\n" << buffer << std::endl;
-
 		_clients[it->fd]->appendBuffer(buffer, bytesRead);
 		if (_clients[senderFd]->isReqComplete()) {
 			_clients[senderFd]->httpReq->handleRequest(_clients[senderFd]->getRes());
@@ -141,6 +119,11 @@ int Webserv::ReadDataFromSocket(std::vector<struct pollfd>::iterator & it)
 					return (HandleFunctionError("Send"));
 			}
 			_clients[it->fd]->clearBuffer();
+<<<<<<< HEAD
+=======
+			if (status == -1)
+				return (handleFunctionError("Send"));
+>>>>>>> a0ad5d4 (FIX : multiple IP adress possible and add index files to location config)
 		}
 	}
 	return (1);

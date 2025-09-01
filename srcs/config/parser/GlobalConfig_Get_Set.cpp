@@ -30,7 +30,7 @@ void GlobalConfig::setClientMaxBodySize(std::string &size, t_token &token)
 
 	double bodySize = std::strtod(size.c_str(), &end);
 	if (*end || bodySize <= 0 || bodySize > INT_MAX)
-		ThrowErrorToken(" Invalid client_max_body_size", token);
+		throwErrorToken(" Invalid client_max_body_size", token);
 	this->_clientMaxBodySize = bodySize;
 	setSizeDefined(true);
 }

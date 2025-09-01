@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.text())
             .then(data => {
                 console.log('Successfully fetched data from server');
-                output.innerHTML = 'AJAX request successful! Check console for details.';
+                output.innerHTML = 'AJAX request successful! check console for details.';
             })
             .catch(error => {
                 console.error('AJAX request failed:', error);

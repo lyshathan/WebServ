@@ -8,7 +8,7 @@
 ServerConfig::ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< ServerConfig > &serversConfig)
 : _serversConfig(serversConfig), _tokens(tokenList), _clientMaxBodySize(0),_currentLevel(it->level)
 {
-	ParseServerConfig(it);
+	parseServerConfig(it);
 }
 
 ServerConfig::~ServerConfig(void)
@@ -34,11 +34,11 @@ ServerConfig & ServerConfig::operator=(ServerConfig const &otherServerConfig)
 
 
 
-void	ServerConfig::ParseServerConfig(std::vector< t_token>::iterator &it)
+void	ServerConfig::parseServerConfig(std::vector< t_token>::iterator &it)
 {
 	it++;
 	if (it++->type != OPEN_BRACE)
-		ThrowErrorToken(" Missing open brace", *it);
+		throwErrorToken(" Missing open brace", *it);
 
 	while (!(it->type == CLOSE_BRACE && it->level == _currentLevel))
 	{
@@ -50,32 +50,32 @@ void	ServerConfig::ParseServerConfig(std::vector< t_token>::iterator &it)
 			continue;
 		}
 		else if (it->type == DIRECTIVE && it->content == "listen")	// listen port
-			ParseListenPort(it);
+			parseListenPort(it);
 		else if (it->type == DIRECTIVE && it->content == "server_name")	// server names
-			AddListToVector(_serverNames, it, _tokens, NULL);
+			addListToVector(_serverNames, it, _tokens, NULL);
 		else if (it->type == DIRECTIVE && it->content == "index")	// index files
-			AddListToVector(_indexFiles, it, _tokens, NULL);
+			addListToVector(_indexFiles, it, _tokens, NULL);
 		else if (it->type == DIRECTIVE && it->content == "root")	// root
-			ParseRoot(it);
+			parseRoot(it);
 		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")	// client_max_body_size
-			ParseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
+			parseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
 		else if (it->type == DIRECTIVE && it->content == "error_page")	// error_page
-			ParseErrorPage(it);
+			parseErrorPage(it);
 		else if (it->type == DIRECTIVE && it->content == "location")	// location
 		{
 			LocationConfig newLocation(_tokens, it, _locations);
 			_locations.push_back(newLocation);
-			// newLocation.PrintLocation();
+			// newLocation.printLocation();
 		}
 		else
-			ThrowErrorToken(" Unknown directive", *it);
+			throwErrorToken(" Unknown directive", *it);
 	}
 }
 
-void	ServerConfig::Check(GlobalConfig &global)
+void	ServerConfig::check(GlobalConfig &global)
 {
 	if (_listenPorts.empty())
-		ThrowError(" Server need at least a port");
+		throwError(" Server need at least a port");
 	if (_root.empty())
 		_root = "./www";										// Set default root
 	if (_serverNames.empty())
@@ -90,13 +90,13 @@ void	ServerConfig::Check(GlobalConfig &global)
 	{
 		for (std::vector< LocationConfig >::iterator itLoc = _locations.begin() ; itLoc != _locations.end() ; itLoc++)
 		{
-			itLoc->Check(*this);
+			itLoc->check(*this);
 		}
 	}
 	else
-		std::cout << "No location set ???" << std::endl;		// What to do if no location set?
+		setDefaultLocation();
 
-	SortLocation();
+	sortLocation();
 }
 
 size_t	pathLenght(std::string path)
@@ -116,7 +116,13 @@ size_t	pathLenght(std::string path)
 }
 
 
-void	ServerConfig::SortLocation(void)
+void	ServerConfig::setDefaultLocation(void)
+{
+	LocationConfig defaultLocation(*this, _locations, _tokens);
+	this->_locations.push_back(defaultLocation);
+}
+
+void	ServerConfig::sortLocation(void)
 {
 	size_t	i = 0;
 
@@ -139,7 +145,7 @@ void	ServerConfig::SortLocation(void)
 
 
 
-void	ServerConfig::PrintServer(void)
+void	ServerConfig::printServer(void)
 {
 	std::string indent = "|	|___ ";
 	std::string list = "|	|	- ";
@@ -175,7 +181,7 @@ void	ServerConfig::PrintServer(void)
 	}
 	for (std::vector< LocationConfig >::iterator it = _locations.begin() ; it != _locations.end() ; it++)
 	{
-		it->PrintLocation();
+		it->printLocation();
 	}
 }
 

@@ -16,11 +16,11 @@ Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLO
 
 	std::cout << BLUE << "Reading from config file : " << filename << RESET <<std::endl;
 
-	InitValidDirectives();
-	InitToken(configFile);
+	initValidDirectives();
+	initToken(configFile);
 
-	Parser();
-	CheckConfig();
+	parser();
+	checkConfig();
 }
 
 Config::~Config(void)
@@ -42,7 +42,7 @@ Config & Config::operator=(Config const &otherConfig)
 }
 
 
-void	Config::Parser()
+void	Config::parser()
 {
 	GlobalConfig global;
 	for (std::vector< t_token>::iterator it = _tokens.begin() ; it != _tokens.end() ; it++)
@@ -53,42 +53,42 @@ void	Config::Parser()
 			{
 				ServerConfig newServer(_tokens, it, _serversConfig);
 				_serversConfig.push_back(newServer);
-				// newServer.PrintServer();
+				// newServer.printServer();
 			}
 			else if (it->content == "error_log")
 			{
 				global.setErrorLog((++it)->content);
 				it++;
 				if (it == _tokens.end() || it->type != SEMICOLON)
-					ThrowErrorToken(" Invalid error_log", *it);
+					throwErrorToken(" Invalid error_log", *it);
 			}
 			else if (it->content == "client_max_body_size")
 			{
 				global.setClientMaxBodySize((++it)->content, *it);
 				it++;
 				if (it == _tokens.end() || it->type != SEMICOLON)
-					ThrowErrorToken(" Invalid client_max_body_size", *it);
+					throwErrorToken(" Invalid client_max_body_size", *it);
 			}
 		}
 		else
-			ThrowErrorToken(" Invalid configuration file", *it);
+			throwErrorToken(" Invalid configuration file", *it);
 	}
 	_globalConfig = global;
 }
 
 
-void	Config::CheckConfig(void)
+void	Config::checkConfig(void)
 {
-	_globalConfig.Check();
+	_globalConfig.check();
 	if (_serversConfig.empty())
-		ThrowError(" Need at least one server");
+		throwError(" Need at least one server");
 	for (std::vector< ServerConfig >::iterator itServ = _serversConfig.begin() ; itServ != _serversConfig.end() ; itServ++)
 	{
-		itServ->Check(_globalConfig);
+		itServ->check(_globalConfig);
 	}
 }
 
-const std::vector< ServerConfig > & Config::GetServerConfig() const
+const std::vector< ServerConfig > & Config::getServerConfig() const
 {
 	return (_serversConfig);
 }
@@ -100,7 +100,7 @@ void	Config::PrintConfig(void)
 	_globalConfig.printGlobal();
 	for (std::vector< ServerConfig >::iterator itServer = _serversConfig.begin() ; itServer != _serversConfig.end() ; itServer++)
 	{
-		itServer->PrintServer();
+		itServer->printServer();
 	}
 	std::cout << "================================================================" << std::endl << std::endl;
 }
