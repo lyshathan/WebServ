@@ -14,7 +14,11 @@ class HttpResponse {
 		HttpRequest *_request;
 		HttpResponse();
 
-		std::string	_res;
+		bool				_isTextContent;
+		std::string			_headers;
+		std::string			_res;
+		std::vector<char>	_binRes;
+		std::string			_mimeType;
 	public:
 		HttpResponse(HttpRequest *);
 		~HttpResponse();
@@ -23,13 +27,20 @@ class HttpResponse {
 		void	successfulRequest();
 		void	badRequest();
 		void	notFound();
+		void	setTextRes();
+		void	setBinRes();
+		void	setTextContent();
+		void	setBinContent();
 
 		std::string getTime() const;
 		std::string getMimeType() const;
-		std::string getContent() const;
 		std::string getLastModifiedTime() const;
+		bool		getIsTextContent() const;
 
 		const std::string &getRes() const;
+		const std::vector<char> &getBinRes() const;
+		const std::string &getResHeaders() const;
+		bool isTextContent();
 };
 
 #endif

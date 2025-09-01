@@ -6,7 +6,7 @@
 
 HttpResponse::HttpResponse() {};
 
-HttpResponse::HttpResponse(HttpRequest *req) : _request(req), _res("") {};
+HttpResponse::HttpResponse(HttpRequest *req) : _request(req), _res(""), _isTextContent(false), _mimeType("") {};
 
 HttpResponse::~HttpResponse() {};
 
@@ -62,15 +62,51 @@ std::string HttpResponse::getMimeType() const {
 	return "application/octet-stream";
 }
 
-std::string HttpResponse::getContent() const {
+void HttpResponse::setTextContent() {
 	std::string uri = _request->getUri();
-	std::fstream file(uri.c_str());
+	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
 	if (!file.is_open())
-		return "";
-	std::ostringstream buffer;
-	buffer << file.rdbuf();
+		return ;
+
+	_res.clear();
+	char buffer[4096];
+	std::string chunk;
+	while (file.read(buffer, sizeof(buffer))) {
+		chunk.assign(buffer, file.gcount());
+		_res += chunk;
+	}
+	if (file.gcount() > 0) {
+		chunk.assign(buffer, file.gcount());
+		_res += chunk;
+	}
 	file.close();
-	return buffer.str();
+}
+
+void	HttpResponse::setBinContent() {
+	std::string uri = _request->getUri();
+	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
+	if (!file.is_open())
+		return ;
+
+	char buffer[4096];
+	while (file.read(buffer, sizeof(buffer))) {
+		_binRes.insert(_binRes.end(), buffer, buffer + file.gcount());
+	}
+	if (file.gcount() > 0) {
+		_binRes.insert(_binRes.end(), buffer, buffer + file.gcount());
+	}
+}
+
+bool	HttpResponse::isTextContent() {
+	if (_mimeType.find("text/") == 0 || _mimeType == "application/json" ||
+		_mimeType == "application/javascript") {
+			_isTextContent = true;
+			return 1;
+	} else {
+		_isTextContent = false;
+		return 0;
+	}
+
 }
 
 std::string HttpResponse::getLastModifiedTime() const {
@@ -103,27 +139,53 @@ void HttpResponse::parseResponse() {
 }
 
 const std::string& HttpResponse::getRes() const {return _res;}
+const std::string& HttpResponse::getResHeaders() const {return _headers;}
+const std::vector<char>& HttpResponse::getBinRes() const {return _binRes;}
+bool	HttpResponse::getIsTextContent() const {return _isTextContent;}
 
 void HttpResponse::successfulRequest() {
-	std::ostringstream	res;
-	std::string 		content;
+	_mimeType = getMimeType();
+	if (isTextContent()) {
+		setTextRes();
+	} else {
+		setBinRes();
+	}
+}
 
-	content = getContent();
+void HttpResponse::setTextRes() {
+	std::ostringstream	headers;
 
-	res << _request->getVersion() + " 200 OK\r\n"
+	setTextContent();
+
+	headers << _request->getVersion() + " 200 OK\r\n"
 	<< "Server: webserv\r\n"
 	<< "Date: " << getTime() << "\r\n"
-	<< "Content-Type: " << getMimeType() << "\r\n"
-	<< "Content-Length: " << content.size() << "\r\n"
+	<< "Content-Type: " << _mimeType << "\r\n"
+	<< "Content-Length: " << _res.size() << "\r\n"
 	<< "Last-Modified: " << getLastModifiedTime() << "\r\n"
-	<< "Connection: keep-alive" << "\r\n\r\n"
-	<< content;
+	<< "Connection: keep-alive" << "\r\n\r\n";
 
-	_res = res.str();
+	_headers = headers.str();
+}
+
+void HttpResponse::setBinRes() {
+	std::ostringstream	headers;
+
+	setBinContent();
+
+	headers << _request->getVersion() + " 200 OK\r\n"
+	<< "Server: webserv\r\n"
+	<< "Date: " << getTime() << "\r\n"
+	<< "Content-Type: " << _mimeType << "\r\n"
+	<< "Content-Length: " << _binRes.size() << "\r\n"
+	<< "Last-Modified: " << getLastModifiedTime() << "\r\n"
+	<< "Connection: keep-alive" << "\r\n\r\n";
+
+	_headers = headers.str();
 }
 
 void HttpResponse::notFound() {
-	std::ostringstream res;
+	std::ostringstream headers;
 	std::ostringstream html;
 
 	html << "<html><head><title>404 Not Found</title></head><body>"
@@ -136,19 +198,21 @@ void HttpResponse::notFound() {
 		<< "</body></html>";
 
 	std::string htmlCode = html.str();
+	_binRes.clear();
+	_binRes.insert(_binRes.end(), htmlCode.begin(), htmlCode.end());
 
-	res << _request->getVersion() + " 404 Not Found\r\n"
+	headers << _request->getVersion() + " 404 Not Found\r\n"
 	<< "Server: webserv\r\n"
 	<< "Date: " << getTime() << "\r\n"
 	<< "Content-Type: " << getMimeType() << "\r\n"
-	<< "Content-Length: "<< htmlCode.size() << "\r\n"
-	<< "Connection: closed" << "\r\n\r\n"
-	<< htmlCode;
-	_res = res.str();
+	<< "Content-Length: "<< _binRes.size() << "\r\n"
+	<< "Connection: closed" << "\r\n\r\n";
+
+	_headers = headers.str();
 }
 
 void HttpResponse::badRequest() {
-	std::ostringstream res;
+	std::ostringstream headers;
 	std::ostringstream html;
 
 	html << "<html><head><title>400 Bad Request</title></head><body>"
@@ -161,15 +225,17 @@ void HttpResponse::badRequest() {
 	<< "</body></html>";
 
 	std::string htmlCode = html.str();
+	_binRes.clear();
+	_binRes.insert(_binRes.end(), htmlCode.begin(), htmlCode.end());
 
-	res << _request->getVersion() + " 400 Bad Request\r\n"
+	headers << _request->getVersion() + " 400 Bad Request\r\n"
 	<< "Server: webserv\r\n"
 	<< "Date: " << getTime() << "\r\n"
 	<< "Content-Type: " << getMimeType() << "\r\n"
-	<< "Content-Length: "<< htmlCode.size() << "\r\n"
-	<< "Connection: closed" << "\r\n\r\n"
-	<< htmlCode;
-	_res = res.str();
+	<< "Content-Length: "<< _binRes.size() << "\r\n"
+	<< "Connection: closed" << "\r\n\r\n";
+
+	_headers = headers.str();
 }
 
 

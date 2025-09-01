@@ -51,7 +51,7 @@ void HttpRequest::pickServerConfig() {
 	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
 	size_t longestMatch = 0;
 
-	if (_uri.back() != '/' && isLocationValid(_uri)) {
+	if (_uri[_uri.length() - 1] != '/' && isLocationValid(_uri)) {
 		_status = MOVED_PERMANENTLY;
 		std::cout << "Moved Permanently\n";
 		return;
