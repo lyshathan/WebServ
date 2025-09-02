@@ -1,0 +1,46 @@
+# Root Directory Configuration in Locations
+
+## Global vs Location-specific Root Settings
+
+1. No Root Definition
+   - If neither global level nor location block defines a root directory:
+     - An error message will be displayed
+     - Configuration will be considered invalid
+
+2. Global Root Definition
+   - If a root directory is defined at the global level:
+     - It serves as the default root for all locations
+     - Can be overridden by location-specific root definitions
+
+3. Location Root Behavior
+   - When accessing the root location ('/'):
+     - If no location-specific root is defined:
+       * The location path will be appended to the global root
+     - If a location-specific root is defined:
+       * The location-specific root takes precedence over the global root
+
+## Examples:
+
+### Scenario 1: Global Root Only
+```nginx
+http {
+    root /var/www;
+
+    location /images {
+        # Uses global root: /var/www/images
+    }
+}
+```
+
+### Scenario 2: Location-specific Root
+```nginx
+http {
+    root /var/www;
+
+    location /images {
+        root /var/www/media;  # Uses: /var/www/media/images
+    }
+}
+```
+
+Note: Always ensure that the configured root directories exist and have proper permissions.

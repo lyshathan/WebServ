@@ -18,6 +18,28 @@ bool HttpRequest::validateUri() {
 	return true;
 }
 
+bool HttpRequest::validatePath() {
+	std::string filepath;
+	pickServerConfig();
+	if (_location) {
+		filepath = _location->getRoot() + _uri;
+	} else {
+		return false;
+	}
+	//std::cout << "File Path " << filepath << "\n";
+	if (!_uri.empty() && _uri[_uri.length() - 1] == '/') {
+		std::vector<std::string> files = _location->getIndex();
+		if (!files.empty()) {
+			filepath +=  files.front();
+		}
+	}
+	//std::cout << "File Path " << filepath << "\n";
+	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
+	_uri = filepath;
+	//std::cout << "File Path " << _uri << "\n";
+	return true;
+}
+
 bool HttpRequest::isLocationValid(std::string uri) {
 	std::vector<LocationConfig> locations = _config->getLocations();
 	std::vector<LocationConfig>::const_iterator it = locations.begin();
@@ -30,27 +52,13 @@ bool HttpRequest::isLocationValid(std::string uri) {
 	return false;
 }
 
-bool HttpRequest::validatePath() {
-	std::string filepath;
-	pickServerConfig();
-	if (_location) {
-		filepath = _location->getRoot() + _uri;
-	} else {
-		return false;
-	}
-	//if (_uri == "/") filepath = "./www/index.html";
-	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
-	_uri = filepath;
-	return true;
-}
-
 void HttpRequest::pickServerConfig() {
 	const std::vector<LocationConfig> &locations = _config->getLocations();
 	std::vector<LocationConfig>::const_iterator it = locations.begin();
 	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
 	size_t longestMatch = 0;
 
-	if (_uri[_uri.length() - 1] != '/' && isLocationValid(_uri)) {
+	if (!_uri.empty() && _uri[_uri.length() - 1] != '/' && isLocationValid(_uri)) {
 		_status = MOVED_PERMANENTLY;
 		std::cout << "Moved Permanently\n";
 		return;
