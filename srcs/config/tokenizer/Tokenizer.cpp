@@ -30,6 +30,7 @@ void Config::initValidDirectives(void)
 	LocationDir.push_back("return");
 	LocationDir.push_back("root");
 	LocationDir.push_back("client_max_body_size");
+	LocationDir.push_back("error_page");
 
 	_validDir.push_back(GlobalDir);
 	_validDir.push_back(ServiceDir);
