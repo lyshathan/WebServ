@@ -12,7 +12,7 @@ int	Webserv::runningServ(void)
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
 			return (handleFunctionError("poll"));
-		else if (status == 0) // Is this condition util?
+		else if (status == 0) // Is this condition useful?
 		{
 			//std::cout << "[Server] Waiting ..." << std::endl;
 			continue;

@@ -10,10 +10,11 @@ class Client {
 		int			_fd;
 		std::string	_reqBuffer;
 		size_t		_recvSize;
+		std::pair< uint16_t, std::string> &_serverInfo;
 
 		Client();
 	public:
-		Client(int, const Config &);
+		Client(int, const Config &, std::pair< uint16_t, std::string> &);
 		~Client();
 
 		bool				appendBuffer(const char *, size_t);

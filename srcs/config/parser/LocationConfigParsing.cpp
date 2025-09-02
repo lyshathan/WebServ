@@ -40,13 +40,13 @@ void	LocationConfig::parseReturn(std::vector< t_token>::iterator &it)
 	int code = static_cast<int>(code_d);
 	if ((++it)->type != SEMICOLON)
 	{
-		size_t check = isValidFile(it->content);
-		if (check != VALID)
-		{
-			if (check == NO_EXIST)
-				throwErrorToken(" Error file does not exist", *it);
-			throwErrorToken(" Error file permission denied", *it);
-		}
+		// size_t check = isValidFile(it->content);
+		// if (check != VALID)
+		// {
+		// 	if (check == NO_EXIST)
+		// 		throwErrorToken(" Error file does not exist", *it);
+		// 	throwErrorToken(" Error file permission denied", *it);
+		// }
 		_return.second = it->content;
 		checkForSemicolon(it, _tokens);
 	}
