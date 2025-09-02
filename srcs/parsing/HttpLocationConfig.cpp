@@ -18,18 +18,6 @@ bool HttpRequest::validateUri() {
 	return true;
 }
 
-bool HttpRequest::isLocationValid(std::string uri) {
-	std::vector<LocationConfig> locations = _config->getLocations();
-	std::vector<LocationConfig>::const_iterator it = locations.begin();
-	std::string filepath = uri + "/";
-
-	for (; it != locations.end(); ++it) {
-		if (it->getPath().find(filepath) != std::string::npos)
-			return true;
-	}
-	return false;
-}
-
 bool HttpRequest::validatePath() {
 	std::string filepath;
 	pickServerConfig();
@@ -50,6 +38,18 @@ bool HttpRequest::validatePath() {
 	_uri = filepath;
 	//std::cout << "File Path " << _uri << "\n";
 	return true;
+}
+
+bool HttpRequest::isLocationValid(std::string uri) {
+	std::vector<LocationConfig> locations = _config->getLocations();
+	std::vector<LocationConfig>::const_iterator it = locations.begin();
+	std::string filepath = uri + "/";
+
+	for (; it != locations.end(); ++it) {
+		if (it->getPath().find(filepath) != std::string::npos)
+			return true;
+	}
+	return false;
 }
 
 void HttpRequest::pickServerConfig() {
