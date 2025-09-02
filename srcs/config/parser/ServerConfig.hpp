@@ -42,8 +42,8 @@ class ServerConfig {
 		std::vector<std::string>			getServerName(void) const;
 		std::vector<std::string>			getIndexFiles(void) const;
 		std::string							getRoot(void) const;
+		std::map< int , std::string >		getErrorPages(void) const;
 		const std::vector<LocationConfig>&	getLocations(void) const;
-		bool								getAutoIndex(void) const;
 
 };
 

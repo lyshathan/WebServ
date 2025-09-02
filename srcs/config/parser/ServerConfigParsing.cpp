@@ -42,32 +42,21 @@ void	ServerConfig::parseRoot(std::vector< t_token>::iterator &it)
 {
 	if (!_root.empty())
 		throwErrorToken(" Root is already set", *it);
-	size_t check = isValidDirPath((++it)->content);
-	if (check != VALID)
-	{
-		if (check == NO_EXIST)
-			throwErrorToken(" Path does not exist", *it);
-		else if  (check == NOT_A_DIRECTORY)
-			throwErrorToken(" Directory does not exist", *it);
-		throwErrorToken(" Directory permission denied", *it);
-	}
-	_root = it->content;
+	// size_t check = isValidDirPath((++it)->content);
+	// if (check != VALID)
+	// {
+	// 	if (check == NO_EXIST)
+	// 		throwErrorToken(" Path does not exist", *it);
+	// 	else if  (check == NOT_A_DIRECTORY)
+	// 		throwErrorToken(" Directory does not exist", *it);
+	// 	throwErrorToken(" Directory permission denied", *it);
+	// }
+	_root = (++it)->content;
 	checkForSemicolon(it, _tokens);
 }
 
 
-size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::iterator it)
-{
-	size_t	count = 0;
 
-	while (it != tokenList.end() && it->type == VALUE)
-	{
-		// std::cout << it->content << std::endl;
-		it++;
-		count++;
-	}
-	return (count);
-}
 
 void	ServerConfig::parseErrorPage(std::vector< t_token>::iterator &it)
 {

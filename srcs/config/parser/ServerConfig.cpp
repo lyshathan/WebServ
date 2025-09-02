@@ -76,16 +76,12 @@ void	ServerConfig::check(GlobalConfig &global)
 {
 	if (_listenPorts.empty())
 		throwError(" Server need at least a port");
-	if (_root.empty())
-		_root = "./www";										// Set default root
 	if (_serverNames.empty())
 		_serverNames.push_back("localhost"); 					// Set default servername
 	if (_indexFiles.empty())
 		_indexFiles.push_back("index.html");					// Set defaut index
 	if (_clientMaxBodySize == 0)
 		_clientMaxBodySize = global.getClientMaxBodySize();		// Inheritance of parent
-	if (_errorPages.empty())
-		_errorPages[404] = "www/404.html";						// Set default error page
 	if (!_locations.empty())
 	{
 		for (std::vector< LocationConfig >::iterator itLoc = _locations.begin() ; itLoc != _locations.end() ; itLoc++)
@@ -96,7 +92,6 @@ void	ServerConfig::check(GlobalConfig &global)
 	else
 		setDefaultLocation();
 
-	sortLocation();
 }
 
 size_t	pathLenght(std::string path)

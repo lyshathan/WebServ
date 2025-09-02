@@ -50,6 +50,7 @@ LocationConfig & LocationConfig::operator=(LocationConfig const &otherLocationCo
 	this->_allowMethod = otherLocationConfig._allowMethod;
 	this->_validMethod = otherLocationConfig._validMethod;
 	this->_return = otherLocationConfig._return;
+	this->_errorPages = otherLocationConfig._errorPages;
 	return (*this);
 }
 
@@ -63,8 +64,6 @@ void	LocationConfig::locationConfigParser(std::vector< t_token>::iterator &it)
 		it++;
 	}
 	_path = (it++)->content;
-	if (std::strncmp(_path.c_str(), "/", 1))
-		throwErrorToken(" Wrong location path", *(it-1));
 	for (std::vector< LocationConfig >::iterator itLoc = _locations.begin() ; itLoc != _locations.end() ; itLoc++)
 	{
 		if (itLoc->_path == this->_path)
@@ -93,6 +92,8 @@ void	LocationConfig::locationConfigParser(std::vector< t_token>::iterator &it)
 			parseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
 		else if (it->type == DIRECTIVE && it->content == "return")	// return
 			parseReturn(it);
+		else if (it->type == DIRECTIVE && it->content == "error_page")	// error_page
+			parseErrorPage(it);
 	}
 	if (it->type == CLOSE_BRACE && it->level == _currentLevel)
 		it++;
@@ -108,6 +109,8 @@ void	LocationConfig::check(ServerConfig &server)
 		_allowMethod.push_back("GET");						// Set GET as default method
 	if (_indexFiles.empty())
 		_indexFiles = server.getIndexFiles();				// Set index inherited
+	if (_errorPages.empty())
+		_errorPages = server.getErrorPages();				// Set error pages inherited
 	if (std::find(_allowMethod.begin(), _allowMethod.end(), "POST") != _allowMethod.end() && _uploadPath.empty())
 		throwError(" Missing upload path for POST method");
 	if (!_cgiExtension.empty() && _cgiPath.empty())
@@ -139,6 +142,11 @@ void	LocationConfig::printLocation(void)
 	std::cout << indent << "CGI Path : "  << (_cgiPath == "" ? "UNDEFINED" : _cgiPath) << std::endl;
 	std::cout << indent << "Root : "  << (_root == "" ? "UNDEFINED" : _root) << std::endl;
 	std::cout << indent << "Client body size max : " << _clientMaxBodySize << std::endl;
+	std::cout << indent << "Error pages : " << std::endl;
+	for (std::map< int , std::string >::iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
+	{
+		std::cout << list << it->first << " | " << it->second << std::endl;
+	}
 	std::cout << indent << "Return : " << _return.first << " | " << (_return.second == "" ? "UNDEFINED" : _return.second) << std::endl;
 }
 
