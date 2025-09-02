@@ -74,12 +74,12 @@ int Webserv::acceptNewConnection(int &serverFd)
 	return (0);
 }
 
-const ServerConfig* Webserv::getConfigForPort(int serverFd) {
-	std::map<int, const ServerConfig*>::const_iterator it = _portToConfig.find(serverFd);
-	if (it != _portToConfig.end())
-		return it->second;
-	return NULL;
-}
+// const ServerConfig* Webserv::getConfigForPort(int serverFd) {
+// 	std::map<int, const ServerConfig*>::const_iterator it = _portToConfig.find(serverFd);
+// 	if (it != _portToConfig.end())
+// 		return it->second;
+// 	return NULL;
+// }
 
 int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 {

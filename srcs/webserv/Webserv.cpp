@@ -18,7 +18,7 @@ Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.g
 	if (setupListen() < 0)
 		return ;
 
-	setupPollServer(config);
+	setupPollServer();
 
 	runningServ();
 }
@@ -101,7 +101,7 @@ int Webserv::setupListen(void)
 	return (1);
 }
 
-void Webserv::setupPollServer(Config const &config)
+void Webserv::setupPollServer()
 {
 	struct pollfd	ServerPollFd;
 
@@ -116,15 +116,14 @@ void Webserv::setupPollServer(Config const &config)
 	{
 		std::cout << GREEN << "[Server] Setup PollFds : " << _pollFds[i].fd << " on port [" << _serverPorts[i] << "]" << RESET << std::endl;
 
-		// Find the ServerConfig for this port
-		for (std::vector<ServerConfig>::const_iterator itServer = config.getServerConfig().begin(); itServer != config.getServerConfig().end(); ++itServer) {
-			const std::vector<int>& ports = itServer->getListenPort();
-			for (std::vector<int>::const_iterator it = ports.begin(); it != ports.end(); ++it) {
-				if (*it == _serverPorts[i]) {
-					_portToConfig[_pollFds[i].fd] = &(*itServer);
-					std::cout << GREEN << "[Server] Port " << *it << " associated with server config at " << _pollFds[i].fd << RESET << std::endl;
-				}
-			}
-		}
+		// for (std::vector<ServerConfig>::const_iterator itServer = _config.getServerConfig().begin(); itServer != _config.getServerConfig().end(); ++itServer) {
+		// 	const std::vector<int>& ports = itServer->getListenPort();
+		// 	for (std::vector<int>::const_iterator it = ports.begin(); it != ports.end(); ++it) {
+		// 		if (*it == _serverPorts[i]) {
+		// 			_portToConfig[_pollFds[i].fd] = &(*itServer);
+		// 			std::cout << GREEN << "[Server] Port " << *it << " associated with server config at " << _pollFds[i].fd << RESET << std::endl;
+		// 		}
+		// 	}
+		// }
 	}
 }

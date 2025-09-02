@@ -20,20 +20,26 @@ bool HttpRequest::validateUri() {
 
 bool HttpRequest::validatePath() {
 	std::string filepath;
-	pickServerConfig();
+
+	//Selects correct server config and set it
+	if (pickServerConfig())
+		return false;
+	pickLocationConfig();
+	
 	if (_location) {
 		filepath = _location->getRoot() + _uri;
 	} else {
 		return false;
 	}
+	std::cout << "Location " << _location->getPath() << "\n";
 	//std::cout << "File Path " << filepath << "\n";
-	if (!_uri.empty() && _uri[_uri.length() - 1] == '/') {
-		std::vector<std::string> files = _location->getIndex();
-		if (!files.empty()) {
-			filepath +=  files.front();
-		}
-	}
-	//std::cout << "File Path " << filepath << "\n";
+	// if (!_uri.empty() && _uri[_uri.length() - 1] == '/') {
+	// 	std::vector<std::string> files = _location->getIndex();
+	// 	if (!files.empty()) {
+	// 		filepath +=  files.front();
+	// 	}
+	// }
+	// //std::cout << "File Path " << filepath << "\n";
 	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
 	_uri = filepath;
 	//std::cout << "File Path " << _uri << "\n";
@@ -41,7 +47,7 @@ bool HttpRequest::validatePath() {
 }
 
 bool HttpRequest::isLocationValid(std::string uri) {
-	std::vector<LocationConfig> locations = _config->getLocations();
+	std::vector<LocationConfig> locations = _server->getLocations();
 	std::vector<LocationConfig>::const_iterator it = locations.begin();
 	std::string filepath = uri + "/";
 
@@ -52,8 +58,10 @@ bool HttpRequest::isLocationValid(std::string uri) {
 	return false;
 }
 
-void HttpRequest::pickServerConfig() {
-	const std::vector<LocationConfig> &locations = _config->getLocations();
+void HttpRequest::pickLocationConfig() {
+    //Pick correct server config
+    //Set it at _server
+	const std::vector<LocationConfig> &locations = _server->getLocations();
 	std::vector<LocationConfig>::const_iterator it = locations.begin();
 	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
 	size_t longestMatch = 0;

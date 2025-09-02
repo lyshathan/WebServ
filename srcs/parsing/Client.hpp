@@ -1,6 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
+#include "../webserv/Webserv.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 
@@ -12,7 +13,7 @@ class Client {
 
 		Client();
 	public:
-		Client(int, const ServerConfig *);
+		Client(int, const Config &);
 		~Client();
 
 		bool				appendBuffer(const char *, size_t);
