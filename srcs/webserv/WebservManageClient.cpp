@@ -4,14 +4,8 @@
 
 void Webserv::addClient(int newClientFd, int &serverFd)
 {
-	const ServerConfig* config = getConfigForPort(serverFd);
-	if (config) {
-		// Add to list of clients
-		_clients[newClientFd] = new Client(newClientFd, config);
-	} else {
-		std::cerr << "[server] No configuration found for port " << std::endl;
-	}
-
+	//const ServerConfig* config = getConfigForPort(serverFd);
+	_clients[newClientFd] = new Client(newClientFd, _config);
 	// Add to pollFds
 	struct pollfd newClientPollFd;
 	newClientPollFd.fd = newClientFd;

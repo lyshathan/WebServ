@@ -19,7 +19,7 @@ class Webserv {
 		std::vector<int>			_serverFds;
 		int							_listenBackLog;
 		std::vector<uint16_t>		_serverPorts;
-		std::map<int, const ServerConfig*> _portToConfig;
+		//std::map<int, const ServerConfig*> _portToConfig;
 
 		void		convertPorts(Config const &config);
 		uint32_t	fromHostToAddress(std::string hostname);
@@ -28,14 +28,15 @@ class Webserv {
 		void		cleanServer();
 		int			createServerSocket();
 		int			setupListen();
-		void		setupPollServer(Config const &config);
+		void		setupPollServer();
 		int			runningServ();
 		int			connectAndRead();
 		int			acceptNewConnection(int &serverFd);
 		int			readDataFromSocket(std::vector<struct pollfd>::iterator & it);
 		void		addClient(int newClientFd, int &);
 		void		deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
-		const	ServerConfig* getConfigForPort(int);
+		
+		//const	ServerConfig* getConfigForPort(int);
 
 	public :
 		Webserv(Config const &config);

@@ -10,6 +10,7 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include "../webserv/Webserv.hpp"
 #include "../config/parser/ServerConfig.hpp"
 
 #define BAD_REQUEST 400
@@ -21,7 +22,8 @@ class ServerConfig;
 
 class HttpRequest {
 	private:
-		const ServerConfig					*_config;
+		const Config						&_config;
+		const ServerConfig					*_server;
 		const LocationConfig				*_location;
 		std::string							_method;
 		std::string							_uri;
@@ -37,7 +39,8 @@ class HttpRequest {
 		bool		validateUri();
 		bool		validatePath();
 		bool		validateVersion(std::string);
-		void		pickServerConfig();
+		bool		pickServerConfig();
+		void		pickLocationConfig();
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);
 		bool		mapHeaders(std::string &);
@@ -48,7 +51,7 @@ class HttpRequest {
 
 		HttpRequest();
 	public:
-		HttpRequest(const ServerConfig& config);
+		HttpRequest(const Config& config);
 		~HttpRequest();
 
 		void	handleRequest(std::string);
