@@ -36,4 +36,9 @@ std::string ServerConfig::getRoot(void) const
 	return (_root);
 }
 
+std::map< int , std::string > ServerConfig::getErrorPages(void) const
+{
+	return (_errorPages);
+}
+
 const std::vector<LocationConfig>& ServerConfig::getLocations(void) const { return _locations; }

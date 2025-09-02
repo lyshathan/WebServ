@@ -6,15 +6,15 @@
 void	LocationConfig::parsePath(std::vector< t_token>::iterator &it)
 {
 	std::string pathType = (it++)->content;
-	size_t check = isValidDirPath(it->content);
-	if (check != VALID)
-	{
-		if (check == NO_EXIST)
-			throwErrorToken(" Path does not exist", *it);
-		else if  (check == NOT_A_DIRECTORY)
-			throwErrorToken(" Directory does not exist", *it);
-		throwErrorToken(" Directory permission denied", *it);
-	}
+	// size_t check = isValidDirPath(it->content);
+	// if (check != VALID)
+	// {
+	// 	if (check == NO_EXIST)
+	// 		throwErrorToken(" Path does not exist", *it);
+	// 	else if  (check == NOT_A_DIRECTORY)
+	// 		throwErrorToken(" Directory does not exist", *it);
+	// 	throwErrorToken(" Directory permission denied", *it);
+	// }
 	if (pathType == "upload_path")
 		setString(_uploadPath, it->content, *it);
 	else if (pathType == "cgi_extension")
@@ -67,4 +67,23 @@ void	LocationConfig::parseAutoIndex(std::vector< t_token>::iterator &it)
 	checkForSemicolon(it, _tokens);
 }
 
+void	LocationConfig::parseErrorPage(std::vector< t_token>::iterator &it)
+{
+	char *end;
 
+	it++;
+	size_t	nbOfErrorCode = CountErrorCodes(_tokens, it);
+	std::vector< t_token>::iterator itErrorPage = it + nbOfErrorCode - 1;
+	while (it != itErrorPage)
+	{
+		double code_d = std::strtod(it->content.c_str(), &end);
+		if (*end || code_d < 0 || code_d > INT_MAX)					// Need to validate the rules here ----------------
+			throwErrorToken(" Invalid error code", *it);
+		int code = static_cast<int>(code_d);
+		if (_errorPages.find(code) != _errorPages.end())
+			throwErrorToken(" Already existing code", *it);
+		_errorPages[code] = itErrorPage->content;
+		it++;
+	}
+	checkForSemicolon(it, _tokens);
+}

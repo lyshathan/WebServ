@@ -16,5 +16,5 @@ void	checkForSemicolon(std::vector< t_token>::iterator &it, std::vector< t_token
 void	setString(std::string &element, std::string &value, t_token &token);
 void	addListToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it, std::vector< t_token> &tokenList, std::vector<std::string> *validValue);
 void	parseClientMaxBodySize(std::vector< t_token>::iterator &it, size_t &clientMaxBodySize, std::vector< t_token> &tokenList);
-
+size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::iterator it);
 #endif

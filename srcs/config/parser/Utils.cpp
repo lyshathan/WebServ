@@ -81,3 +81,16 @@ void	parseClientMaxBodySize(std::vector< t_token>::iterator &it, size_t &clientM
 
 	checkForSemicolon(it, tokenList);
 }
+
+size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::iterator it)
+{
+	size_t	count = 0;
+
+	while (it != tokenList.end() && it->type == VALUE)
+	{
+		// std::cout << it->content << std::endl;
+		it++;
+		count++;
+	}
+	return (count);
+}

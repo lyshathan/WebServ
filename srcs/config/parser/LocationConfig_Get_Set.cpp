@@ -10,7 +10,15 @@ std::string	LocationConfig::getPath(void) const
 	return (_path);
 }
 
-std::string LocationConfig::getRoot(void) const { return _root; }
+std::string LocationConfig::getRoot(void) const 
+{
+	return (_root);
+}
+
+bool LocationConfig::getAutoIndex(void) const
+{
+	return (_autoIndex);
+}
 
 std::vector<std::string> LocationConfig::getIndex(void) const { return _indexFiles;}
 

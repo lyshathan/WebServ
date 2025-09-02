@@ -21,6 +21,7 @@ class LocationConfig {
 		std::vector< std::string >		_allowMethod;
 		std::vector< std::string >		_validMethod;
 		std::pair< int , std::string >	_return;
+		std::map< int , std::string >	_errorPages;
 
 		const size_t					_currentLevel;
 		bool							_isExactPath;
@@ -29,7 +30,7 @@ class LocationConfig {
 		void	parsePath(std::vector< t_token>::iterator &it);
 		void	parseReturn(std::vector< t_token>::iterator &it);
 		void	parseAutoIndex(std::vector< t_token>::iterator &it);
-
+		void	parseErrorPage(std::vector< t_token>::iterator &it);
 
 	public :
 		LocationConfig(ServerConfig &server, std::vector< LocationConfig > &locations, std::vector<t_token> &tokenList);
@@ -39,6 +40,7 @@ class LocationConfig {
 		void	printLocation(void);
 		void	check(ServerConfig &server);
 
+		bool		getAutoIndex(void) const;
 		std::string	getPath(void) const;
 		std::string	getRoot(void) const;
 		std::vector<std::string> getIndex(void) const;
