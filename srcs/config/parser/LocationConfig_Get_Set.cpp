@@ -10,7 +10,7 @@ std::string	LocationConfig::getPath(void) const
 	return (_path);
 }
 
-std::string LocationConfig::getRoot(void) const 
+std::string LocationConfig::getRoot(void) const
 {
 	return (_root);
 }

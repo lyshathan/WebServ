@@ -43,12 +43,12 @@ class HttpRequest {
 		bool		validatePath();
 		bool		validateVersion(std::string);
 		bool		pickServerConfig();
-		void		pickLocationConfig();
+		bool		pickLocationConfig();
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);
 		bool		mapHeaders(std::string &);
 		bool		isValidTchar(char c);
-		void		errorHandler(int);
+		void		errorHandler();
 
 		bool		isLocationValid(std::string);
 

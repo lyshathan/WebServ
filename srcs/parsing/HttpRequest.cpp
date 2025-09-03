@@ -16,18 +16,28 @@ void HttpRequest::handleRequest(std::string data) {
 	std::string	firstLine;
 	std::string	headers;
 
+
 	//std::cout << "Body size " <<_config->getClientMaxBodySize() << std::endl;
 
-	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine))
-		return errorHandler(BAD_REQUEST);
-	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers))
-		return errorHandler(BAD_REQUEST);
-	if (!data.empty() && !parseBody(data))
-		return errorHandler(BAD_REQUEST);
-	if (!validateUri())
-		return errorHandler(BAD_REQUEST);
-	if (!validatePath())
-		return errorHandler(NOT_FOUND);
+	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine)) {
+		_status = BAD_REQUEST;
+		return errorHandler();
+	}
+	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers)) {
+		_status = BAD_REQUEST;
+		return errorHandler();
+	}
+	if (!data.empty() && !parseBody(data)) {
+		_status = BAD_REQUEST;
+		return errorHandler();
+	}
+	if (!validateUri()) {
+		_status = BAD_REQUEST;
+		return errorHandler();
+	}
+	if (!validatePath()) {
+		return errorHandler();
+	}
 	else
 		_status = OK;
 }

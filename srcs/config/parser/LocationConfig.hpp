@@ -37,7 +37,7 @@ class LocationConfig {
 		LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations);
 		~LocationConfig();
 		LocationConfig & operator=(LocationConfig const &otherLocationConfig);
-		void	printLocation(void);
+		void	printLocation(void) const;
 		void	check(ServerConfig &server);
 
 		bool		getAutoIndex(void) const;

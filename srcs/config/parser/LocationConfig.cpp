@@ -83,7 +83,7 @@ void	LocationConfig::locationConfigParser(std::vector< t_token>::iterator &it)
 			addListToVector(_allowMethod, it, _tokens, &_validMethod);
 		else if (it->type == DIRECTIVE && it->content == "autoindex")	// auto index
 			parseAutoIndex(it);
-		else if (it->type == DIRECTIVE && it->content == "index")	// index files
+		else if (it->type == DIRECTIVE && it->content == "index") // index files
 			addListToVector(_indexFiles, it, _tokens, NULL);
 		else if (it->type == DIRECTIVE				// paths
 			&& (it->content == "upload_path" || it->content == "cgi_extension" || it->content == "cgi_path" || it->content == "root"))
@@ -118,7 +118,7 @@ void	LocationConfig::check(ServerConfig &server)
 }
 
 
-void	LocationConfig::printLocation(void)
+void	LocationConfig::printLocation(void) const
 {
 	std::string indent = "|	|	|___ ";
 	std::string list = "|	|	|	- ";
@@ -132,7 +132,7 @@ void	LocationConfig::printLocation(void)
 		std::cout << list << *it << std::endl;
 	}
 	std::cout << indent << "Index files : " << std::endl;
-	for (std::vector<std::string>::iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
+	for (std::vector<std::string>::const_iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
 	{
 		std::cout << list << *it << std::endl;
 	}
@@ -143,7 +143,7 @@ void	LocationConfig::printLocation(void)
 	std::cout << indent << "Root : "  << (_root == "" ? "UNDEFINED" : _root) << std::endl;
 	std::cout << indent << "Client body size max : " << _clientMaxBodySize << std::endl;
 	std::cout << indent << "Error pages : " << std::endl;
-	for (std::map< int , std::string >::iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
+	for (std::map< int , std::string >::const_iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
 	{
 		std::cout << list << it->first << " | " << it->second << std::endl;
 	}

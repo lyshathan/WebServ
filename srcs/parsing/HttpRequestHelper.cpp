@@ -12,14 +12,17 @@ void HttpRequest::cleanReqInfo() {
 	_status = 0;
 }
 
-void HttpRequest::errorHandler(int status) {
-	if (status == BAD_REQUEST) {
+void HttpRequest::errorHandler() {
+	if (_status == BAD_REQUEST) {
 		_status = BAD_REQUEST;
 		std::cout << "400 Bad request\n";
 	}
-	if (status == NOT_FOUND) {
+	if (_status == NOT_FOUND) {
 		_status = NOT_FOUND;
 		std::cout << "404 Not found\n";
+	}
+	else {
+		std::cout << "status not defined\n";
 	}
 }
 

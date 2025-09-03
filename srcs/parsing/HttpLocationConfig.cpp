@@ -22,22 +22,28 @@ bool HttpRequest::validatePath() {
 	std::string filepath;
 
 	//Selects correct server config and set it
-	if (pickServerConfig())
+	if (pickServerConfig() || !pickLocationConfig())
 		return false;
-	pickLocationConfig();
-	
-	if (_location) {
-		filepath = _location->getRoot() + _uri;
-	} else {
-		return false;
-	}
-	std::cout << "Location " << _location->getPath() << "\n";
-	//std::cout << "File Path " << filepath << "\n";
+
+	std::cout << _location->getPath() << "\n";
+	std::cout << *_location->getIndex().begin() << "\n";
+	// _location->printLocation();
+	// std::cout << _location->getIndex().size() << "\n";
+	// if (!_location->getIndex().empty())
+	// 	std::cout << "Test\n";
+	//filepath = _location->getRoot() + _uri;
+
+	//std::cout << "Location - " << *_location->getIndex().begin() << "\n";
+	//std::vector<std::string> files = _location->getIndex();
+
+	_status = BAD_REQUEST;
+	return false;
 	// if (!_uri.empty() && _uri[_uri.length() - 1] == '/') {
 	// 	std::vector<std::string> files = _location->getIndex();
-	// 	if (!files.empty()) {
-	// 		filepath +=  files.front();
-	// 	}
+	// 	// std::vector<std::string>::iterator it = files.begin();
+	// 	// for (; it != files.end(); ++it) {
+	// 	// 	std::cout << "Index - " << *it << "\n";
+	// 	// }
 	// }
 	// //std::cout << "File Path " << filepath << "\n";
 	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
@@ -58,9 +64,7 @@ bool HttpRequest::isLocationValid(std::string uri) {
 	return false;
 }
 
-void HttpRequest::pickLocationConfig() {
-    //Pick correct server config
-    //Set it at _server
+bool HttpRequest::pickLocationConfig() {
 	const std::vector<LocationConfig> &locations = _server->getLocations();
 	std::vector<LocationConfig>::const_iterator it = locations.begin();
 	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
@@ -69,7 +73,7 @@ void HttpRequest::pickLocationConfig() {
 	if (!_uri.empty() && _uri[_uri.length() - 1] != '/' && isLocationValid(_uri)) {
 		_status = MOVED_PERMANENTLY;
 		std::cout << "Moved Permanently\n";
-		return;
+		return false;
 	}
 	for (; it != locations.end(); ++it) {
 		if (_uri.compare(0, it->getPath().length(), it->getPath()) == 0) {
@@ -79,6 +83,10 @@ void HttpRequest::pickLocationConfig() {
 				}
 		}
 	}
-	if (bestMatch != locations.end())
+	if (bestMatch != locations.end()) {
 		_location = &(*bestMatch);
+		return true;
+	}
+	_status = NOT_FOUND;
+	return false;
 }

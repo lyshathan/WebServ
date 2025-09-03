@@ -13,7 +13,7 @@ bool HttpRequest::pickServerConfig() {
 
     const std::vector< ServerConfig > &serverList = _config.getServerConfig();
     std::vector< ServerConfig >::const_iterator itServer = serverList.begin();
-    
+
     for (; itServer != serverList.end() ; ++itServer)   // iterate through server list
     {
         const std::vector< std::string > &configServerNames = itServer->getServerName();
@@ -35,8 +35,7 @@ bool HttpRequest::pickServerConfig() {
     }
 
 
-
-    const std::vector< ServerConfig > config = _config.getServerConfig();
+    const std::vector< ServerConfig > &config = _config.getServerConfig();
     _server = &(*config.begin());
 
     return false;
