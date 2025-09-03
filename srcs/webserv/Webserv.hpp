@@ -14,14 +14,13 @@ class Webserv {
 		const Config						&_config;
 		const std::vector<ServerConfig>		&_serverConfigs;
 
-		std::vector<struct pollfd>	_pollFds;
-		std::map<int, Client*>		_clients;
 		std::vector<int>			_serverFds;
+		std::map<int, Client*>		_clients;
+		std::vector<struct pollfd>	_pollFds;
+		std::map< int, std::pair< uint16_t, std::string> >	_serverInfos;
 		int							_listenBackLog;
-		std::vector<uint16_t>		_serverPorts;
-		//std::map<int, const ServerConfig*> _portToConfig;
 
-		void		convertPorts(Config const &config);
+
 		uint32_t	fromHostToAddress(std::string hostname);
 		uint32_t	fromIPToInt(const std::string &IPstr);
 		int			handleFunctionError(std::string errFunction);
@@ -35,9 +34,9 @@ class Webserv {
 		int			readDataFromSocket(std::vector<struct pollfd>::iterator & it);
 		void		addClient(int newClientFd, int &);
 		void		deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
-		
-		//const	ServerConfig* getConfigForPort(int);
 
+		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
+		
 	public :
 		Webserv(Config const &config);
 		~Webserv();
