@@ -50,7 +50,7 @@ class HttpRequest {
 		bool		isValidTchar(char c);
 		void		errorHandler();
 
-		bool		isLocationValid(std::string);
+		bool		isLocationValid();
 
 		HttpRequest();
 	public:

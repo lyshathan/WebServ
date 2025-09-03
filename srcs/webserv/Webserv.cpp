@@ -39,7 +39,7 @@ int Webserv::createServerSocket()
 		const std::map< uint16_t, std::string>& portAndIP = _serverConfigs[servIndex].getPortAndIP();
 		for (std::map< uint16_t, std::string>::const_iterator PortIt = portAndIP.begin() ; PortIt != portAndIP.end() ; PortIt++ )
 		{
-		
+
 			if (socketAlreadyExists(PortIt->first, PortIt->second))
 				continue;
 
@@ -77,7 +77,7 @@ int Webserv::createServerSocket()
 			info.first = PortIt->first;
 			info.second = PortIt->second;
 			_serverInfos[serverFd] = info;
-			std::cout << "fd = " << serverFd << "	|	port = " << info.first << "	|	IP = " << info.second << std::endl;
+			//std::cout << "fd = " << serverFd << "	|	port = " << info.first << "	|	IP = " << info.second << std::endl;
 		}
 	}
 	return(1);

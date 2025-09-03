@@ -8,7 +8,7 @@ int main(void)
 	try
 	{
 		config = Config("simple.conf");
-		//config.PrintConfig();
+		config.PrintConfig();
 		// config.printTokens();
 		Webserv webserv(config);
 	}

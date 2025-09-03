@@ -4,7 +4,7 @@ bool HttpRequest::pickServerConfig() {
     //Pick correct server config
     //Set it at _server
 
-    std::cout << "Looking for port (" << _serverInfo.first << ") and IP (" << _serverInfo.second << ")" << std::endl;
+    //std::cout << "Looking for port (" << _serverInfo.first << ") and IP (" << _serverInfo.second << ")" << std::endl;
     const std::string host = _headers.find("host")->second;
     size_t pos = host.find(':', 0);
     std::string searchedName = host.substr(0, pos);
@@ -24,7 +24,7 @@ bool HttpRequest::pickServerConfig() {
             std::vector< int >::const_iterator itPort = configPort.begin();
             for (; itPort != configPort.end() ; ++itPort)    // iterate through port
             {
-                std::cout << *itName << "   |   " << *itPort << std::endl;
+                //std::cout << *itName << "   |   " << *itPort << std::endl;
             //   if (*itName == searchedName
                     // && _serverInfo.first == *itPort
                     // && _serverInfo.second == )
