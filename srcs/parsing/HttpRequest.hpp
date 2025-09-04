@@ -9,6 +9,8 @@
 #include <map>
 #include <dirent.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "../webserv/Webserv.hpp"
 #include "../config/parser/ServerConfig.hpp"
@@ -17,6 +19,7 @@
 #define NOT_FOUND 404
 #define MOVED_PERMANENTLY 301
 #define OK 200
+#define FORBIDDEN 403
 
 class ServerConfig;
 
@@ -42,15 +45,18 @@ class HttpRequest {
 		bool		validateUri();
 		bool		validatePath();
 		bool		validateVersion(std::string);
+
 		bool		pickServerConfig();
 		bool		pickLocationConfig();
+		bool		setUri(std::string &);
+
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);
 		bool		mapHeaders(std::string &);
 		bool		isValidTchar(char c);
 		void		errorHandler();
 
-		bool		isLocationValid();
+		bool		isLocationPathValid();
 
 		HttpRequest();
 	public:

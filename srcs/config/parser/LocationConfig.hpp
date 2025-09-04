@@ -40,6 +40,7 @@ class LocationConfig {
 		void	printLocation(void) const;
 		void	check(ServerConfig &server);
 
+		bool		getExactMatch(void) const;
 		bool		getAutoIndex(void) const;
 		std::string	getPath(void) const;
 		std::string	getRoot(void) const;

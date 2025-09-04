@@ -19,59 +19,71 @@ bool HttpRequest::validateUri() {
 }
 
 bool HttpRequest::validatePath() {
-	std::string filepath;
-
-	if (pickServerConfig() || !pickLocationConfig())
+	if (pickServerConfig() || !pickLocationConfig() || !isLocationPathValid())
 		return false;
-
-	filepath = _location->getRoot() + _uri;
-	if (!_uri.empty() && _uri[_uri.length() - 1] == '/') {
-		std::vector<std::string> files = _location->getIndex();
-		std::vector<std::string>::iterator it = files.begin();
-		for (; it != files.end(); ++it) {
-			if (access((filepath + *it).c_str(),  F_OK | R_OK) == 0) {
-				_uri = filepath + *it;
-				//std::cout << "Filepath - " << filepath + *it << "\n";
-				return true;
-			}
-		}
-		_status = NOT_FOUND;
-		return false;
-	}
-	std::cout << "File path = " << filepath << "/n";
-	if (access(filepath.c_str(),  F_OK | R_OK) != 0) return false;
-	_uri = filepath;
-	std::cout << "Filepath - " << filepath << "\n";
 	return true;
 }
 
-bool	is_directory(const char *path) {
-	struct stat info;
-	if (stat(path, &info) !=0) return false;
-	return (info.st_mode & S_IFDIR) !=0;
-}
+bool HttpRequest::setUri(std::string &path) {
+	std::string filepath;
+	std::vector<std::string> index = _location->getIndex();
 
-bool HttpRequest::isLocationValid() {
-	std::vector<LocationConfig> locations = _server->getLocations();
-	std::vector<LocationConfig>::const_iterator it = locations.begin();
-	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
-	size_t longestMatch = 0;
-
-	for (; it != locations.end(); ++it) {
-		std::string path = it->getPath();
-		if (!path.empty() && path[path.length() - 1] == '/')
-			path.resize(path.size() - 1);
-		if (_uri.compare(0, path.length(), path) == 0)
-		if (it->getPath().find(_uri) != std::string::npos) {
-			if (path.length() > longestMatch) {
-					longestMatch = path.length();
-					bestMatch = it;
+	if (!index.empty()) {
+		std::vector<std::string>::iterator it = index.begin();
+		for (; it != index.end(); ++it) {
+			filepath = path + *it;
+			std::cout << "File to check " << filepath << "\n";
+			if (access(filepath.c_str(),  F_OK) == 0) {
+				if (access(filepath.c_str(),  R_OK) == 0) {
+					std::cout << "Default index found\n"
+					<< filepath << "\n";
+					_uri = filepath;
+					return true;
+				}
+				_status = FORBIDDEN;
+				std::cout << "Path is a valid file but there's no access to it\n";
+				return false;
 			}
 		}
 	}
-	if (bestMatch != locations.end()) {
-		std::cout << "Location " << bestMatch->getPath() << "\n";
-		return true;
+	std::cout << "Path does not exist\n";
+	_status = NOT_FOUND;
+	return false;
+}
+
+bool HttpRequest::isLocationPathValid() {
+	std::string	path = _location->getRoot() + _uri;
+
+	struct stat buf;
+	if (!stat(path.c_str(),&buf)) {
+		if (S_ISREG(buf.st_mode)) {
+			if (access(path.c_str(),  R_OK) != 0) {
+				std::cout << "Path is a valid file but there's no access to it\n";
+				_status = FORBIDDEN;
+				return false;
+			}
+			std::cout << "Path is a valid file\n";
+			return true;
+		}
+		else if (S_ISDIR(buf.st_mode)) {
+			if (access(path.c_str(),  R_OK | X_OK) != 0) {
+				std::cout << "Path is a dir file but there's no access to it\n";
+				_status = FORBIDDEN;
+				return false;
+			}
+			if (!_uri.empty() && _uri[_uri.length() - 1] != '/') {
+				_status = MOVED_PERMANENTLY;
+				return false;
+			}
+			if (!setUri(path))
+				return false;
+			std::cout << "Path is a valid dir\n";
+			return true;
+		}
+	} else {
+		std::cout << "Path does not exist\n";
+		_status = NOT_FOUND;
+		return false;
 	}
 	return false;
 }
@@ -82,21 +94,22 @@ bool HttpRequest::pickLocationConfig() {
 	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
 	size_t longestMatch = 0;
 
-	if (!_uri.empty() && _uri[_uri.length() - 1] != '/') {
-			if (isLocationValid()) {
-			_status = MOVED_PERMANENTLY;
-			std::cout << "Moved Permanently\n";
-			} else {
-				_status = NOT_FOUND;
-			}
-			return false;
-	}
 	for (; it != locations.end(); ++it) {
-		if (_uri.compare(0, it->getPath().length(), it->getPath()) == 0) {
-				if (it->getPath().length() > longestMatch) {
-					longestMatch = it ->getPath().length();
+		std::string	path = it->getPath();
+
+		if (_uri.length() >= path.length()) {
+			if (it->getExactMatch()) {
+				if (path == _uri) {
+					bestMatch = it;
+					break ;
+				}
+			}
+			else if (_uri.compare(0, path.length(), path) == 0) {
+				if (path.length() > longestMatch) {
+					longestMatch = path.length();
 					bestMatch = it;
 				}
+			}
 		}
 	}
 	if (bestMatch != locations.end()) {
