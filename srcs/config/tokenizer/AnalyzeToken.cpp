@@ -2,10 +2,10 @@
 
 void Config::analyzeTokenContent(t_token &token)
 {
-	std::string level[] = {"global", "service", "location"};
-	std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "EQUAL", "UNDEFINED"};
+	// std::string level[] = {"global", "service", "location"};
+	// std::string type[] = {"DIRECTIVE", "VALUE", "OPEN_BRACE", "CLOSE_BRACE", "SEMICOLON", "SEMICOLON_OR_VALUE", "PATH", "EQUAL", "UNDEFINED"};
 
-	std::cout << GREEN << token.content << RESET << "	" ;
+	// std::cout << GREEN << token.content << RESET << "	" ;
 	std::ostringstream	errorMsg;
 	token.line = _lineNumber;
 
@@ -16,7 +16,7 @@ void Config::analyzeTokenContent(t_token &token)
 	else
 		analyzeCaseDirOrValue(token);
 	token.level = _level;
-	std::cout << "Type : " << type[token.type] << " - Expected token type : " << type[_expectedToken] << " - level : " << level[token.level] << std::endl;
+	// std::cout << "Type : " << type[token.type] << " - Expected token type : " << type[_expectedToken] << " - level : " << level[token.level] << std::endl;
 }
 
 void	Config::analyzeCaseBrace(t_token &token)

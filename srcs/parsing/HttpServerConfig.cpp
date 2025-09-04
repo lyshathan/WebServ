@@ -7,8 +7,8 @@ bool HttpRequest::pickServerConfig() {
     const std::string host = _headers.find("host")->second;
     std::string searchedName = host.substr(0, host.find(':', 0));
 
-    std::cout << RED << "Looking for : " << std::endl;
-    std::cout << "  - port : " << _serverInfo.first << "\n  - IP : " << _serverInfo.second << "\n   - server_name : " << searchedName << RESET << std::endl;
+    // std::cout << RED << "Looking for : " << std::endl;
+    // std::cout << "  - port : " << _serverInfo.first << "\n  - IP : " << _serverInfo.second << "\n   - server_name : " << searchedName << RESET << std::endl;
 
     const std::vector< ServerConfig > &serverList = _config.getServerConfig();  //
     std::vector< ServerConfig >::const_iterator itServer = serverList.begin();  //

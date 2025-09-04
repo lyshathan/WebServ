@@ -46,13 +46,13 @@ void Config::initToken(std::ifstream &configFile)
 	while (getline(configFile, line))
 	{
 		_lineNumber++;
-		
+
 		// If we're in the middle of a quoted string, add newline to preserve multi-line content
 		if (_quoteState != OUT && !word.empty())
 		{
 			word += " ";
 		}
-		
+
 		for (size_t i = 0 ; i < line.length() ; )
 		{
 			// Skip whitespace only if we're not in a quoted string
@@ -63,15 +63,15 @@ void Config::initToken(std::ifstream &configFile)
 				if (line[i] == '#')
 					break;
 			}
-			
+
 			if (line[i] == '\"' || line[i] == '\'' || _quoteState != OUT)
 			{
 				std::string newpart = handleQuotedToken(line, &i);
-				std::cout << "==> word : " << word << " + newpart : " << newpart << std::endl;
+				// std::cout << "==> word : " << word << " + newpart : " << newpart << std::endl;
 				word += newpart;
 				if (_quoteState == OUT)
 				{
-					std::cout << "==> treat quoted token : " << word << std::endl;
+					// std::cout << "==> treat quoted token : " << word << std::endl;
 					if (!word.empty())
 					{
 						token.content = word;
@@ -112,16 +112,16 @@ void Config::initToken(std::ifstream &configFile)
 			}
 		}
 	}
-	
+
 	// Check for unclosed quotes
 	if (_quoteState != OUT)
 		throwErrorToken(" Unclosed quote ", token);
-		
+
 	if (_level != GLOBAL)
 		throwErrorToken(" Level error ", token);
 	if (_tokens.back().type != SEMICOLON && _tokens.back().type != CLOSE_BRACE)
 		throwErrorToken(" Unexpected end of file ", token);
-	printTokens();
+	// printTokens();
 }
 
 std::string Config::handleQuotedToken(std::string &line, size_t *i)
@@ -149,7 +149,7 @@ std::string Config::handleQuotedToken(std::string &line, size_t *i)
 		word += line[*i];
 		(*i)++;
 	}
-	std::cout << word << " |	quote state : " << _quoteState << std::endl;
+	// std::cout << word << " |	quote state : " << _quoteState << std::endl;
 
 	return (word);
 
