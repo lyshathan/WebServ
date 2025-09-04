@@ -33,7 +33,7 @@ class ServerConfig {
 		~ServerConfig();
 
 		ServerConfig & operator=(ServerConfig const &otherServerConfig);
-		void	printServer();
+		void	printServer() const;
 		void	check(GlobalConfig &global);
 
 		size_t								getClientMaxBodySize(void) const;

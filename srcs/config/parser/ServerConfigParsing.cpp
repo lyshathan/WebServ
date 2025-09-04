@@ -9,14 +9,14 @@ void	ServerConfig::parseListenPort(std::vector< t_token>::iterator &it)
 	std::string	content;
 
 	size_t find = ((++it)->content).find(':', 0);
-	if (find <= it->content.size())
+	if (find != std::string::npos)
 	{
 		IP = it->content.substr(0, find);
 		content = it->content.substr(find + 1, it->content.size());
 	}
 	else
 	{
-		IP = "localhost";
+		IP = "0.0.0.0";
 		content = it->content;
 	}
 

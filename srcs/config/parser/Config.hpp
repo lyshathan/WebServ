@@ -20,6 +20,8 @@ class Config {
 		std::vector<t_token>		_tokens;
 		std::vector< std::vector<std::string> >	_validDir;
 
+		t_quote						_quoteState;
+
 		// TOKENIZER
 		void	initValidDirectives();
 		void	initToken(std::ifstream &configFile);
@@ -29,6 +31,8 @@ class Config {
 		void	analyzeCaseBrace(t_token &token);
 		void	analyzeCaseSemicolon(t_token &token);
 		void	analyzeCaseDirOrValue(t_token &token);
+
+		std::string handleQuotedToken(std::string &line, size_t *i);
 
 		// PARSER
 		void	parser();
