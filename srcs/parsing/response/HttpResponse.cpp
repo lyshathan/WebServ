@@ -25,11 +25,6 @@ void HttpResponse::parseResponse() {
 		notFound();
 }
 
-const std::string& HttpResponse::getRes() const {return _res;}
-const std::string& HttpResponse::getResHeaders() const {return _headers;}
-const std::vector<char>& HttpResponse::getBinRes() const {return _binRes;}
-bool	HttpResponse::getIsTextContent() const {return _isTextContent;}
-
 void HttpResponse::successfulRequest() {
 	_mimeType = getMimeType();
 	if (isTextContent()) {
@@ -71,8 +66,11 @@ void HttpResponse::setBinRes() {
 	_headers = headers.str();
 }
 
+// std::string HttpResponse::responseHeader() {
+
+// }
+
 void HttpResponse::notFound() {
-	std::cout << "Not Found\n";
 	std::ostringstream headers;
 	std::ostringstream html;
 
