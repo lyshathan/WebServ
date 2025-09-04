@@ -13,23 +13,16 @@ void HttpRequest::cleanReqInfo() {
 }
 
 void HttpRequest::errorHandler() {
-	if (_status == BAD_REQUEST) {
-		// _status = BAD_REQUEST;
+	if (_status == BAD_REQUEST)
 		std::cout << "400 Bad request\n";
-	}
-	else if (_status == NOT_FOUND) {
-		// _status = NOT_FOUND;
+	else if (_status == NOT_FOUND)
 		std::cout << "404 Not found\n";
-	}
-	else if (_status == MOVED_PERMANENTLY) {
+	else if (_status == MOVED_PERMANENTLY)
 		std::cout << "300 Moved permanently\n";
-	}
-	else if (_status == FORBIDDEN) {
+	else if (_status == FORBIDDEN)
 		std::cout << "401 Forbidden\n";
-	}
-	else {
+	else
 		std::cout << "status not defined\n";
-	}
 }
 
 bool HttpRequest::extractUntil(std::string &line,
