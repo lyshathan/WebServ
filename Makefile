@@ -15,26 +15,40 @@ CONFIG_PARSER = Config \
 				ServerConfig ServerConfigParsing ServerConfig_Get_Set\
 				LocationConfig LocationConfigParsing LocationConfig_Get_Set\
 				Utils
+
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
-PARSING = Client HttpRequest HttpRequestHelper HttpResponse HttpLocationConfig HttpResponseHelper HttpServerConfig
+
+PARSING = Client
+
+HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
+				HttpServerConfig
+
+HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
+				HttpResponseSetters
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/webserv/, $(WEBSERV))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/, $(GENERAL))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/parser/, $(CONFIG_PARSER))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(CONFIG_TOKENIZER))) \
-		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING)))
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/request/, $(HTTPREQUEST))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(HTTPRESPONSE)))
 
 H_WEBSERV = Includes Webserv
 H_CONFIG_PARSER = Config GlobalConfig LocationConfig ServerConfig Utils
 H_CONFIG_TOKENIZER = Token
-H_PARSING = Client HttpRequest HttpResponse
+H_PARSING = Client
+H_REQUEST = HttpRequest
+H_RESPONSE = HttpResponse
 
 HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/webserv/, $(H_WEBSERV))) \
 		$(SRCS_DIR)/config/General.hpp \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/parser/, $(H_CONFIG_PARSER))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(H_CONFIG_TOKENIZER))) \
-		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING)))
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/request/, $(H_REQUEST))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(H_RESPONSE)))
 
 #====== OBJECTS & DEPENDENCIES ======#
 
@@ -45,7 +59,9 @@ OBJ_SUBDIRS = \
 	$(OBJDIR)/webserv \
 	$(OBJDIR)/config/parser \
 	$(OBJDIR)/config/tokenizer \
-	$(OBJDIR)/parsing
+	$(OBJDIR)/parsing \
+	$(OBJDIR)/parsing/request \
+	$(OBJDIR)/parsing/response
 
 DEPS = $($(OBJDIR)/%.o=.d)
 

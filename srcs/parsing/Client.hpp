@@ -2,8 +2,8 @@
 #define CLIENT_HPP
 
 #include "../webserv/Webserv.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
+#include "request/HttpRequest.hpp"
+#include "response/HttpResponse.hpp"
 
 class Client {
 	private:

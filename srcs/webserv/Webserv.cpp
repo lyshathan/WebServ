@@ -108,7 +108,7 @@ void Webserv::setupPollServer()
 		_pollFds.push_back(ServerPollFd);
 
 		std::map< int, std::pair< uint16_t, std::string> >::iterator find = _serverInfos.find(_serverFds[i]);
-		std::cout << GREEN << "[Server] Server fd added to _pollFds : " << "[" << _serverFds[i] << "] > "<< find->second.second << ":" << find->second.first << RESET << std::endl;
+		std::cout << PURPLE << "[Server] Server fd added to _pollFds : " << "[" << _serverFds[i] << "] > "<< find->second.second << ":" << find->second.first << RESET << std::endl;
 	}
 
 }
@@ -118,8 +118,13 @@ bool	Webserv::socketAlreadyExists(const uint16_t &port, const std::string &IP) c
 	std::map< int, std::pair< uint16_t, std::string> >::const_iterator it = _serverInfos.begin();
 	for (; it != _serverInfos.end() ; ++it)
 	{
-		if (it->second.first == port && it->second.second == IP)
-			return (true);
+		if (it->second.first == port && it->second.second == IP
+			|| it->second.first == port && it->second.second == "0.0.0.0"
+			|| it->second.first == port && IP == "0.0.0.0")
+			{
+				std::cout << YELLOW << "Host:Port (" << IP << ":" << port<< ") already existing, skipping server." << std::endl;
+				return (true);
+			}
 	}
 	return (false);
 }

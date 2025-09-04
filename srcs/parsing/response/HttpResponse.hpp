@@ -6,7 +6,7 @@
 #include <ctime>
 #include <time.h>
 #include <fstream>
-#include "HttpRequest.hpp"
+#include "../request/HttpRequest.hpp"
 #include <sys/stat.h>
 
 class HttpResponse {
