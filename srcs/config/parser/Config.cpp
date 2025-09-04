@@ -6,11 +6,11 @@
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-Config::Config(void): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE)
+Config::Config(void): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _quoteState(OUT)
 {
 }
 
-Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _configFileName(filename)
+Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _configFileName(filename), _quoteState(OUT)
 {
 	std::ifstream	configFile(filename.c_str());
 

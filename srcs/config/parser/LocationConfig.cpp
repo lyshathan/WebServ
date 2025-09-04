@@ -66,7 +66,7 @@ void	LocationConfig::locationConfigParser(std::vector< t_token>::iterator &it)
 	_path = (it++)->content;
 	for (std::vector< LocationConfig >::iterator itLoc = _locations.begin() ; itLoc != _locations.end() ; itLoc++)
 	{
-		if (itLoc->_path == this->_path)
+		if (itLoc->_path == this->_path && itLoc->_isExactPath == this->_isExactPath)
 			throwErrorToken(" Already existing location path", *it);
 	}
 	if (it++->type != OPEN_BRACE)
