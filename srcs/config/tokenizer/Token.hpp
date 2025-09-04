@@ -10,6 +10,12 @@ typedef enum	e_level {
 	LOCATION
 }				t_level;
 
+typedef enum	e_quote {
+	OUT,
+	SINGLE,
+	DOUBLE
+}				t_quote;
+
 typedef enum	e_type {
 	DIRECTIVE,
 	VALUE,

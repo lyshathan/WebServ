@@ -140,7 +140,7 @@ void	ServerConfig::sortLocation(void)
 
 
 
-void	ServerConfig::printServer(void)
+void	ServerConfig::printServer(void) const
 {
 	std::string indent = "|	|___ ";
 	std::string list = "|	|	- ";
@@ -153,28 +153,28 @@ void	ServerConfig::printServer(void)
 	// 	std::cout << list << *it << std::endl;
 	// }
 
-	for (std::map<uint16_t, std::string>::iterator it = _portAndIP.begin() ; it != _portAndIP.end() ; it++)
+	for (std::map<uint16_t, std::string>::const_iterator it = _portAndIP.begin() ; it != _portAndIP.end() ; it++)
 	{
 		std::cout << list << it->second << ":" << it->first << std::endl;
 	}
 	std::cout << indent << "Server Names :" << std::endl;
-	for (std::vector<std::string>::iterator it = _serverNames.begin() ; it != _serverNames.end() ; it++)
+	for (std::vector<std::string>::const_iterator it = _serverNames.begin() ; it != _serverNames.end() ; it++)
 	{
 		std::cout << list << *it << std::endl;
 	}
 	std::cout << indent << "Root : " << (_root == "" ? "UNDEFINED" : _root) << std::endl;
 	std::cout << indent << "Index files : " << std::endl;
-	for (std::vector<std::string>::iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
+	for (std::vector<std::string>::const_iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
 	{
 		std::cout << list << *it << std::endl;
 	}
 	std::cout << indent << "Client max body size : " << _clientMaxBodySize << std::endl;
 	std::cout << indent << "Error pages : " << std::endl;
-	for (std::map< int , std::string >::iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
+	for (std::map< int , std::string >::const_iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
 	{
 		std::cout << list << it->first << " | " << it->second << std::endl;
 	}
-	for (std::vector< LocationConfig >::iterator it = _locations.begin() ; it != _locations.end() ; it++)
+	for (std::vector< LocationConfig >::const_iterator it = _locations.begin() ; it != _locations.end() ; it++)
 	{
 		it->printLocation();
 	}

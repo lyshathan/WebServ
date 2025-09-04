@@ -41,42 +41,118 @@ void Config::initToken(std::ifstream &configFile)
 {
 	std::string		line;
 	t_token			token;
+	std::string		word;
 
 	while (getline(configFile, line))
 	{
 		_lineNumber++;
+		
+		// If we're in the middle of a quoted string, add newline to preserve multi-line content
+		if (_quoteState != OUT && !word.empty())
+		{
+			word += " ";
+		}
+		
 		for (size_t i = 0 ; i < line.length() ; )
 		{
-			std::string	word;
-			while (line[i] && myIsSpace(line[i]))
-				i++;
-			if (line[i] == '#')
-				break;
-			if (isSpecialChar(line[i]))
+			// Skip whitespace only if we're not in a quoted string
+			if (_quoteState == OUT)
 			{
-				token.content = line[i];
-				analyzeTokenContent(token);
-				_tokens.push_back(token);
-				i++;
+				while (line[i] && myIsSpace(line[i]))
+					i++;
+				if (line[i] == '#')
+					break;
 			}
-			while (line[i] && !myIsSpace(line[i]) && !isSpecialChar(line[i]))
+			
+			if (line[i] == '\"' || line[i] == '\'' || _quoteState != OUT)
 			{
-				word += line[i];
-				i++;
+				std::string newpart = handleQuotedToken(line, &i);
+				std::cout << "==> word : " << word << " + newpart : " << newpart << std::endl;
+				word += newpart;
+				if (_quoteState == OUT)
+				{
+					std::cout << "==> treat quoted token : " << word << std::endl;
+					if (!word.empty())
+					{
+						token.content = word;
+						analyzeTokenContent(token);
+						_tokens.push_back(token);
+						word = "";
+					}
+					continue;
+				}
+				else
+				{
+					break;
+				}
 			}
-			if (!word.empty())
+
+			// Only process non-quoted content if we're not in a quote
+			if (_quoteState == OUT)
 			{
-				token.content = word;
-				analyzeTokenContent(token);
-				_tokens.push_back(token);
+				if (isSpecialChar(line[i]))
+				{
+					token.content = line[i];
+					analyzeTokenContent(token);
+					_tokens.push_back(token);
+					i++;
+				}
+				while (line[i] && !myIsSpace(line[i]) && !isSpecialChar(line[i]))
+				{
+					word += line[i];
+					i++;
+				}
+				if (!word.empty())
+				{
+					token.content = word;
+					analyzeTokenContent(token);
+					_tokens.push_back(token);
+					word = "";
+				}
 			}
 		}
 	}
+	
+	// Check for unclosed quotes
+	if (_quoteState != OUT)
+		throwErrorToken(" Unclosed quote ", token);
+		
 	if (_level != GLOBAL)
 		throwErrorToken(" Level error ", token);
 	if (_tokens.back().type != SEMICOLON && _tokens.back().type != CLOSE_BRACE)
 		throwErrorToken(" Unexpected end of file ", token);
-	// printTokens();
+	printTokens();
+}
+
+std::string Config::handleQuotedToken(std::string &line, size_t *i)
+{
+	std::string word;
+
+	if (_quoteState == OUT)
+	{
+		char quote = line[*i];
+		if (*i == '\'')
+			_quoteState = SINGLE;
+		else
+			_quoteState = DOUBLE;
+		(*i)++;
+	}
+
+	while (line[*i] && _quoteState != OUT)
+	{
+		if (_quoteState == SINGLE && line[*i] == '\'' || _quoteState == DOUBLE && line[*i] == '\"')
+		{
+			(*i)++;
+			_quoteState = OUT;
+			break;
+		}
+		word += line[*i];
+		(*i)++;
+	}
+	std::cout << word << " |	quote state : " << _quoteState << std::endl;
+
+	return (word);
+
 }
 
 void	Config::printTokens()

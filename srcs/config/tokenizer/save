@@ -1,0 +1,75 @@
+	// std::string		word;
+
+	// while (getline(configFile, line))
+	// {
+	// 	_lineNumber++;
+	// 	for (size_t i = 0 ; i < line.length() ; )
+	// 	{
+	// 		std::string		word;
+	// 		while (line[i] && myIsSpace(line[i]))
+	// 			i++;
+	// 		if (line[i] == '#')
+	// 			break;
+	// 		// if (line[i] == '\"' || line[i] == '\'' || _quoteState != OUT)
+	// 		// {
+	// 		// 	word = handleQuotedToken(line, &i);
+	// 		// 	if (_quoteState == OUT)
+	// 		// 	{
+	// 		// 		if (!word.empty())
+	// 		// 		{
+	// 		// 			token.content = word;
+	// 		// 			analyzeTokenContent(token);
+	// 		// 			_tokens.push_back(token);
+	// 		// 			word = "";
+	// 		// 		}
+					
+	// 		// 		continue;
+	// 		// 	}
+	// 		// }
+
+	// 		if (isSpecialChar(line[i]))
+	// 		{
+	// 			token.content = line[i];
+	// 			analyzeTokenContent(token);
+	// 			_tokens.push_back(token);
+	// 			i++;
+	// 		}
+	// 		while (line[i] && !myIsSpace(line[i]) && !isSpecialChar(line[i]))
+	// 		{
+	// 			word += line[i];
+	// 			i++;
+	// 		}
+	// 		if (!word.empty())
+	// 		{
+	// 			token.content = word;
+	// 			analyzeTokenContent(token);
+	// 			_tokens.push_back(token);
+	// 			word = "";
+	// 		}
+	// 	}
+	// }
+
+	std::string Config::handleQuotedToken(std::string &line, size_t *i)
+{
+	std::string word;
+
+	// if (_quoteState == OUT)
+	// {
+	// 	char quote = line[*i];
+	// 	i++;
+	// }
+
+	// while (line[*i] && _quoteState != OUT)
+	// {
+	// 	if (_quoteState == SINGLE && line[*i] == '\'' || _quoteState == DOUBLE && line[*i] == '\"')
+	// 	{
+	// 		i++;
+	// 		_quoteState = OUT;
+	// 		break;
+	// 	}
+	// 	word += line[*i];
+	// 	i++;
+	// }
+	return (word);
+
+}
