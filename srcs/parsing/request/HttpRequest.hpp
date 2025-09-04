@@ -49,6 +49,7 @@ class HttpRequest {
 		bool		pickServerConfig();
 		bool		pickLocationConfig();
 		bool		setUri(std::string &);
+		void		setErrorPage();
 
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);

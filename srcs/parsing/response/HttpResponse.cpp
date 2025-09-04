@@ -66,13 +66,18 @@ void HttpResponse::setBinRes() {
 	_headers = headers.str();
 }
 
-// std::string HttpResponse::responseHeader() {
+std::string HttpResponse::responseHeader() {
+	std::ostringstream html;
 
-// }
+	return html.str();
+}
 
 void HttpResponse::notFound() {
 	std::ostringstream headers;
 	std::ostringstream html;
+
+
+	
 
 	html << "<html><head><title>404 Not Found</title></head><body>"
 		<< "<center><h1>404 Not Found</h1></center>"

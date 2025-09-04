@@ -15,8 +15,10 @@ void HttpRequest::cleanReqInfo() {
 void HttpRequest::errorHandler() {
 	if (_status == BAD_REQUEST)
 		std::cout << "400 Bad request\n";
-	else if (_status == NOT_FOUND)
+	else if (_status == NOT_FOUND) {
+		setErrorPage();
 		std::cout << "404 Not found\n";
+	}
 	else if (_status == MOVED_PERMANENTLY)
 		std::cout << "300 Moved permanently\n";
 	else if (_status == FORBIDDEN)

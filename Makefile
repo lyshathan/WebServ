@@ -21,7 +21,7 @@ CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 PARSING = Client
 
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
-				HttpServerConfig
+				HttpServerConfig HttpRequestNotFound
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
 				HttpResponseSetters
