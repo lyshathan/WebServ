@@ -1,14 +1,13 @@
 #include "HttpRequest.hpp"
 
 bool HttpRequest::pickServerConfig() {
-    //Pick correct server config
-    //Set it at _server
+    _server = NULL;
 
     const std::string host = _headers.find("host")->second;
     std::string searchedName = host.substr(0, host.find(':', 0));
 
-    // std::cout << RED << "Looking for : " << std::endl;
-    // std::cout << "  - port : " << _serverInfo.first << "\n  - IP : " << _serverInfo.second << "\n   - server_name : " << searchedName << RESET << std::endl;
+    std::cout << "Pick right server config, looking for : " << std::endl;
+    std::cout << "    - port : " << _serverInfo.first << "\n    - IP : " << _serverInfo.second << "\n    - server_name : " << searchedName << std::endl;
 
     const std::vector< ServerConfig > &serverList = _config.getServerConfig();  //
     std::vector< ServerConfig >::const_iterator itServer = serverList.begin();  //
@@ -25,39 +24,26 @@ bool HttpRequest::pickServerConfig() {
                 // Port and IP are matching !
                 // std::cout << GREEN << "Port and IP are matching !" << RESET << std::endl;
                 // std::cout << "Check for server_name : " << std::endl;
+                if (_server == NULL)
+                    _server = _server = &(*itServer);
                 const std::vector<std::string> serverNames = itServer->getServerName();
                 std::vector<std::string>::const_iterator foundServerName = std::find(serverNames.begin(), serverNames.end(), searchedName);
                 if (foundServerName != serverNames.end())
                 {
                     // Server Name is also matching !
-                    // std::cout << GREEN << "Server Name is also matching !   --> " << *foundServerName << RESET << std::endl;
-                    // _server = &(*itServer);
+                    std::cout << GREEN << "Server config perfect match !   --> " << *foundServerName << RESET << std::endl;
+                    _server = &(*itServer);
                     break;
                 }
             }
         }
     }
-
-
-        //   const std::vector< std::string > &configServerNames = itServer->getServerName();
-        // std::vector< std::string >::const_iterator itName = configServerNames.begin();
-        // for (; itName != configServerNames.end() ; ++itName)    // iterate through server names
-        // {
-        //     const std::vector< int > &configPort = itServer->getListenPort();
-        //     std::vector< int >::const_iterator itPort = configPort.begin();
-        //     for (; itPort != configPort.end() ; ++itPort)    // iterate through port
-        //     {
-        //         std::cout << *itName << "   |   " << *itPort << std::endl;
-        //     //   if (*itName == searchedName
-        //             // && _serverInfo.first == *itPort
-        //             // && _serverInfo.second == )
-        //     }
-
-        // }
-
-    const std::vector< ServerConfig > &config = _config.getServerConfig();
-    _server = &(*config.begin());
-
+    if (_server == NULL)
+    {
+        std::cout << GREEN << "Not matching any server config, use default one" << RESET << std::endl;
+        const std::vector< ServerConfig > &config = _config.getServerConfig();
+        _server = &(*config.begin());
+    }
     _server->printServer();
 
     return false;
