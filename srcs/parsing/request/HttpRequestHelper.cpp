@@ -12,21 +12,6 @@ void HttpRequest::cleanReqInfo() {
 	_status = 0;
 }
 
-void HttpRequest::errorHandler() {
-	if (_status == BAD_REQUEST)
-		std::cout << "400 Bad request\n";
-	else if (_status == NOT_FOUND) {
-		setErrorPage();
-		std::cout << "404 Not found\n";
-	}
-	else if (_status == MOVED_PERMANENTLY)
-		std::cout << "300 Moved permanently\n";
-	else if (_status == FORBIDDEN)
-		std::cout << "401 Forbidden\n";
-	else
-		std::cout << "status not defined\n";
-}
-
 bool HttpRequest::extractUntil(std::string &line,
 	std::string &data, const std::string &del) {
 	size_t pos = data.find(del);

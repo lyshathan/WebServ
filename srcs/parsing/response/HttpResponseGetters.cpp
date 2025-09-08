@@ -5,9 +5,20 @@
 /******************************************************************************/
 
 const std::string& HttpResponse::getRes() const {return _res;}
-const std::string& HttpResponse::getResHeaders() const {return _headers;}
 const std::vector<char>& HttpResponse::getBinRes() const {return _binRes;}
 bool	HttpResponse::getIsTextContent() const {return _isTextContent;}
+
+const std::string& HttpResponse::getResHeaders() {
+	std::ostringstream	headers;
+
+	headers << _responseStatus;
+	std::map<std::string, std::string>::iterator it = _headers.begin();
+	for (; it != _headers.end(); ++it)
+		headers << it->first << it->second;
+	headers << "\r\n";
+	_resHeaders = headers.str();
+	return _resHeaders;
+}
 
 std::string HttpResponse::getMimeType() const {
 	std::string uri = _request->getUri();

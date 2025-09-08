@@ -14,16 +14,23 @@ class HttpResponse {
 		HttpRequest *_request;
 		HttpResponse();
 
-		bool				_isTextContent;
-		std::string			_headers;
-		std::string			_res;
-		std::vector<char>	_binRes;
-		std::string			_mimeType;
+		bool								_isTextContent;
+		std::map<int, std::string>			_statusPhrases;
+		std::map<int, std::string>			_htmlResponses;
+		std::map<std::string, std::string>	_headers;
+		std::string							_resHeaders;
+		std::string							_responseStatus;
+		std::string							_res;
+		std::vector<char>					_binRes;
+		std::string							_mimeType;
+
 	public:
 		HttpResponse(HttpRequest *);
 		~HttpResponse();
 
 		void	parseResponse();
+		void	initHtmlResponses();
+		void	initStatusPhrases();
 
 		void	successfulRequest();
 		void	badRequest();
@@ -33,6 +40,9 @@ class HttpResponse {
 		void	setBinRes();
 		void	setTextContent();
 		void	setBinContent();
+		void	setBody(int);
+		void	addHeader(const std::string &, const std::string &);
+		void	setDefaultHeaders(int);
 
 		std::string getTime() const;
 		std::string getMimeType() const;
@@ -40,10 +50,11 @@ class HttpResponse {
 		bool		getIsTextContent() const;
 
 		std::string responseHeader();
-		
+
 		const std::string &getRes() const;
 		const std::vector<char> &getBinRes() const;
-		const std::string &getResHeaders() const;
+		const std::string &getResHeaders();
+
 		bool isTextContent();
 };
 

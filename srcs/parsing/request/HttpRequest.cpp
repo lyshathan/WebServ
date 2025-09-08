@@ -13,33 +13,26 @@ HttpRequest::~HttpRequest() {};
 /******************************************************************************/
 
 void HttpRequest::handleRequest(std::string data) {
+	if (!requestParser(data))
+		return ;
+	requestHandler();
+}
+
+bool	HttpRequest::requestParser(std::string data) {
 	std::string	firstLine;
 	std::string	headers;
 
-
-	//std::cout << "Body size " <<_config->getClientMaxBodySize() << std::endl;
-
-	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine)) {
+	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine))
 		_status = BAD_REQUEST;
-		return errorHandler();
-	}
-	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers)) {
+	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers))
 		_status = BAD_REQUEST;
-		return errorHandler();
-	}
-	if (!data.empty() && !parseBody(data)) {
+	if (!data.empty() && !parseBody(data))
 		_status = BAD_REQUEST;
-		return errorHandler();
-	}
-	if (!validateUri()) {
+	if (!validateUri())
 		_status = BAD_REQUEST;
-		return errorHandler();
-	}
-	if (!validatePath()) {
-		return errorHandler();
-	}
-	else
-		_status = OK;
+	if (_status == BAD_REQUEST)
+		return false;
+	return true;
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {
@@ -85,6 +78,19 @@ bool HttpRequest::parseHeaders(std::string data) {
 	return true;
 }
 
+bool HttpRequest::validateUri() {
+	if (_uri[0] != '/') return false;
+	if (_uri.find("..") != std::string::npos) return false;
+	if (_uri.find('\0') != std::string::npos) return false;
+	for (size_t i = 0; i < _uri.length(); ++i) {
+		if (!std::isalnum(_uri[i])) {
+			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
+				continue;
+			return false;
+		}
+	}
+	return true;
+}
 
 bool HttpRequest::parseBody(std::string data) {
 	(void)data;

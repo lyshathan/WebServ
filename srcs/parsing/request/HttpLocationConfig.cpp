@@ -4,24 +4,10 @@
 /*							LOCATION FUNCTIONS								  */
 /******************************************************************************/
 
-bool HttpRequest::validateUri() {
-	if (_uri[0] != '/') return false;
-	if (_uri.find("..") != std::string::npos) return false;
-	if (_uri.find('\0') != std::string::npos) return false;
-	for (size_t i = 0; i < _uri.length(); ++i) {
-		if (!std::isalnum(_uri[i])) {
-			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
-				continue;
-			return false;
-		}
-	}
-	return true;
-}
-
-bool HttpRequest::validatePath() {
+void HttpRequest::requestHandler() {
 	if (pickServerConfig() || !pickLocationConfig() || !isLocationPathValid())
-		return false;
-	return true;
+		return ;
+	_status = OK;
 }
 
 bool HttpRequest::setUri(std::string &path) {
@@ -43,6 +29,7 @@ bool HttpRequest::setUri(std::string &path) {
 		}
 	}
 	_status = NOT_FOUND;
+	setErrorPage();
 	return false;
 }
 
@@ -74,6 +61,7 @@ bool HttpRequest::isLocationPathValid() {
 		}
 	} else {
 		_status = NOT_FOUND;
+		setErrorPage();
 		return false;
 	}
 	return false;
@@ -105,8 +93,10 @@ bool HttpRequest::pickLocationConfig() {
 	}
 	if (bestMatch != locations.end()) {
 		_location = &(*bestMatch);
+		std::cout << "Location chosen " << _location->getPath() << "\n";
 		return true;
 	}
 	_status = NOT_FOUND;
+	setErrorPage();
 	return false;
 }
