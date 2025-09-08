@@ -7,7 +7,7 @@ RM = rm -rf
 #============== SOURCES ==============#
 
 SRCS_DIR = srcs
-MAIN = main
+MAIN = main ProjectTools
 WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservConversion
 GENERAL = General
 CONFIG_PARSER = Config \

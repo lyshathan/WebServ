@@ -77,7 +77,7 @@ void	ServerConfig::check(GlobalConfig &global)
 	if (_listenPorts.empty())
 		throwError(" Server need at least a port");
 	if (_serverNames.empty())
-		_serverNames.push_back("localhost"); 					// Set default servername
+		_serverNames.push_back("127.0.0.1"); 					// Set default servername
 	if (_indexFiles.empty())
 		_indexFiles.push_back("index.html");					// Set defaut index
 	if (_clientMaxBodySize == 0)

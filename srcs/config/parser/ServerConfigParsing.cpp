@@ -12,6 +12,8 @@ void	ServerConfig::parseListenPort(std::vector< t_token>::iterator &it)
 	if (find != std::string::npos)
 	{
 		IP = it->content.substr(0, find);
+		if (IP == "localhost")
+			IP = "127.0.0.1";
 		content = it->content.substr(find + 1, it->content.size());
 	}
 	else

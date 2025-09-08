@@ -6,7 +6,7 @@ void Webserv::addClient(int newClientFd, int &serverFd)
 {
 	//const ServerConfig* config = getConfigForPort(serverFd);
 	std::map< int, std::pair< uint16_t, std::string> >::iterator find = _serverInfos.find(serverFd);
-	_clients[newClientFd] = new Client(newClientFd, _config, find->second);
+	_clients[newClientFd] = new Client(newClientFd, _config);
 	// Add to pollFds
 	struct pollfd newClientPollFd;
 	newClientPollFd.fd = newClientFd;
