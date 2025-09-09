@@ -70,7 +70,7 @@ int Webserv::acceptNewConnection(int &serverFd)
 		return (handleFunctionError("Accept"));
 
 	// Add new client to pollFds and to _client map
-	addClient(clientFd, serverFd);
+	addClient(clientFd);
 
 	//std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << "for server " << serverFd << RESET << std::endl;
 	return (0);

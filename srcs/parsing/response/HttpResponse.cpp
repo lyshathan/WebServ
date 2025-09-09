@@ -6,7 +6,7 @@
 
 HttpResponse::HttpResponse() {};
 
-HttpResponse::HttpResponse(HttpRequest *req) : _request(req), _res(""), _isTextContent(false), _mimeType("") {
+HttpResponse::HttpResponse(HttpRequest *req) : _request(req), _isTextContent(false), _res(""), _mimeType("") {
 	initStatusPhrases();
 	initHtmlResponses();
 };

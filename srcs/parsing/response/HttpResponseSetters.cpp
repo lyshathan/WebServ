@@ -5,6 +5,7 @@
 /******************************************************************************/
 
 void HttpResponse::setDefaultHeaders(int status) {
+	(void)status;
 	// _responseStatus = _request->getVersion() + " " +
 	// 	std::to_string(status) + " " + _statusPhrases[status] + "\r\n";
 

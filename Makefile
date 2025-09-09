@@ -1,6 +1,6 @@
 NAME = Webserv
 CC = c++
-FLAGS =  -Iincludes -std=c++98 -MMD -MP -g3
+FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
 TEST_FLAGS = -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
 RM = rm -rf
 
@@ -48,7 +48,8 @@ HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/webserv/, $(H_WEBSERV))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(H_CONFIG_TOKENIZER))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/request/, $(H_REQUEST))) \
-		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(H_RESPONSE)))
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(H_RESPONSE))) \
+		$(SRCS_DIR)/ProjectTools.hpp
 
 #====== OBJECTS & DEPENDENCIES ======#
 

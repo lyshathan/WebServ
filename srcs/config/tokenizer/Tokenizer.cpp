@@ -130,7 +130,6 @@ std::string Config::handleQuotedToken(std::string &line, size_t *i)
 
 	if (_quoteState == OUT)
 	{
-		char quote = line[*i];
 		if (*i == '\'')
 			_quoteState = SINGLE;
 		else
@@ -140,7 +139,7 @@ std::string Config::handleQuotedToken(std::string &line, size_t *i)
 
 	while (line[*i] && _quoteState != OUT)
 	{
-		if (_quoteState == SINGLE && line[*i] == '\'' || _quoteState == DOUBLE && line[*i] == '\"')
+		if ((_quoteState == SINGLE && line[*i] == '\'') || (_quoteState == DOUBLE && line[*i] == '\"'))
 		{
 			(*i)++;
 			_quoteState = OUT;
