@@ -4,7 +4,7 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-HttpRequest::HttpRequest(const Config& config, std::pair< uint16_t, std::string> &serverInfo) : _config(config), _location(NULL), _status(0), _serverInfo(serverInfo) {};
+HttpRequest::HttpRequest(const Config& config, int &fd) : _config(config), _location(NULL), _status(0), _clientfd(fd) {};
 
 HttpRequest::~HttpRequest() {};
 

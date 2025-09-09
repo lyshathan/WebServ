@@ -21,7 +21,7 @@ class Webserv {
 		int							_listenBackLog;
 
 
-		uint32_t	fromHostToAddress(std::string hostname);
+		// uint32_t	fromHostToAddress(std::string hostname);
 		uint32_t	fromIPToInt(const std::string &IPstr);
 		int			handleFunctionError(std::string errFunction);
 		void		cleanServer();

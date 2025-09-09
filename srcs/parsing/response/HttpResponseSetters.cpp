@@ -5,16 +5,16 @@
 /******************************************************************************/
 
 void HttpResponse::setDefaultHeaders(int status) {
-	_responseStatus = _request->getVersion() + " " +
-		std::to_string(status) + " " + _statusPhrases[status] + "\r\n";
+	// _responseStatus = _request->getVersion() + " " +
+	// 	std::to_string(status) + " " + _statusPhrases[status] + "\r\n";
 
 	addHeader("Server: ", "webserv");
 	addHeader("Date: ", getTime());
 	addHeader("Content-Type: ", _mimeType);
-	if (_isTextContent)
-		addHeader("Content-Length: ", std::to_string(_res.size()));
-	else
-		addHeader("Content-Length: ", std::to_string(_binRes.size()));
+	// if (_isTextContent)
+	// 	addHeader("Content-Length: ", std::to_string(_res.size()));
+	// else
+	// 	addHeader("Content-Length: ", std::to_string(_binRes.size()));
 }
 
 void HttpResponse::addHeader(const std::string &key, const std::string &value) {

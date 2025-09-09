@@ -34,8 +34,7 @@ class HttpRequest {
 		std::map<std::string, std::string>	_headers;
 		std::string							_body;
 		int									_status;
-
-		std::pair< uint16_t, std::string> &_serverInfo;
+		int									_clientfd;
 
 
 		bool		parseFirstLine(std::string);
@@ -62,7 +61,7 @@ class HttpRequest {
 
 		HttpRequest();
 	public:
-		HttpRequest(const Config& config, std::pair< uint16_t, std::string> &);
+		HttpRequest(const Config& config, int &);
 		~HttpRequest();
 
 		void	handleRequest(std::string);
