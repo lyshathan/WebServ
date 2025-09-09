@@ -69,11 +69,11 @@ void HttpResponse::setTextContent() {
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
 	if (!file.is_open())
 		return ;
-
 	_res.clear();
 	char buffer[4096];
 	std::string chunk;
 	while (file.read(buffer, sizeof(buffer))) {
+		std::cout << "Buffer " << buffer << "\n";
 		chunk.assign(buffer, file.gcount());
 		_res += chunk;
 	}
