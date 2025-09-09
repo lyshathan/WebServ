@@ -68,13 +68,13 @@ void	ServerConfig::parseErrorPage(std::vector< t_token>::iterator &it)
 	it++;
 	size_t	nbOfErrorCode = CountErrorCodes(_tokens, it);
 	std::vector< t_token>::iterator itErrorPage = it + nbOfErrorCode - 1;
-	check = isValidFile(itErrorPage->content);
-	if (check != VALID)
-	{
-		if (check == NO_EXIST)
-			throwErrorToken(" Error file does not exist", *it);
-		throwErrorToken(" Error file permission denied", *it);
-	}
+	// check = isValidFile(itErrorPage->content);
+	// if (check != VALID)
+	// {
+	// 	if (check == NO_EXIST)
+	// 		throwErrorToken(" Error file does not exist", *it);
+	// 	throwErrorToken(" Error file permission denied", *it);
+	// }
 	while (it != itErrorPage)
 	{
 		double code_d = std::strtod(it->content.c_str(), &end);

@@ -21,6 +21,13 @@
 #define OK 200
 #define FORBIDDEN 403
 
+typedef enum	e_servState {
+	NO_MATCH,
+	MATCH_PORT,
+	MATCH_PORT_IP,
+	EXACT_MATCH,
+}				t_servState;
+
 class ServerConfig;
 
 class HttpRequest {
