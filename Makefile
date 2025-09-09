@@ -1,7 +1,7 @@
 NAME = Webserv
 CC = c++
 FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
-TEST_FLAGS = -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
+TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
 RM = rm -rf
 
 #============== SOURCES ==============#
@@ -82,6 +82,10 @@ DEPS = $($(OBJDIR)/%.o=.d)
 #=============== RULES ===============#
 
 all:  $(NAME)
+
+test: $(OBJS)
+	@$(CC) $(TEST_FLAGS) $(OBJS) -o $(NAME)
+	@echo "\n\033[1;32m ⚙️  WebServ compiled in production mode\033[0m ⚙️\n"
 
 $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)

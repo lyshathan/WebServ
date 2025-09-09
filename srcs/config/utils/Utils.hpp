@@ -42,4 +42,5 @@ void	parseClientMaxBodySize(std::vector< t_token>::iterator &it, size_t &clientM
 size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::iterator it);
 void	throwErrorToken(const char* msg, t_token &token);
 void	throwError(const char* msg);
+
 #endif
