@@ -1,5 +1,5 @@
 #include "ServerConfig.hpp"
-#include "Utils.hpp"
+#include "../utils/Utils.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor

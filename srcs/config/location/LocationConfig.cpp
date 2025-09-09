@@ -1,6 +1,6 @@
-#include "ServerConfig.hpp"
+#include "../server/ServerConfig.hpp"
 #include "LocationConfig.hpp"
-#include "Utils.hpp"
+#include "../utils/Utils.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor

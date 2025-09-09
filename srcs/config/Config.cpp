@@ -1,6 +1,6 @@
 #include "Config.hpp"
-#include "ServerConfig.hpp"
-#include "Utils.hpp"
+#include "server/ServerConfig.hpp"
+#include "utils/Utils.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor
@@ -25,7 +25,6 @@ Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLO
 
 Config::~Config(void)
 {
-	std::cout << RED << "Conf destructor called" << RESET <<std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

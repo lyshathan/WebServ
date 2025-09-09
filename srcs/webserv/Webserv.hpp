@@ -2,8 +2,8 @@
 # define WEBSERV_HPP
 
 #include "Includes.hpp"
-#include "../config/parser/Config.hpp"
-#include "../config/parser/ServerConfig.hpp"
+#include "../config/Config.hpp"
+#include "../config/server/ServerConfig.hpp"
 
 class Client;
 class ServerConfig;

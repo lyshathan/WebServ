@@ -1,7 +1,7 @@
 #ifndef LOCATIONCONFIG_HPP
 #define LOCATIONCONFIG_HPP
 
-#include "../General.hpp"
+#include "../utils/Utils.hpp"
 
 class ServerConfig;
 

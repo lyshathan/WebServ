@@ -1,4 +1,4 @@
-#include "../parser/Config.hpp"
+#include "../Config.hpp"
 
 void Config::analyzeTokenContent(t_token &token)
 {

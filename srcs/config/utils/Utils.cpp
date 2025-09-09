@@ -28,7 +28,6 @@ int	isValidFile(std::string &dir)
 }
 
 
-
 void	checkForSemicolon(std::vector< t_token>::iterator &it, std::vector< t_token> &tokens)
 {
 	it++;
@@ -93,4 +92,20 @@ size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::i
 		count++;
 	}
 	return (count);
+}
+
+void	throwErrorToken(const char* msg, t_token &token)
+{
+	std::ostringstream errorMsg;
+
+	errorMsg << RED << "[Config file] " << msg << " at line : " << token.line << " \'" << token.content << "\'" << RESET <<std::endl;
+	throw std::invalid_argument(errorMsg.str());
+}
+
+void	throwError(const char* msg)
+{
+	std::ostringstream errorMsg;
+
+	errorMsg << RED << "[Config file] " << msg << RESET <<std::endl;
+	throw std::invalid_argument(errorMsg.str());
 }

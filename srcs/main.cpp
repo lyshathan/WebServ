@@ -1,4 +1,4 @@
-#include "config/parser/Config.hpp"
+#include "config/Config.hpp"
 #include "webserv/Webserv.hpp"
 #include "parsing/Client.hpp"
 

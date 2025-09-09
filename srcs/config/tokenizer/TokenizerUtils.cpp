@@ -1,4 +1,4 @@
-#include "../parser/Config.hpp"
+#include "../Config.hpp"
 
 bool myIsSpace(unsigned char c) {
     return (c == ' ' || c == '\t' || c == '\r' || c == '\f' || c == '\v');

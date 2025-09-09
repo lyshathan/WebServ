@@ -1,7 +1,7 @@
 #ifndef GLOBALCONFIG_HPP
 #define GLOBALCONFIG_HPP
 
-#include "../General.hpp"
+#include "../utils/Utils.hpp"
 
 class GlobalConfig {
 	private :

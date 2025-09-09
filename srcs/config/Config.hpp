@@ -1,8 +1,8 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "../General.hpp"
-#include "GlobalConfig.hpp"
+#include "utils/Utils.hpp"
+#include "global/GlobalConfig.hpp"
 
 class GlobalConfig;
 class ServerConfig;

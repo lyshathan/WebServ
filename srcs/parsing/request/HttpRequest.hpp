@@ -13,7 +13,7 @@
 #include <fcntl.h>
 
 #include "../../webserv/Webserv.hpp"
-#include "../../config/parser/ServerConfig.hpp"
+#include "../../config/server/ServerConfig.hpp"
 
 #define BAD_REQUEST 400
 #define NOT_FOUND 404

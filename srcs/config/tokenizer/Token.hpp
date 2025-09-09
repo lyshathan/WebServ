@@ -1,7 +1,7 @@
 #ifndef TOKEN_HPP
 #define TOKEN_HPP
 
-#include "../General.hpp"
+#include "../utils/Utils.hpp"
 #include <string>
 
 typedef enum	e_level {

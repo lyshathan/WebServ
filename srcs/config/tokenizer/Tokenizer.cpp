@@ -1,4 +1,4 @@
-#include "../parser/Config.hpp"
+#include "../Config.hpp"
 
 bool myIsSpace(unsigned char c);
 bool isSpecialChar(unsigned char c);

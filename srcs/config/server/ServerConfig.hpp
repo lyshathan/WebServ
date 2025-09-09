@@ -1,8 +1,8 @@
 #ifndef SERVERCONFIG_HPP
 #define SERVERCONFIG_HPP
 
-#include "LocationConfig.hpp"
-#include "GlobalConfig.hpp"
+#include "../location/LocationConfig.hpp"
+#include "../global/GlobalConfig.hpp"
 
 class ServerConfig {
 	private :
