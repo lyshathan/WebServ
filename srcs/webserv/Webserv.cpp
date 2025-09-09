@@ -1,5 +1,8 @@
+
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
+#include "../ProjectTools.hpp"
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor
@@ -8,6 +11,8 @@
 Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.getServerConfig()), _listenBackLog(10)
 {
 	std::cout << "---- SERVER ----" << std::endl;
+
+	// initServerInfo();
 
 	if (createServerSocket() < 0)
 		return ;
@@ -30,7 +35,6 @@ Webserv::~Webserv()
 //										Methods
 ////////////////////////////////////////////////////////////////////////////////////
 
-
 int Webserv::createServerSocket()
 {
 	std::cout << BLUE << "[Server] Create and bind server sockets :" << RESET << std::endl;
@@ -51,9 +55,9 @@ int Webserv::createServerSocket()
 			std::memset(&socketAddress, 0, sizeof(socketAddress));
 			socketAddress.sin_family = AF_INET; // IPv4
 			if (PortIt->second == "localhost")
-				socketAddress.sin_addr.s_addr = fromIPToInt("127.0.0.1"); // Specific loopback localhost
+				socketAddress.sin_addr.s_addr = ::fromIPToIntNetwork("127.0.0.1"); // Specific loopback localhost
 			else
-				socketAddress.sin_addr.s_addr = fromIPToInt(PortIt->second); // Convert IP string to int address
+				socketAddress.sin_addr.s_addr = ::fromIPToIntNetwork(PortIt->second); // Convert IP string to int address
 
 			socketAddress.sin_port = htons(PortIt->first);
 
@@ -77,7 +81,7 @@ int Webserv::createServerSocket()
 			info.first = PortIt->first;
 			info.second = PortIt->second;
 			_serverInfos[serverFd] = info;
-			//std::cout << "fd = " << serverFd << "	|	port = " << info.first << "	|	IP = " << info.second << std::endl;
+			// std::cout << "fd = " << serverFd << "	|	port = " << info.first << "	|	IP = " << info.second << std::endl;
 		}
 	}
 	return(1);
@@ -113,18 +117,53 @@ void Webserv::setupPollServer()
 
 }
 
+
 bool	Webserv::socketAlreadyExists(const uint16_t &port, const std::string &IP) const
-{
+{	
+	// Normalize localhost to 127.0.0.1 for comparison
+	std::string normalizedIP = IP;
+	if (IP == "localhost")
+		normalizedIP = "127.0.0.1";
+	
+	// First check if this exact IP:port already exists in created sockets
 	std::map< int, std::pair< uint16_t, std::string> >::const_iterator it = _serverInfos.begin();
 	for (; it != _serverInfos.end() ; ++it)
 	{
-		if (it->second.first == port && it->second.second == IP
-			|| it->second.first == port && it->second.second == "0.0.0.0"
-			|| it->second.first == port && IP == "0.0.0.0")
-			{
-				std::cout << YELLOW << "Host:Port (" << IP << ":" << port<< ") already existing, skipping server." << std::endl;
-				return (true);
-			}
+		std::string existingIP = it->second.second;
+		if (existingIP == "localhost")
+			existingIP = "127.0.0.1";
+			
+		if (it->second.first == port && existingIP == normalizedIP)
+		{
+			std::cout << YELLOW << "Host:Port (" << IP << ":" << port<< ") already existing, skipping server." << RESET << std::endl;
+			return (true);
+		}
+		
+		// If we already have 0.0.0.0:port, skip any specific IP:port
+		if (it->second.first == port && it->second.second == "0.0.0.0" && normalizedIP != "0.0.0.0")
+		{
+			std::cout << YELLOW << "0.0.0.0:" << port << " already exists. Skipping Host:Port (" << IP << ":" << port<< ")" << RESET << std::endl;
+			return (true);
+		}
 	}
+	
+	// For any non-0.0.0.0 binding, check if 0.0.0.0:port exists anywhere in the config
+	// If it does, skip this specific binding in favor of the global one
+	if (normalizedIP != "0.0.0.0")
+	{
+		for (size_t servIndex = 0 ; servIndex < _serverConfigs.size() ; servIndex++)
+		{
+			const std::map< uint16_t, std::string>& portAndIP = _serverConfigs[servIndex].getPortAndIP();
+			for (std::map< uint16_t, std::string>::const_iterator itPort = portAndIP.begin() ; itPort != portAndIP.end() ; itPort++ )
+			{
+				if (itPort->first == port && itPort->second == "0.0.0.0")
+				{
+					std::cout << YELLOW << "A more global server config (0.0.0.0:" << port << ") exists in config. Skipping Host:Port (" << IP << ":" << port<< ")" << RESET << std::endl;
+					return (true);
+				}
+			}
+		}
+	}
+	
 	return (false);
 }

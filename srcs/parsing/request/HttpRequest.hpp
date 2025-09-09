@@ -33,34 +33,35 @@ class HttpRequest {
 		std::string							_version;
 		std::map<std::string, std::string>	_headers;
 		std::string							_body;
-		int			_status;
-
-		std::pair< uint16_t, std::string> &_serverInfo;
+		int									_status;
+		int									_clientfd;
 
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
 		bool		parseBody(std::string);
 
+		void		requestHandler();
+		bool		requestParser(std::string);
+
 		bool		validateUri();
-		bool		validatePath();
 		bool		validateVersion(std::string);
 
 		bool		pickServerConfig();
 		bool		pickLocationConfig();
 		bool		setUri(std::string &);
+		void		setErrorPage();
 
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);
 		bool		mapHeaders(std::string &);
 		bool		isValidTchar(char c);
-		void		errorHandler();
 
 		bool		isLocationPathValid();
 
 		HttpRequest();
 	public:
-		HttpRequest(const Config& config, std::pair< uint16_t, std::string> &);
+		HttpRequest(const Config& config, int &);
 		~HttpRequest();
 
 		void	handleRequest(std::string);

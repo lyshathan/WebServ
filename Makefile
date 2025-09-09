@@ -1,13 +1,13 @@
 NAME = Webserv
 CC = c++
 FLAGS =  -Iincludes -std=c++98 -MMD -MP -g3
-TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
+TEST_FLAGS = -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
 RM = rm -rf
 
 #============== SOURCES ==============#
 
 SRCS_DIR = srcs
-MAIN = main
+MAIN = main ProjectTools
 WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservConversion
 GENERAL = General
 CONFIG_PARSER = Config \
@@ -21,7 +21,7 @@ CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 PARSING = Client
 
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
-				HttpServerConfig
+				HttpServerConfig HttpRequestNotFound
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
 				HttpResponseSetters

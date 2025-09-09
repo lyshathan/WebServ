@@ -1,0 +1,36 @@
+#include "ProjectTools.hpp"
+
+uint32_t	fromIPToIntHost(const std::string &IPstr)
+{
+	// std::string test = "127.0.0.1";
+    std::istringstream iss( IPstr );
+    
+    uint32_t IPint = 0;
+    
+    for( uint32_t i = 0; i < 4; ++i ) {
+        uint32_t part;
+        iss >> part;
+        if ( iss.fail() || part > 255 ) {
+            throw std::runtime_error( "Invalid IP address - Expected [0, 255]" );
+        }
+        
+		// Shifts the octet to its correct position in the 32-bit integer (host byte order)
+        IPint |= part << ( 8 * ( 3 - i ) );
+
+        // check for delimiter except on last iteration
+        if ( i != 3 ) {
+            char delimiter;
+            iss >> delimiter;
+            if ( iss.fail() || delimiter != '.' ) {
+                throw std::runtime_error( "Invalid IP address - Expected '.' delimiter" );
+            }
+        }
+    } 
+    return IPint;
+}
+
+uint32_t	fromIPToIntNetwork(const std::string &IPstr)
+{
+    // Convert from host byte order to network byte order
+	return (htonl(fromIPToIntHost(IPstr)));
+}
