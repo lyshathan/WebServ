@@ -59,7 +59,7 @@ bool HttpRequest::pickServerConfig() {
 		const std::vector< ServerConfig > &config = _config.getServerConfig();
 		_server = &(*config.begin());
 	}
-	_server->printServer();
+	// _server->printServer();
 
 	return false;
 }
