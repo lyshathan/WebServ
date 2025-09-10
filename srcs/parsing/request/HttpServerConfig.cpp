@@ -26,42 +26,52 @@ bool HttpRequest::pickServerConfig() {
 
 	const std::vector< ServerConfig > &serverList = _config.getServerConfig();  //
 	std::vector< ServerConfig >::const_iterator itServer = serverList.begin();  //
-	for (; itServer != serverList.end() ; ++itServer)                           // iterate through server list
+	for (; (itServer != serverList.end() && state != EXACT_MATCH) ; ++itServer)                           // iterate through server list
 	{
 		const std::map< uint16_t, std::string> portAndIPMap = itServer->getPortAndIP();
 		std::map< uint16_t, std::string>::const_iterator itPortAndIP = portAndIPMap.begin();
-		for (; itPortAndIP != portAndIPMap.end() ; ++itPortAndIP)    // iterate through map of Port+IP
+		for (; (itPortAndIP != portAndIPMap.end() && state != EXACT_MATCH) ; ++itPortAndIP)    // iterate through map of Port+IP
 		{
 			uint32_t configIP = fromIPToIntHost(itPortAndIP->second);
 			// std::cout << "Check for : " << std::endl;
 			// std::cout << "  - port : " << itPortAndIP->first << "\n  - IP : " << itPortAndIP->second << "(" << configIP << ")" << std::endl;
-			if (itPortAndIP->first == serverPort && state == NO_MATCH)
+
+			if (itPortAndIP->first == serverPort)
 			{
-				std::cout << GREEN << "Set default server matching port" << RESET <<std::endl;
-				state = MATCH_PORT;
-				_server = &(*itServer);
-			}
-			if (itPortAndIP->first == serverPort && configIP == serverIP)
-			{
-				// Port and IP are matching !
-				// std::cout << "Check for server_name : " << std::endl;
-				if (state == NO_MATCH || state == MATCH_PORT)
+				if (configIP == serverIP || itPortAndIP->second == "0.0.0.0")
 				{
-					std::cout << GREEN << "Set default server matching port AND IP" << RESET << std::endl;
-					state = MATCH_PORT_IP;
-					if (_server != &(*itServer))
+					const std::vector<std::string> serverNames = itServer->getServerName();
+					std::vector<std::string>::const_iterator foundServerName = std::find(serverNames.begin(), serverNames.end(), searchedName);
+					if (foundServerName != serverNames.end() && configIP == serverIP)
+					{
+						state = EXACT_MATCH;
 						_server = &(*itServer);
+						std::cout << GREEN << "Server config perfect match !" << RESET << std::endl;
+					}
+					else if (foundServerName != serverNames.end() && itPortAndIP->second == "0.0.0.0")
+					{
+						state = EXACT_MATCH_DEFAULT_IP;
+						_server = &(*itServer);	
+						std::cout << GREEN << "Set default server matching port AND server_name with DEFAULT IP" << RESET << std::endl;
+					}
+					else if (configIP == serverIP)
+					{
+						state = MATCH_PORT_IP;
+						_server = &(*itServer);
+						std::cout << GREEN << "Set default server matching port AND IP " << _server->getID() <<  RESET << std::endl;
+					}
+					else if (state < MATCH_PORT_DEFAULT_IP)
+					{
+						state = MATCH_PORT_DEFAULT_IP;
+						_server = &(*itServer);
+						std::cout << GREEN << "Set default server matching port AND DEFAULT IP " << _server->getID() <<  RESET << std::endl;
+					}
 				}
-				const std::vector<std::string> serverNames = itServer->getServerName();
-				std::vector<std::string>::const_iterator foundServerName = std::find(serverNames.begin(), serverNames.end(), searchedName);
-				if (foundServerName != serverNames.end())
+				else if (_server == NULL)
 				{
-					// Server Name is also matching !
-					std::cout << GREEN << "Server config perfect match !   --> " << *foundServerName << RESET << std::endl;
-					state = EXACT_MATCH;
-					if (_server != &(*itServer))
-						_server = &(*itServer);
-					break;
+					state = MATCH_PORT;
+					std::cout << GREEN << "Set default server matching port" << RESET <<std::endl;
+					_server = &(*itServer);
 				}
 			}
 		}
@@ -72,7 +82,10 @@ bool HttpRequest::pickServerConfig() {
 		const std::vector< ServerConfig > &config = _config.getServerConfig();
 		_server = &(*config.begin());
 	}
+	std::cout << GREEN << "--> Chosen server config : " << _server->getID() << RESET << std::endl;
 	// _server->printServer();
 
 	return false;
 }
+
+

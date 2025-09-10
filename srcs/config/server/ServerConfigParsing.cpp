@@ -63,7 +63,7 @@ void	ServerConfig::parseRoot(std::vector< t_token>::iterator &it)
 void	ServerConfig::parseErrorPage(std::vector< t_token>::iterator &it)
 {
 	char *end;
-	size_t	check;
+	// size_t	check;
 
 	it++;
 	size_t	nbOfErrorCode = CountErrorCodes(_tokens, it);
