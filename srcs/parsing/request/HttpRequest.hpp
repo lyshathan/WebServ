@@ -20,6 +20,7 @@
 #define MOVED_PERMANENTLY 301
 #define OK 200
 #define FORBIDDEN 403
+#define MOVED_PERMANENTLY_302 302
 
 class ServerConfig;
 

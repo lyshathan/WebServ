@@ -62,6 +62,8 @@ void HttpResponse::initHtmlResponses(){
 		"<body><h1>500 Internal Server Error</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[400] = "<!DOCTYPE html><html><head><title>Bad Request</title></head>"
 		"<body><h1>400 Bad Request</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[302] = "<!DOCTYPE html><html><head><title>302 Found</title></head>"
+		"<body><h1>302 Found</h1><p>The server encountered an unexpected condition.</p></body></html>";
 }
 
 void HttpResponse::setTextContent() {

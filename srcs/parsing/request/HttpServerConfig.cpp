@@ -20,8 +20,8 @@ bool HttpRequest::pickServerConfig() {
 	const std::string host = _headers.find("host")->second;
 	std::string searchedName = host.substr(0, host.find(':', 0));
 
-	std::cout << "Pick right server config, looking for : " << std::endl;
-	std::cout << "    - port : " << serverPort << "\n    - IP : " <<  serverIP << "\n    - server_name : " << searchedName << std::endl;
+	// std::cout << "Pick right server config, looking for : " << std::endl;
+	// std::cout << "    - port : " << serverPort << "\n    - IP : " <<  serverIP << "\n    - server_name : " << searchedName << std::endl;
 
 	const std::vector< ServerConfig > &serverList = _config.getServerConfig();  //
 	std::vector< ServerConfig >::const_iterator itServer = serverList.begin();  //
@@ -46,7 +46,7 @@ bool HttpRequest::pickServerConfig() {
 				if (foundServerName != serverNames.end())
 				{
 					// Server Name is also matching !
-					std::cout << GREEN << "Server config perfect match !   --> " << *foundServerName << RESET << std::endl;
+					// std::cout << GREEN << "Server config perfect match !   --> " << *foundServerName << RESET << std::endl;
 					_server = &(*itServer);
 					break;
 				}
@@ -55,7 +55,7 @@ bool HttpRequest::pickServerConfig() {
 	}
 	if (_server == NULL)
 	{
-		std::cout << GREEN << "Not matching any server config, use default one" << RESET << std::endl;
+		// std::cout << GREEN << "Not matching any server config, use default one" << RESET << std::endl;
 		const std::vector< ServerConfig > &config = _config.getServerConfig();
 		_server = &(*config.begin());
 	}
