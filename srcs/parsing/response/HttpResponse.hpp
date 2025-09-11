@@ -32,12 +32,6 @@ class HttpResponse {
 		void	initHtmlResponses();
 		void	initStatusPhrases();
 
-		void	successfulRequest();
-		void	badRequest();
-		void	notFound();
-
-		void	setTextRes();
-		void	setBinRes();
 		void	setTextContent();
 		void	setBinContent();
 		void	setBody(int);
@@ -48,8 +42,6 @@ class HttpResponse {
 		std::string getMimeType() const;
 		std::string getLastModifiedTime() const;
 		bool		getIsTextContent() const;
-
-		std::string responseHeader();
 
 		const std::string &getRes() const;
 		const std::vector<char> &getBinRes() const;
