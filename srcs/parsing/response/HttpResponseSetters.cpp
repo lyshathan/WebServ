@@ -69,8 +69,12 @@ void HttpResponse::initHtmlResponses(){
 void HttpResponse::setTextContent() {
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
-	if (!file.is_open())
+	if (!file.is_open()) {
+		if (!_htmlResponses[_request->getStatus()].empty()){
+			_res = _htmlResponses[_request->getStatus()];
+		}
 		return ;
+	}
 	_res.clear();
 	char buffer[4096];
 	std::string chunk;

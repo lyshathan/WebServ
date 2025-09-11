@@ -15,6 +15,7 @@
 #include "../../webserv/Webserv.hpp"
 #include "../../config/server/ServerConfig.hpp"
 
+#define DEFAULT 0
 #define BAD_REQUEST 400
 #define NOT_FOUND 404
 #define MOVED_PERMANENTLY 301

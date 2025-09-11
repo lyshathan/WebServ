@@ -12,7 +12,7 @@ void HttpRequest::setErrorPage() {
 			if (errorPath[0] == '/') {
 				std::cout << "Error found " << it->second << "\n";
 				_uri = it->second;
-				// requestHandler();
+				requestHandler();
 			} else {
 				_status = MOVED_PERMANENTLY_302;
 				_uri = it->second;

@@ -33,8 +33,10 @@ bool HttpRequest::setUri(std::string &path) {
 			}
 		}
 	}
-	_status = NOT_FOUND;
-	setErrorPage();
+	if (!_status) {
+		_status = NOT_FOUND;
+		setErrorPage();
+	}
 	return false;
 }
 
@@ -66,7 +68,8 @@ bool HttpRequest::isLocationPathValid() {
 				return false;
 			return true;
 		}
-	} else {
+	}
+	if (!_status) {
 		_status = NOT_FOUND;
 		setErrorPage();
 		return false;
@@ -104,7 +107,7 @@ bool HttpRequest::pickLocationConfig() {
 		return true;
 	} else
 		_location = &(*locations.begin());
-	_status = NOT_FOUND;
-	setErrorPage();
-	return false;
+	// _status = NOT_FOUND;
+	// setErrorPage();
+	return true;
 }
