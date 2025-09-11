@@ -23,6 +23,15 @@
 #define FORBIDDEN 403
 #define MOVED_PERMANENTLY_302 302
 
+typedef enum	e_servState {
+	NO_MATCH,
+	MATCH_PORT,
+	MATCH_PORT_DEFAULT_IP,
+	MATCH_PORT_IP,
+	EXACT_MATCH_DEFAULT_IP,
+	EXACT_MATCH,
+}				t_servState;
+
 class ServerConfig;
 
 class HttpRequest {

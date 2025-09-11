@@ -42,3 +42,8 @@ std::map< int , std::string > ServerConfig::getErrorPages(void) const
 }
 
 const std::vector<LocationConfig>& ServerConfig::getLocations(void) const { return _locations; }
+
+size_t ServerConfig::getID(void) const
+{ 
+	return (_ID);
+}

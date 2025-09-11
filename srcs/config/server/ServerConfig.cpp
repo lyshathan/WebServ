@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 ServerConfig::ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< ServerConfig > &serversConfig)
-: _serversConfig(serversConfig), _tokens(tokenList), _clientMaxBodySize(0),_currentLevel(it->level)
+: _serversConfig(serversConfig), _tokens(tokenList), _clientMaxBodySize(0),_currentLevel(it->level), _ID(serversConfig.size() + 1)
 {
 	parseServerConfig(it);
 }
@@ -146,7 +146,7 @@ void	ServerConfig::printServer(void) const
 	std::string list = "|	|	- ";
 
 	std::cout << "|" << std::endl;
-	std::cout << "|" << PURPLE << "==== SERVER ========" << RESET << std::endl;
+	std::cout << "|" << PURPLE << "==== SERVER " << _ID << "========" << RESET << std::endl;
 	std::cout << indent << "Listen IP:port :" << std::endl;
 	// for (std::vector<int>::iterator it = _listenPorts.begin() ; it != _listenPorts.end() ; it++)
 	// {

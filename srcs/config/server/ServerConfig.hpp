@@ -18,6 +18,7 @@ class ServerConfig {
 		size_t							_clientMaxBodySize;
 		std::vector< LocationConfig >	_locations;
 		const size_t					_currentLevel;
+		const size_t					_ID;
 
 		void	parseServerConfig(std::vector< t_token>::iterator &it);
 		void	parseListenPort(std::vector< t_token>::iterator &it);
@@ -44,6 +45,7 @@ class ServerConfig {
 		std::string							getRoot(void) const;
 		std::map< int , std::string >		getErrorPages(void) const;
 		const std::vector<LocationConfig>&	getLocations(void) const;
+		size_t								getID(void) const;
 
 };
 
