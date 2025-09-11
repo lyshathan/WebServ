@@ -62,18 +62,24 @@ void HttpResponse::initHtmlResponses(){
 		"<body><h1>500 Internal Server Error</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[400] = "<!DOCTYPE html><html><head><title>Bad Request</title></head>"
 		"<body><h1>400 Bad Request</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[302] = "<!DOCTYPE html><html><head><title>302 Found</title></head>"
+		"<body><h1>302 Found</h1><p>The server encountered an unexpected condition.</p></body></html>";
 }
 
 void HttpResponse::setTextContent() {
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
-	if (!file.is_open())
+	if (!file.is_open()) {
+		if (!_htmlResponses[_request->getStatus()].empty()){
+			_res = _htmlResponses[_request->getStatus()];
+		}
 		return ;
-
+	}
 	_res.clear();
 	char buffer[4096];
 	std::string chunk;
 	while (file.read(buffer, sizeof(buffer))) {
+		std::cout << "Buffer " << buffer << "\n";
 		chunk.assign(buffer, file.gcount());
 		_res += chunk;
 	}
