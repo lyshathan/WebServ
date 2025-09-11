@@ -5,15 +5,20 @@
 /******************************************************************************/
 
 void HttpRequest::requestHandler() {
+	std::cout << "Request incoming from .." << _uri << "\n";
+	if (_uri.find("/.well-known/") == 0)
+		return ;
 	if (pickServerConfig() || !pickLocationConfig() || !isLocationPathValid())
 		return ;
-	_status = OK;
+	if (!_status)
+		_status = OK;
 }
 
 bool HttpRequest::setUri(std::string &path) {
 	std::string filepath;
 	std::vector<std::string> index = _location->getIndex();
 
+	// std::cout << "setUri path\n";
 	if (!index.empty()) {
 		std::vector<std::string>::iterator it = index.begin();
 		for (; it != index.end(); ++it) {
@@ -28,8 +33,10 @@ bool HttpRequest::setUri(std::string &path) {
 			}
 		}
 	}
-	_status = NOT_FOUND;
-	setErrorPage();
+	if (!_status) {
+		_status = NOT_FOUND;
+		setErrorPage();
+	}
 	return false;
 }
 
@@ -44,6 +51,7 @@ bool HttpRequest::isLocationPathValid() {
 				_status = FORBIDDEN;
 				return false;
 			}
+			_uri = path;
 			return true;
 		}
 		else if (S_ISDIR(buf.st_mode)) {
@@ -52,6 +60,7 @@ bool HttpRequest::isLocationPathValid() {
 				return false;
 			}
 			if (!_uri.empty() && _uri[_uri.length() - 1] != '/') {
+				_uri += "/";
 				_status = MOVED_PERMANENTLY;
 				return false;
 			}
@@ -59,7 +68,8 @@ bool HttpRequest::isLocationPathValid() {
 				return false;
 			return true;
 		}
-	} else {
+	}
+	if (!_status) {
 		_status = NOT_FOUND;
 		setErrorPage();
 		return false;
@@ -95,8 +105,9 @@ bool HttpRequest::pickLocationConfig() {
 		_location = &(*bestMatch);
 		std::cout << "Location chosen " << _location->getPath() << "\n";
 		return true;
-	}
-	_status = NOT_FOUND;
-	setErrorPage();
-	return false;
+	} else
+		_location = &(*locations.begin());
+	// _status = NOT_FOUND;
+	// setErrorPage();
+	return true;
 }

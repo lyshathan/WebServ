@@ -27,7 +27,11 @@ void HttpResponse::parseResponse() {
 		addHeader("Connection: ", "keep-alive");
 	else if (status == NOT_FOUND)
 		addHeader("Connection: ", "close");
-	// if (status == BAD_REQUEST)
+	else if (status == MOVED_PERMANENTLY || status == MOVED_PERMANENTLY_302) {
+		addHeader("Connection: ", "keep-alive");
+		addHeader("Location: ", _request->getUri());
+	}
+	// if (status == BAD_REQUmEST)
 	// 	badRequest();
 	// if (status == NOT_FOUND)
 	// 	notFound();

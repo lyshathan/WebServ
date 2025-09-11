@@ -37,7 +37,7 @@ Webserv::~Webserv()
 
 int Webserv::createServerSocket()
 {
-	std::cout << BLUE << "[Server] Create and bind server sockets :" << RESET << std::endl;
+	// std::cout << BLUE << "[Server] Create and bind server sockets :" << RESET << std::endl;
 	for (size_t servIndex = 0 ; servIndex < _serverConfigs.size() ; servIndex++)
 	{
 		const std::map< uint16_t, std::string>& portAndIP = _serverConfigs[servIndex].getPortAndIP();
@@ -111,20 +111,20 @@ void Webserv::setupPollServer()
 		ServerPollFd.revents = 0;
 		_pollFds.push_back(ServerPollFd);
 
-		std::map< int, std::pair< uint16_t, std::string> >::iterator find = _serverInfos.find(_serverFds[i]);
-		std::cout << PURPLE << "[Server] Server fd added to _pollFds : " << "[" << _serverFds[i] << "] > "<< find->second.second << ":" << find->second.first << RESET << std::endl;
+		// std::map< int, std::pair< uint16_t, std::string> >::iterator find = _serverInfos.find(_serverFds[i]);
+		// std::cout << PURPLE << "[Server] Server fd added to _pollFds : " << "[" << _serverFds[i] << "] > "<< find->second.second << ":" << find->second.first << RESET << std::endl;
 	}
 
 }
 
 
 bool	Webserv::socketAlreadyExists(const uint16_t &port, const std::string &IP) const
-{	
+{
 	// Normalize localhost to 127.0.0.1 for comparison
 	std::string normalizedIP = IP;
 	if (IP == "localhost")
 		normalizedIP = "127.0.0.1";
-	
+
 	// First check if this exact IP:port already exists in created sockets
 	std::map< int, std::pair< uint16_t, std::string> >::const_iterator it = _serverInfos.begin();
 	for (; it != _serverInfos.end() ; ++it)
@@ -132,13 +132,13 @@ bool	Webserv::socketAlreadyExists(const uint16_t &port, const std::string &IP) c
 		std::string existingIP = it->second.second;
 		if (existingIP == "localhost")
 			existingIP = "127.0.0.1";
-			
+
 		if (it->second.first == port && existingIP == normalizedIP)
 		{
 			std::cout << YELLOW << "Host:Port (" << IP << ":" << port<< ") already existing, skipping server." << RESET << std::endl;
 			return (true);
 		}
-		
+
 		// If we already have 0.0.0.0:port, skip any specific IP:port
 		if (it->second.first == port && it->second.second == "0.0.0.0" && normalizedIP != "0.0.0.0")
 		{
@@ -146,7 +146,7 @@ bool	Webserv::socketAlreadyExists(const uint16_t &port, const std::string &IP) c
 			return (true);
 		}
 	}
-	
+
 	// For any non-0.0.0.0 binding, check if 0.0.0.0:port exists anywhere in the config
 	// If it does, skip this specific binding in favor of the global one
 	if (normalizedIP != "0.0.0.0")
@@ -164,6 +164,6 @@ bool	Webserv::socketAlreadyExists(const uint16_t &port, const std::string &IP) c
 			}
 		}
 	}
-	
+
 	return (false);
 }
