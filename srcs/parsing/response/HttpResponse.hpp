@@ -36,7 +36,10 @@ class HttpResponse {
 		void	setBinContent();
 		void	setBody(int);
 		void	addHeader(const std::string &, const std::string &);
-		void	setDefaultHeaders(int);
+		void	setContentHeaders();
+		void	setStatusLine(int);
+		void	setConnectionHeader(int);
+		void	setStatusSpecificHeaders(int);
 
 		std::string getTime() const;
 		std::string getMimeType() const;

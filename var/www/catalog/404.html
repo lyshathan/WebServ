@@ -1,1 +1,58 @@
-catalog error page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - GreenLeaf</title>
+    <meta name="description" content="The page you're looking for doesn't exist. Explore our plant catalog instead.">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/index.html" class="logo">🌿 GreenLeaf</a>
+            <ul class="nav-links">
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/catalog/index.html">Plant Catalog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="error-page">
+            <h1>404</h1>
+            <h2>Oops! This page seems to have wilted away</h2>
+            <p>The page you're looking for might have been moved, deleted, or perhaps never existed. Don't worry though - there are plenty of beautiful plants waiting to be discovered!</p>
+
+            <div style="margin: 2rem 0;">
+                <a href="/index.html" class="cta-button" style="margin-right: 1rem;">🏠 Go Home</a>
+                <a href="/catalog/index.html" class="cta-button">🌱 Browse Plants</a>
+            </div>
+
+            <div class="plant-grid" style="margin-top: 3rem;">
+                <div class="plant-card">
+                    <h3>🌹 Popular Plants</h3>
+                    <p>Check out our most loved plants</p>
+                    <a href="/plants/rose.html">View Roses</a>
+                </div>
+                <div class="plant-card">
+                    <h3>🌵 Easy Care</h3>
+                    <p>Perfect for beginners</p>
+                    <a href="/plants/cactus.html">View Cacti</a>
+                </div>
+                <div class="plant-card">
+                    <h3>🌿 Indoor Plants</h3>
+                    <p>Great for your home</p>
+                    <a href="/plants/fern.html">View Ferns</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 GreenLeaf Plant Catalog. Bringing nature closer to home.</p>
+    </footer>
+
+    <script src="/static/main.js"></script>
+</body>
+</html>

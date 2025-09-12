@@ -20,17 +20,8 @@ HttpResponse::~HttpResponse() {};
 void HttpResponse::parseResponse() {
 	int	status = _request->getStatus();
 
+	setStatusLine(status);
 	setBody(status);
-	setDefaultHeaders(status);
-
-	if (status == OK || status == FORBIDDEN)
-		addHeader("Connection: ", "keep-alive");
-	else if (status == NOT_FOUND)
-		addHeader("Connection: ", "close");
-	else if (status == MOVED_PERMANENTLY || status == MOVED_PERMANENTLY_302) {
-		addHeader("Connection: ", "keep-alive");
-		addHeader("Location: ", _request->getUri());
-	}
+	setContentHeaders();
+	setStatusSpecificHeaders(status);
 }
-
-

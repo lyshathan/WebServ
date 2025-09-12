@@ -2,16 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cactus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cactus - Desert Survivor | GreenLeaf</title>
+    <meta name="description" content="Discover cacti, the ultimate low-maintenance plants. Perfect for busy lifestyles and modern decor.">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Cactus</h1>
-        <img src="/static/images/cactus.svg" alt="Cactus" style="width:120px;height:120px;">
-        <p>Cacti are succulent plants that thrive in dry environments.</p>
-    <nav>
-        <a href="/catalog/index.html">Back to Catalog</a>
-    </nav>
+    <header>
+        <nav>
+            <a href="/index.html" class="logo">🌿 GreenLeaf</a>
+            <ul class="nav-links">
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/catalog/index.html">Plant Catalog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="plant-detail">
+            <div class="plant-info">
+                <div class="plant-image">
+                    <img src="/static/images/cactus.jpeg?v=1" alt="Desert Cactus Plant">
+                </div>
+                <div class="plant-description">
+                    <h2>Cactus - The Desert Survivor</h2>
+                    <p>Cacti are remarkable succulent plants belonging to the family Cactaceae. These incredible survivors have evolved to thrive in some of the world's harshest environments, storing water in their thick stems and reducing water loss through specialized spines instead of leaves.</p>
+                    <p>Perfect for modern living, cacti require minimal care while providing maximum visual impact. Their unique shapes and occasional spectacular blooms make them living sculptures for your home or office.</p>
+                </div>
+            </div>
+
+            <div class="plant-specs">
+                <h3>Plant Specifications</h3>
+                <div class="spec-item">
+                    <span><strong>Scientific Name:</strong></span>
+                    <span>Cactaceae family</span>
+                </div>
+                <div class="spec-item">
+                    <span><strong>Plant Type:</strong></span>
+                    <span>Succulent</span>
+                </div>
+                <div class="spec-item">
+                    <span><strong>Mature Size:</strong></span>
+                    <span>1 inch to 60 feet (species dependent)</span>
+                </div>
+                <div class="spec-item">
+                    <span><strong>Sun Exposure:</strong></span>
+                    <span>Bright light to full sun</span>
+                </div>
+                <div class="spec-item">
+                    <span><strong>Soil Type:</strong></span>
+                    <span>Well-draining, sandy or gritty soil</span>
+                </div>
+                <div class="spec-item">
+                    <span><strong>Bloom Time:</strong></span>
+                    <span>Spring to summer (varies by species)</span>
+                </div>
+                <div class="spec-item">
+                    <span><strong>Hardiness Zones:</strong></span>
+                    <span>9-11 (indoors: any zone)</span>
+                </div>
+            </div>
+
+            <div class="plant-specs">
+                <h3>Care Instructions</h3>
+                <p><strong>Watering:</strong> Water thoroughly but infrequently. Allow soil to dry completely between waterings. Reduce watering in winter.</p>
+                <p><strong>Light:</strong> Provide bright, indirect light indoors or full sun outdoors. Rotate occasionally for even growth.</p>
+                <p><strong>Temperature:</strong> Most cacti prefer temperatures between 65-80°F (18-27°C) during growing season.</p>
+                <p><strong>Soil:</strong> Use a cactus-specific potting mix or create your own with regular potting soil mixed with sand and perlite.</p>
+                <p><strong>Fertilizing:</strong> Feed with diluted cactus fertilizer during growing season (spring and summer).</p>
+            </div>
+        </div>
+
+        <section class="hero">
+            <h2>Explore More Plants</h2>
+            <p>Discover other beautiful plants in our collection</p>
+            <div style="margin-top: 2rem;">
+                <a href="/plants/rose.html" class="cta-button" style="margin-right: 1rem;">View Rose</a>
+                <a href="/plants/fern.html" class="cta-button">View Fern</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 GreenLeaf Plant Catalog. Bringing nature closer to home.</p>
+    </footer>
+
     <script src="/static/main.js"></script>
 </body>
 </html>
