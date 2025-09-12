@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 
 
-bool HttpRequest::pickServerConfig() {
+void HttpRequest::pickServerConfig() {
 	_server = NULL;
 	t_servState	state = NO_MATCH;
 
@@ -52,7 +52,7 @@ bool HttpRequest::pickServerConfig() {
 					else if (foundServerName != serverNames.end() && itPortAndIP->second == "0.0.0.0")
 					{
 						state = EXACT_MATCH_DEFAULT_IP;
-						_server = &(*itServer);	
+						_server = &(*itServer);
 						std::cout << GREEN << "Set default server matching port AND server_name with DEFAULT IP" << RESET << std::endl;
 					}
 					else if (configIP == serverIP)
@@ -89,7 +89,6 @@ bool HttpRequest::pickServerConfig() {
 	std::cout << GREEN << "--> Chosen server config : " << _server->getID() << RESET << std::endl;
 	// _server->printServer();
 
-	return false;
 }
 
 

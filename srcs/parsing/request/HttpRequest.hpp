@@ -58,10 +58,11 @@ class HttpRequest {
 		bool		validateUri();
 		bool		validateVersion(std::string);
 
-		bool		pickServerConfig();
-		bool		pickLocationConfig();
 		bool		setUri(std::string &);
 		void		setErrorPage();
+
+		void		pickServerConfig();
+		void		pickLocationConfig();
 
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);

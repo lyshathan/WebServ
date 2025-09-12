@@ -8,8 +8,12 @@ void HttpRequest::requestHandler() {
 	std::cout << "Request incoming from .." << _uri << "\n";
 	if (_uri.find("/.well-known/") == 0)
 		return ;
-	if (pickServerConfig() || !pickLocationConfig() || !isLocationPathValid())
-		return ;
+	pickServerConfig();
+	pickLocationConfig();
+	if (!isLocationPathValid()) {
+		setErrorPage();
+		return;
+	}
 	if (!_status)
 		_status = OK;
 }
@@ -33,10 +37,8 @@ bool HttpRequest::setUri(std::string &path) {
 			}
 		}
 	}
-	if (!_status) {
+	if (!_status)
 		_status = NOT_FOUND;
-		setErrorPage();
-	}
 	return false;
 }
 
@@ -69,15 +71,12 @@ bool HttpRequest::isLocationPathValid() {
 			return true;
 		}
 	}
-	if (!_status) {
+	if (!_status)
 		_status = NOT_FOUND;
-		setErrorPage();
-		return false;
-	}
 	return false;
 }
 
-bool HttpRequest::pickLocationConfig() {
+void HttpRequest::pickLocationConfig() {
 	const std::vector<LocationConfig> &locations = _server->getLocations();
 	std::vector<LocationConfig>::const_iterator it = locations.begin();
 	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
@@ -104,10 +103,6 @@ bool HttpRequest::pickLocationConfig() {
 	if (bestMatch != locations.end()) {
 		_location = &(*bestMatch);
 		std::cout << "Location chosen " << _location->getPath() << "\n";
-		return true;
 	} else
 		_location = &(*locations.begin());
-	// _status = NOT_FOUND;
-	// setErrorPage();
-	return true;
 }
