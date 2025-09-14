@@ -85,7 +85,7 @@ int Webserv::acceptNewConnection(int &serverFd)
 
 int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 {
-	char	buffer[BUFSIZ + 1];
+	char	buffer[BUFSIZ];
 	int 	senderFd;
 	int		bytesRead;
 	int		status;
@@ -103,9 +103,14 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	else
 	{
 		_clients[it->fd]->appendBuffer(buffer, bytesRead);
+		if (!_clients[senderFd]->httpReq->getHeadersParsed())
+			_clients[senderFd]->httpReq->requestHeaderParser(_clients[senderFd]->getRes());
+
 		if (_clients[senderFd]->isReqComplete()) {
-			_clients[senderFd]->httpReq->handleRequest(_clients[senderFd]->getRes());
+			_clients[senderFd]->httpReq->requestBodyParser(_clients[senderFd]->getRes());
+			_clients[senderFd]->httpReq->requestHandler();
 			_clients[it->fd]->httpRes->parseResponse();
+
 			std::string resHeaders = _clients[it->fd]->httpRes->getResHeaders().c_str();
 			status = send(it->fd, resHeaders.c_str(), resHeaders.length(), 0);
 			bool	isTextContent = _clients[it->fd]->httpRes->getIsTextContent();

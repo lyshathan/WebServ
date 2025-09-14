@@ -46,14 +46,12 @@ class HttpRequest {
 		std::string							_body;
 		int									_status;
 		int									_clientfd;
+		bool								_areHeadersParsed;
 
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
 		bool		parseBody(std::string);
-
-		void		requestHandler();
-		bool		requestParser(std::string);
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
@@ -76,32 +74,17 @@ class HttpRequest {
 		HttpRequest(const Config& config, int &);
 		~HttpRequest();
 
-		void	handleRequest(std::string);
+		void	requestHeaderParser(std::string);
+		void	requestBodyParser(std::string);
+		void	requestHandler();
 
 		const std::string&	getMethod() const;
 		const std::string&	getUri() const;
 		const std::string&	getVersion() const;
 		void				cleanReqInfo();
 		int					getStatus() const;
+		bool				getHeadersParsed() const;
 		std::map<std::string, std::string>& getHeaders();
 };
 
 #endif
-
-// "GET /index.html HTTP/1.1\r\nHost:localhost:8080\r\nUser-Agent:Mozilla/5.0\r\n\r\n"
-
-// Request-Line = GET /index.html HTTP/1.1\r\n
-
-// Headers = Host:localhost:8080\r\nUser-Agent:Mozilla/5.0
-
-// {
-// 	method:"GET"
-// 	path:"/index.html"
-// 	version:"HTTP/1.1"
-// 	headers: {
-// 		"Host":"localhost:8080",
-// 		"User-Agent":"Mozilla/5.0"
-// 	}
-// 	body:NULL
-// 	valid:true
-// }

@@ -76,13 +76,3 @@ bool HttpRequest::validateVersion(std::string str){
 	std::string version = str.substr(PREFIX.length());
 	return (version == VALID_VERSIONS[0] || version == VALID_VERSIONS[1]);
 }
-
-const std::string& HttpRequest::getMethod()const {return _method;}
-
-const std::string& HttpRequest::getUri() const {return _uri;}
-
-const std::string& HttpRequest::getVersion() const {return _version;}
-
-std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
-
-int	HttpRequest::getStatus() const {return _status;}
