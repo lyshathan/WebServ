@@ -98,7 +98,21 @@ bool HttpRequest::parseBody(std::string data) {
 	size_t headerEnd = data.find("\r\n\r\n");
 	if (headerEnd == std::string::npos)
 		return false;
-	std::string body = data.substr(headerEnd + 4);
-	std::cout << "----- Body ---- \n" << body << "\n";
+	_body = data.substr(headerEnd + 4);
+
+	// std::string fullPath = "./uploaded_body.png";
+
+	// // 3. Open file in binary mode
+	// std::ofstream file(fullPath, std::ios::binary);
+	// if (!file.is_open()) {
+	// 	std::cout << "Error opening the file\n";
+	// 	return false; // Error opening file
+	// }
+	// file.write(body.data(), body.size());
+	// if (file.fail()) {
+	// 	return false;
+	// }
+
+	// file.close();
 	return true;
 }

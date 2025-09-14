@@ -25,7 +25,7 @@ void	Client::clearBuffer() {
 }
 
 bool	Client::appendBuffer(const char *data, size_t size) {
-	_reqBuffer += std::string(data, size);
+	_reqBuffer.insert(_reqBuffer.end(), data, data + size);
 	_recvSize += size;
 	return true;
 }

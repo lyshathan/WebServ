@@ -7,9 +7,9 @@
 
 class Client {
 	private:
-		int			_fd;
-		std::string	_reqBuffer;
-		size_t		_recvSize;
+		int					_fd;
+		std::string			_reqBuffer;
+		size_t				_recvSize;
 
 		Client();
 	public:
