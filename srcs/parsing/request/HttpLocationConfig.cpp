@@ -10,12 +10,38 @@ void HttpRequest::requestHandler() {
 		return ;
 	pickServerConfig();
 	pickLocationConfig();
-	if (!isLocationPathValid()) {
+	if (!validateMethods()) {
 		setErrorPage();
 		return;
 	}
+	if (_method == "POST") {
+		if (!isUploadPathValid()) {
+			setErrorPage();
+			return;
+		}
+	} else {
+		if (!isLocationPathValid()) {
+		setErrorPage();
+		return;
+	}
+	}
 	if (!_status)
 		_status = OK;
+}
+
+bool HttpRequest::validateMethods() {
+	std::vector<std::string> allowMethods = _location->getAllowMethods();
+	std::vector<std::string>::iterator it = allowMethods.begin();
+
+	if (!allowMethods.empty()) {
+		for (; it != allowMethods.end(); ++it) {
+		if ((*it).compare(_method) == 0)
+			return true;
+		}
+		std::cout << "FORBIDDEN\n";
+		_status = FORBIDDEN;
+	}
+	return false;
 }
 
 bool HttpRequest::setUri(std::string &path) {
@@ -40,6 +66,41 @@ bool HttpRequest::setUri(std::string &path) {
 	if (!_status)
 		_status = NOT_FOUND;
 	return false;
+}
+
+bool HttpRequest::isUploadPathValid() {
+	std::string	path = _location->getUploadPath() + _uri;
+
+	std::cout << "Path " << path << "\n";
+	struct stat buf;
+	if (!stat(path.c_str(),&buf)) {
+		if (S_ISREG(buf.st_mode)) {
+			if (access(path.c_str(),  R_OK) != 0) {
+				_status = FORBIDDEN;
+				return false;
+			}
+			_uri = path;
+			return true;
+		}
+	}
+
+	// std::cout << "Body " << _body << "\n";
+	std::string fullPath = "./uploaded_body.png";
+
+	// 3. Open file in binary mode
+	// std::ofstream file(fullPath, std::ios::binary);
+	// if (!file.is_open()) {
+	// 	std::cout << "Error opening the file\n";
+	// 	return false; // Error opening file
+	// }
+	// file.write(body.data(), body.size());
+	// if (file.fail()) {
+	// 	return false;
+	// }
+
+	// file.close();
+
+	return true;
 }
 
 bool HttpRequest::isLocationPathValid() {

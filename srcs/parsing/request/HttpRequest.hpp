@@ -43,7 +43,7 @@ class HttpRequest {
 		std::string							_uri;
 		std::string							_version;
 		std::map<std::string, std::string>	_headers;
-		std::string							_body;
+		std::map<std::string, std::string>	_body;
 		int									_status;
 		int									_clientfd;
 		bool								_areHeadersParsed;
@@ -52,12 +52,15 @@ class HttpRequest {
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
 		bool		parseBody(std::string);
+		bool		parseMultiPartBody(std::map<std::string, std::string>::const_iterator &it, std::string);
+		void		parseOnePart(std::string);
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
 
 		bool		setUri(std::string &);
 		void		setErrorPage();
+		bool		validateMethods();
 
 		void		pickServerConfig();
 		void		pickLocationConfig();
@@ -68,6 +71,7 @@ class HttpRequest {
 		bool		isValidTchar(char c);
 
 		bool		isLocationPathValid();
+		bool		isUploadPathValid();
 
 		HttpRequest();
 	public:
@@ -78,12 +82,12 @@ class HttpRequest {
 		void	requestBodyParser(std::string);
 		void	requestHandler();
 
-		const std::string&	getMethod() const;
-		const std::string&	getUri() const;
-		const std::string&	getVersion() const;
-		int					getStatus() const;
-		bool				getHeadersParsed() const;
-		std::map<std::string, std::string>& getHeaders();
+		const std::string&					getMethod() const;
+		const std::string&					getUri() const;
+		const std::string&					getVersion() const;
+		int									getStatus() const;
+		bool								getHeadersParsed() const;
+		std::map<std::string, std::string>&	getHeaders();
 
 		void 				setHeadersParsed();
 

@@ -10,6 +10,7 @@ void HttpRequest::setErrorPage() {
 		if (it != path.end()) {
 			std::string errorPath = it->second;
 			if (errorPath[0] == '/') {
+				_method = "GET";
 				std::cout << "Error found " << it->second << "\n";
 				_uri = it->second;
 				requestHandler();

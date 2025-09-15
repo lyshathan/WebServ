@@ -98,26 +98,55 @@ bool HttpRequest::validateUri() {
 	return true;
 }
 
+void HttpRequest::parseOnePart(std::string part) {
+	std::string str = "filename=";
+	size_t pos = part.find(str);
+	if (pos == std::string::npos) return;
+
+	size_t start = pos + str.length() + 1;
+	if (start >= part.length()) return;
+
+	size_t end = part.find('"', start);
+	if (end == std::string::npos) return;
+
+	std::string filename = part.substr(start, end - start);
+
+	size_t bodyPos = part.find("\r\n\r\n");
+	std::string body;
+	if (bodyPos != std::string::npos)
+		body = part.substr(bodyPos + 4);
+	_body[filename] = body;
+}
+
+bool HttpRequest::parseMultiPartBody(std::map<std::string, std::string>::const_iterator &it, std::string body) {
+	size_t	pos = it->second.find("=");
+	if (pos != std::string::npos) {
+		std::string boundary = "--" + it->second.substr(pos + 1);
+		size_t currentPos = body.find(boundary);
+		while (currentPos != std::string::npos) {
+			size_t nextBoundary = body.find(boundary, currentPos + boundary.length());
+			if (nextBoundary != std::string::npos) {
+				std::string part = body.substr(currentPos + boundary.length(), nextBoundary
+												- currentPos - boundary.length());
+				parseOnePart(part);
+			}
+			currentPos = nextBoundary;
+		}
+	}
+	return true;
+}
+
 bool HttpRequest::parseBody(std::string data) {
 	size_t headerEnd = data.find("\r\n\r\n");
 	if (headerEnd == std::string::npos)
 		return false;
-	_body = data.substr(headerEnd + 4);
-
-	// std::cout << "Body " << _body << "\n";
-	// std::string fullPath = "./uploaded_body.png";
-
-	// // 3. Open file in binary mode
-	// std::ofstream file(fullPath, std::ios::binary);
-	// if (!file.is_open()) {
-	// 	std::cout << "Error opening the file\n";
-	// 	return false; // Error opening file
-	// }
-	// file.write(body.data(), body.size());
-	// if (file.fail()) {
-	// 	return false;
-	// }
-
-	// file.close();
+	std::string body = data.substr(headerEnd + 4);
+	std::map<std::string, std::string>::const_iterator it = _headers.find("content-type");
+	if (it != _headers.end()) {
+		if (it->second.find("multipart") != std::string::npos)
+			parseMultiPartBody(it, body);
+		else
+			_body[""] = body;
+	}
 	return true;
 }

@@ -1,8 +1,6 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-
-
 int	Webserv::runningServ(void)
 {
 
@@ -107,6 +105,7 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			_clients[senderFd]->httpReq->requestHeaderParser(_clients[senderFd]->getRes());
 		}
 		if (_clients[senderFd]->isReqComplete()) {
+			// std::cout << "[Buffer]\n" << _clients[senderFd]->getRes() << "\n";
 			_clients[senderFd]->httpReq->requestBodyParser(_clients[senderFd]->getRes());
 			_clients[senderFd]->httpReq->requestHandler();
 			_clients[it->fd]->httpRes->parseResponse();

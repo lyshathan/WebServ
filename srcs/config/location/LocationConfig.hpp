@@ -37,16 +37,19 @@ class LocationConfig {
 		LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations);
 		~LocationConfig();
 		LocationConfig & operator=(LocationConfig const &otherLocationConfig);
-		void	printLocation(void) const;
-		void	check(ServerConfig &server);
+		void						printLocation(void) const;
+		void						check(ServerConfig &server);
 
-		bool		getExactMatch(void) const;
-		bool		getAutoIndex(void) const;
-		std::string	getPath(void) const;
-		std::string	getRoot(void) const;
-		std::vector<std::string> getIndex(void) const;
-		std::map<int,std::string> getErrorPages(void) const;
-		void		setPath(std::string newPath);
+		bool						getExactMatch(void) const;
+		bool						getAutoIndex(void) const;
+		std::string					getPath(void) const;
+		std::string					getRoot(void) const;
+		std::vector<std::string>	getIndex(void) const;
+		std::map<int,std::string>	getErrorPages(void) const;
+		std::vector<std::string>	getAllowMethods(void) const;
+		std::string					getUploadPath(void) const;
+
+		void						setPath(std::string newPath);
 };
 
 #endif
