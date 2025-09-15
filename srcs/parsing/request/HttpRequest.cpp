@@ -17,6 +17,10 @@ void HttpRequest::requestHeaderParser(std::string data) {
 	std::string	firstLine;
 	std::string	headers;
 
+	size_t headerEnd = data.find("\r\n\r\n");
+	if (headerEnd == std::string::npos)
+		return ;
+
 	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine)) {
 		_status = BAD_REQUEST;
 		return ;
@@ -100,6 +104,7 @@ bool HttpRequest::parseBody(std::string data) {
 		return false;
 	_body = data.substr(headerEnd + 4);
 
+	// std::cout << "Body " << _body << "\n";
 	// std::string fullPath = "./uploaded_body.png";
 
 	// // 3. Open file in binary mode

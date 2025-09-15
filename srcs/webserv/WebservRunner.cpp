@@ -103,9 +103,9 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	else
 	{
 		_clients[it->fd]->appendBuffer(buffer, bytesRead);
-		if (!_clients[senderFd]->httpReq->getHeadersParsed())
+		if (!_clients[senderFd]->httpReq->getHeadersParsed()) {
 			_clients[senderFd]->httpReq->requestHeaderParser(_clients[senderFd]->getRes());
-
+		}
 		if (_clients[senderFd]->isReqComplete()) {
 			_clients[senderFd]->httpReq->requestBodyParser(_clients[senderFd]->getRes());
 			_clients[senderFd]->httpReq->requestHandler();

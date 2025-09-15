@@ -21,6 +21,7 @@ const std::string &Client::getRes() const { return _reqBuffer;}
 void	Client::clearBuffer() {
 	_reqBuffer = "";
 	_recvSize = 0;
+	httpReq->setHeadersParsed();
 	httpReq->cleanReqInfo();
 }
 
@@ -41,6 +42,7 @@ bool Client::isReqComplete() const {
 	if (it != headers.end()) {
 		size_t contentLength = std::stoul(it->second);
 		size_t bodyReceived = _reqBuffer.length() - (headerEnd + 4);
+		// std::cout << "\n\nTrue or false - " << (bodyReceived >= contentLength) << "\n";
 		return bodyReceived >= contentLength;
 	}
 

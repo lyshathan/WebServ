@@ -81,10 +81,13 @@ class HttpRequest {
 		const std::string&	getMethod() const;
 		const std::string&	getUri() const;
 		const std::string&	getVersion() const;
-		void				cleanReqInfo();
 		int					getStatus() const;
 		bool				getHeadersParsed() const;
 		std::map<std::string, std::string>& getHeaders();
+
+		void 				setHeadersParsed();
+
+		void				cleanReqInfo();
 };
 
 #endif

@@ -15,3 +15,5 @@ std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
 int	HttpRequest::getStatus() const {return _status;}
 
 bool HttpRequest::getHeadersParsed() const {return _areHeadersParsed;}
+
+void HttpRequest::setHeadersParsed() { _areHeadersParsed = false; }
