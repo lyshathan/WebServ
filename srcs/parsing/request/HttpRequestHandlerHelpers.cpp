@@ -13,8 +13,7 @@ bool HttpRequest::validateMethods() {
 			if ((*it).compare(_method) == 0)
 				return true;
 		}
-		std::cout << "FORBIDDEN\n";
-		_status = FORBIDDEN;
+		_status = NOT_ALLOWED;
 	}
 	return false;
 }

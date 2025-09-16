@@ -23,6 +23,7 @@
 #define OK 200
 #define CREATED 201
 #define FORBIDDEN 403
+#define NOT_ALLOWED 405
 
 typedef enum	e_servState {
 	NO_MATCH,
