@@ -23,6 +23,9 @@ void HttpResponse::parseResponse() {
 	setStatusLine(status);
 	if (status == 201) {
 		postParseResponse(status);
+	}
+	else if (status == 204) {
+		deleteParseResponse();
 	} else {
 		setBody(status);
 		setContentHeaders();
@@ -30,7 +33,17 @@ void HttpResponse::parseResponse() {
 	}
 }
 
-void HttpResponse::postParseResponse (int status) {
+void HttpResponse::deleteParseResponse() {
+
+	_isTextContent = true;
+	_res = "";
+	addHeader("Server: ", "webserv");
+	addHeader("Date: ", getTime());
+	addHeader("Content-Length: ", "0");
+	addHeader("Connection: ", "close");
+}
+
+void HttpResponse::postParseResponse(int status) {
 	std::stringstream ss;
 
 	_isTextContent = true;

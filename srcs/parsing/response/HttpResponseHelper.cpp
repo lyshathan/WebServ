@@ -50,6 +50,8 @@ void HttpResponse::initStatusPhrases(){
 	_statusPhrases[400] = "Bad Request";
 	_statusPhrases[201] = "Created";
 	_statusPhrases[405] = "Method Not Allowed";
+	_statusPhrases[500] = "Internal Server Error";
+	_statusPhrases[204] = "No Content";
 }
 
 void HttpResponse::initHtmlResponses(){
@@ -71,4 +73,6 @@ void HttpResponse::initHtmlResponses(){
 		"<body><h1>302 Found</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[405] = "<!DOCTYPE html><html><head><title>405 Not Allowed</title></head>"
 		"<body><h1>405 Not Allowed</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[500] = "<!DOCTYPE html><html><head><title>500 Internal Server Error</title></head>"
+		"<body><h1>500 Internal Server Error</h1><p>The server encountered an unexpected condition.</p></body></html>";
 }

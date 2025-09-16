@@ -42,6 +42,7 @@ class HttpResponse {
 		void	setStatusSpecificHeaders(int);
 
 		void	postParseResponse(int);
+		void	deleteParseResponse();
 
 		std::string getTime() const;
 		std::string getMimeType() const;

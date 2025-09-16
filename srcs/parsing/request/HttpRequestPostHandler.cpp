@@ -4,6 +4,41 @@
 /*								POST HANDLER								  */
 /******************************************************************************/
 
+bool HttpRequest::postHandler() {
+	if (!isUploadPathValid()) {
+		setErrorPage();
+		return false;
+	}
+	createFile();
+	if (!_status)
+		_status = CREATED;
+	return true;
+}
+
+bool HttpRequest::isUploadPathValid() {
+	std::string	path = _location->getUploadPath() + _uri;
+	struct stat buf;
+
+	std::cout << "Upload Path " << path << "\n";
+	if (!stat(path.c_str(),&buf)) {
+		if (S_ISDIR(buf.st_mode)) {
+			if (access(path.c_str(),  R_OK | X_OK) != 0) {
+				_status = FORBIDDEN;
+				return false;
+			}
+			if (!_uri.empty() && _uri[_uri.length() - 1] != '/') {
+				_uri += "/";
+				_status = MOVED_PERMANENTLY;
+				return false;
+			}
+			return true;
+		}
+	}
+	if (!_status)
+		_status = NOT_FOUND;
+	return false;
+}
+
 bool HttpRequest::nameAttribute(std::string& path, std::string& filename) {
 	int counter = 1;
 	std::string originalFilename = filename;

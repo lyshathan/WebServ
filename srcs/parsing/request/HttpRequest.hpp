@@ -24,6 +24,8 @@
 #define CREATED 201
 #define FORBIDDEN 403
 #define NOT_ALLOWED 405
+#define INTERNAL_ERROR 500
+#define NO_CONTENT 204
 
 typedef enum	e_servState {
 	NO_MATCH,
@@ -59,7 +61,9 @@ class HttpRequest {
 
 		bool		postHandler();
 		bool		getHandler();
+		bool		deleteHandler();
 		bool		createFile();
+		bool		deleteFile();
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
@@ -78,6 +82,7 @@ class HttpRequest {
 
 		bool		isLocationPathValid();
 		bool		isUploadPathValid();
+		bool		isDeletePathValid();
 		bool		nameAttribute(std::string&, std::string &);
 
 		HttpRequest();
