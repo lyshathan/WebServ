@@ -6,6 +6,7 @@
 
 void HttpRequest::cleanReqInfo() {
 	_method.clear();
+	_body.clear();
 	_uri.clear();
 	_version.clear();
 	_headers.clear();
@@ -19,6 +20,20 @@ bool HttpRequest::extractUntil(std::string &line,
 		return false;
 	line = data.substr(0, pos);
 	data = data.substr(pos + del.length());
+	return true;
+}
+
+bool HttpRequest::validateUri() {
+	if (_uri[0] != '/') return false;
+	if (_uri.find("..") != std::string::npos) return false;
+	if (_uri.find('\0') != std::string::npos) return false;
+	for (size_t i = 0; i < _uri.length(); ++i) {
+		if (!std::isalnum(_uri[i])) {
+			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
+				continue;
+			return false;
+		}
+	}
 	return true;
 }
 

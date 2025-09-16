@@ -48,11 +48,14 @@ void HttpResponse::initStatusPhrases(){
 	_statusPhrases[404] = "Not Found";
 	_statusPhrases[500] = "Internal Server Error";
 	_statusPhrases[400] = "Bad Request";
+	_statusPhrases[201] = "Created";
 }
 
 void HttpResponse::initHtmlResponses(){
 	_htmlResponses[200] = "<!DOCTYPE html><html><head><title>OK</title></head>"
 		"<body><h1>200 OK</h1><p>Your request has succeeded.</p></body></html>";
+	_htmlResponses[201] = "<!DOCTYPE html><html><head><title>Created</title></head>"
+		"<body><h1>201 Created</h1><p>File uploaded successfully.</p></body></html>";
 	_htmlResponses[301] = "<!DOCTYPE html><html><head><title>Moved Permanently</title></head>"
 		"<body><h1>301 Moved Permanently</h1><p>The requested resource has been moved.</p></body></html>";
 	_htmlResponses[403] = "<!DOCTYPE html><html><head><title>Forbidden</title></head>"

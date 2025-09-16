@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload - GreenLeaf</title>
+    <meta name="description" content="Upload your plant images and documents to the GreenLeaf collection.">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/index.html" class="logo">🌿 GreenLeaf</a>
+            <ul class="nav-links">
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/catalog/index.html">Plant Catalog</a></li>
+                <li><a href="/uploads/">Upload</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Share Your Plant Collection</h1>
+            <p>Upload your beautiful plant photos and documents to share with the GreenLeaf community. Help us grow our botanical database!</p>
+        </section>
+
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <div class="upload-card">
+                <h2>📤 Upload Files</h2>
+                <form id="uploadForm" action="/uploads/" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="fileInput">Choose files to upload:</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="fileInput" name="files" multiple accept="image/*,application/pdf,.txt,.md,.doc,.docx">
+                            <label for="fileInput" class="file-input-label">
+                                <span class="file-icon">📁</span>
+                                <span class="file-text">Click to choose files or drag & drop</span>
+                            </label>
+                        </div>
+                        <div class="file-info">
+                            <small>Supported formats: Images (JPG, PNG, GIF), Documents (PDF, TXT, DOC), and more</small>
+                        </div>
+                    </div>
+
+                    <div class="upload-actions">
+                        <button type="submit" class="upload-button">
+                            <span class="upload-icon">🌱</span>
+                            Upload Files
+                        </button>
+                        <button type="reset" class="reset-button">Clear Form</button>
+                    </div>
+                </form>
+
+                <div id="uploadStatus" class="upload-status" style="display: none;">
+                    <div class="status-message"></div>
+                    <div class="upload-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+
+                <div id="selectedFiles" class="selected-files" style="display: none;">
+                    <h3>Selected Files:</h3>
+                    <ul id="fileList"></ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="upload-tips">
+            <h2>Upload Guidelines</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h3>📸 Image Quality</h3>
+                    <p>Upload high-quality images with good lighting to showcase your plants' beauty</p>
+                </div>
+                <div class="tip-card">
+                    <h3>📝 File Names</h3>
+                    <p>Use descriptive file names that include the plant species or document type</p>
+                </div>
+                <div class="tip-card">
+                    <h3>🗂️ Organization</h3>
+                    <p>Select the appropriate category to help organize the uploaded content</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 GreenLeaf Plant Catalog. Bringing nature closer to home.</p>
+    </footer>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileList = document.getElementById('fileList');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const statusMessage = uploadStatus.querySelector('.status-message');
+
+
+        // Handle file selection for upload
+        fileInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                selectedFiles.style.display = 'block';
+                fileList.innerHTML = '';
+
+                files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-size">(${formatFileSize(file.size)})</span>
+                    `;
+                    fileList.appendChild(li);
+                });
+
+                // Update file input label
+                const fileText = document.querySelector('.file-text');
+                fileText.textContent = `${files.length} file(s) selected`;
+            } else {
+                selectedFiles.style.display = 'none';
+                document.querySelector('.file-text').textContent = 'Click to choose files or drag & drop';
+            }
+        });
+
+        // Handle form submission
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(uploadForm);
+
+            // Show upload status
+            uploadStatus.style.display = 'block';
+            statusMessage.textContent = 'Uploading files...';
+            statusMessage.className = 'status-message uploading';
+
+            // Upload to the files directory
+            fetch('/uploads/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    statusMessage.textContent = 'Files uploaded successfully! 🎉';
+                    statusMessage.className = 'status-message success';
+                    uploadForm.reset();
+                    selectedFiles.style.display = 'none';
+                    document.querySelector('.file-text').textContent = 'Click to choose files or drag & drop';
+                } else {
+                    throw new Error('Upload failed');
+                }
+            })
+            .catch(error => {
+                statusMessage.textContent = 'Upload failed. Please try again.';
+                statusMessage.className = 'status-message error';
+            });
+        });
+
+        // Drag and drop functionality
+        const fileInputWrapper = document.querySelector('.file-input-wrapper');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            fileInputWrapper.classList.add('drag-over');
+        }
+
+        function unhighlight(e) {
+            fileInputWrapper.classList.remove('drag-over');
+        }
+
+        fileInputWrapper.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            fileInput.dispatchEvent(event);
+        }
+
+        // Format file size helper
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

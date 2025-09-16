@@ -56,9 +56,9 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	}
 	if (!ss.eof() || i < NUM_TOKENS)
 		return false;
-	if (firstLineTokens[0] != "GET" && firstLineTokens[0] != "POST"
-		&& firstLineTokens[0] != "DELETE")
-		return false;
+	// if (firstLineTokens[0] != "GET" && firstLineTokens[0] != "POST"
+	// 	&& firstLineTokens[0] != "DELETE")
+	// 	return false;
 	if (firstLineTokens[1].size() > 8000
 		|| !validateVersion(firstLineTokens[2]))
 		return false;
@@ -81,20 +81,6 @@ bool HttpRequest::parseHeaders(std::string data) {
 		return false;
 	if (_headers.count("host") == 0)
 		return false;
-	return true;
-}
-
-bool HttpRequest::validateUri() {
-	if (_uri[0] != '/') return false;
-	if (_uri.find("..") != std::string::npos) return false;
-	if (_uri.find('\0') != std::string::npos) return false;
-	for (size_t i = 0; i < _uri.length(); ++i) {
-		if (!std::isalnum(_uri[i])) {
-			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
-				continue;
-			return false;
-		}
-	}
 	return true;
 }
 

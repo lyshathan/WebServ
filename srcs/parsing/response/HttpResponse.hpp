@@ -41,6 +41,8 @@ class HttpResponse {
 		void	setConnectionHeader(int);
 		void	setStatusSpecificHeaders(int);
 
+		void	postParseResponse(int);
+
 		std::string getTime() const;
 		std::string getMimeType() const;
 		std::string getLastModifiedTime() const;

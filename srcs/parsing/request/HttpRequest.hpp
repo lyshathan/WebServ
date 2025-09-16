@@ -19,9 +19,10 @@
 #define BAD_REQUEST 400
 #define NOT_FOUND 404
 #define MOVED_PERMANENTLY 301
-#define OK 200
-#define FORBIDDEN 403
 #define MOVED_PERMANENTLY_302 302
+#define OK 200
+#define CREATED 201
+#define FORBIDDEN 403
 
 typedef enum	e_servState {
 	NO_MATCH,
@@ -55,6 +56,10 @@ class HttpRequest {
 		bool		parseMultiPartBody(std::map<std::string, std::string>::const_iterator &it, std::string);
 		void		parseOnePart(std::string);
 
+		bool		postHandler();
+		bool		getHandler();
+		bool		createFile();
+
 		bool		validateUri();
 		bool		validateVersion(std::string);
 
@@ -72,6 +77,7 @@ class HttpRequest {
 
 		bool		isLocationPathValid();
 		bool		isUploadPathValid();
+		bool		nameAttribute(std::string&, std::string &);
 
 		HttpRequest();
 	public:

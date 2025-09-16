@@ -1,0 +1,43 @@
+#include "HttpRequest.hpp"
+
+/******************************************************************************/
+/*						HANDLER HELPERS FUNCTIONS							  */
+/******************************************************************************/
+
+bool HttpRequest::validateMethods() {
+	std::vector<std::string> allowMethods = _location->getAllowMethods();
+	std::vector<std::string>::iterator it = allowMethods.begin();
+
+	if (!allowMethods.empty()) {
+		for (; it != allowMethods.end(); ++it) {
+			if ((*it).compare(_method) == 0)
+				return true;
+		}
+		std::cout << "FORBIDDEN\n";
+		_status = FORBIDDEN;
+	}
+	return false;
+}
+
+bool HttpRequest::setUri(std::string &path) {
+	std::string filepath;
+	std::vector<std::string> index = _location->getIndex();
+
+	if (!index.empty()) {
+		std::vector<std::string>::iterator it = index.begin();
+		for (; it != index.end(); ++it) {
+			filepath = path + *it;
+			if (access(filepath.c_str(),  F_OK) == 0) {
+				if (access(filepath.c_str(),  R_OK) == 0) {
+					_uri = filepath;
+					return true;
+				}
+				_status = FORBIDDEN;
+				return false;
+			}
+		}
+	}
+	if (!_status)
+		_status = NOT_FOUND;
+	return false;
+}
