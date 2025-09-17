@@ -54,11 +54,39 @@ void HttpResponse::setBody(int status) {
 		setBinContent();
 }
 
+void HttpResponse::setAutoIndex() {
+	std::string	uri = _request->getUri();
+	std::stringstream ss;
+
+	ss << "<html><head><title>Index of " << uri
+	<< "</title></head><body> <h1>Index of " << uri
+	<< "</h1><hr><pre>";
+
+	std::string path = _request->getRoot() + _request->getUri();
+	DIR *dir = opendir(path.c_str());
+	if (!dir) {
+		std::cout << "Error opening directory\n";
+		return ;
+	}
+
+	struct dirent *entry;
+	while ((entry = readdir(dir)) != NULL) {
+		if (std::string(entry->d_name) == ".")
+			continue;
+		ss << "<a href=\"" << entry->d_name << "\">" << entry->d_name << "</a><br>\n";
+	}
+	ss << "</pre><hr></body></html>";
+	_res = ss.str();
+	closedir(dir);
+}
+
 void HttpResponse::setTextContent() {
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
 	if (!file.is_open()) {
-		if (!_htmlResponses[_request->getStatus()].empty()){
+		if (_request->getAutoIndex())
+			setAutoIndex();
+		else if (!_htmlResponses[_request->getStatus()].empty()){
 			_res = _htmlResponses[_request->getStatus()];
 		}
 		return ;

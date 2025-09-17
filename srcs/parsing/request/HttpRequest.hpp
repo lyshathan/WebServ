@@ -97,9 +97,11 @@ class HttpRequest {
 		const std::string&					getMethod() const;
 		const std::string&					getUri() const;
 		const std::string&					getVersion() const;
+		const std::string					getRoot() const;
 		int									getStatus() const;
 		bool								getHeadersParsed() const;
 		std::map<std::string, std::string>&	getHeaders();
+		bool								getAutoIndex() const;
 
 		void 				setHeadersParsed();
 

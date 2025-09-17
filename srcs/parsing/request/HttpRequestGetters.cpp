@@ -10,10 +10,14 @@ const std::string& HttpRequest::getUri() const {return _uri;}
 
 const std::string& HttpRequest::getVersion() const {return _version;}
 
+const std::string HttpRequest::getRoot() const { return _location->getRoot(); }
+
 std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
 
 int	HttpRequest::getStatus() const {return _status;}
 
 bool HttpRequest::getHeadersParsed() const {return _areHeadersParsed;}
+
+bool HttpRequest::getAutoIndex() const { return _location->getAutoIndex(); }
 
 void HttpRequest::setHeadersParsed() { _areHeadersParsed = false; }

@@ -40,6 +40,7 @@ class HttpResponse {
 		void	setStatusLine(int);
 		void	setConnectionHeader(int);
 		void	setStatusSpecificHeaders(int);
+		void	setAutoIndex();
 
 		void	postParseResponse(int);
 		void	deleteParseResponse();

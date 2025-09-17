@@ -36,6 +36,8 @@ bool HttpRequest::setUri(std::string &path) {
 			}
 		}
 	}
+	if (_location->getAutoIndex())
+		return true;
 	if (!_status)
 		_status = NOT_FOUND;
 	return false;
