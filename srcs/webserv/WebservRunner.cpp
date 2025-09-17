@@ -86,7 +86,7 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	char	buffer[BUFSIZ];
 	int 	senderFd;
 	int		bytesRead;
-	int		status;
+	// int		status;
 
 	senderFd = it->fd;
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
@@ -104,30 +104,47 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		if (!_clients[senderFd]->httpReq->getHeadersParsed()) {
 			_clients[senderFd]->httpReq->requestHeaderParser(_clients[senderFd]->getRes());
 		}
-		if (_clients[senderFd]->isReqComplete()) {
-			// std::cout << "[Buffer]\n" << _clients[senderFd]->getRes() << "\n";
+
+		int	httpStatus = _clients[senderFd]->httpReq->getStatus();
+		if (httpStatus != 0) {
+			return processAndSendResponse(it->fd);
+		} else if (_clients[senderFd]->isReqComplete()) {
 			_clients[senderFd]->httpReq->requestBodyParser(_clients[senderFd]->getRes());
 			_clients[senderFd]->httpReq->requestHandler();
-			_clients[it->fd]->httpRes->parseResponse();
-
-			std::string resHeaders = _clients[it->fd]->httpRes->getResHeaders().c_str();
-			status = send(it->fd, resHeaders.c_str(), resHeaders.length(), 0);
-			bool	isTextContent = _clients[it->fd]->httpRes->getIsTextContent();
-			if (!isTextContent) {
-				std::vector<char> binaryContent = _clients[it->fd]->httpRes->getBinRes();
-				status = send(it->fd, &binaryContent[0], binaryContent.size(), 0);
-				if (status == -1)
-					return (handleFunctionError("Send"));
-			} else {
-				std::string textContent = _clients[it->fd]->httpRes->getRes().c_str();
-				status = send(it->fd, textContent.c_str(), textContent.size(), 0);
-				if (status == -1)
-					return (handleFunctionError("Send"));
-			}
-			_clients[it->fd]->clearBuffer();
-			if (status == -1)
-				return (handleFunctionError("Send"));
+			return processAndSendResponse(it->fd);
 		}
 	}
 	return (1);
+}
+
+int Webserv::processAndSendResponse(int clientFd) {
+	_clients[clientFd]->httpRes->parseResponse();
+	int status = sendResponse(clientFd);
+	_clients[clientFd]->clearBuffer();
+	if (status == -1)
+		return (handleFunctionError("Send"));
+	return 1;
+}
+
+int Webserv::sendResponse(int clientFd) {
+	int status;
+
+	std::string resHeaders = _clients[clientFd]->httpRes->getResHeaders().c_str();
+	status = send(clientFd, resHeaders.c_str(), resHeaders.length(), 0);
+	if (status == -1)
+		return (handleFunctionError("Send"));
+
+	bool isTextContent = _clients[clientFd]->httpRes->getIsTextContent();
+	if (!isTextContent) {
+		std::vector<char> binaryContent = _clients[clientFd]->httpRes->getBinRes();
+		status = send(clientFd, &binaryContent[0], binaryContent.size(), 0);
+		if (status == -1)
+			return (handleFunctionError("Send"));
+	} else {
+		std::string textContent = _clients[clientFd]->httpRes->getRes().c_str();
+		status = send(clientFd, textContent.c_str(), textContent.size(), 0);
+		if (status == -1)
+			return (handleFunctionError("Send"));
+	}
+	return (0);
 }

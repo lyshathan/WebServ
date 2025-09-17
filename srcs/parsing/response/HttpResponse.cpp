@@ -27,10 +27,16 @@ void HttpResponse::parseResponse() {
 	}
 	else if (status == 204) {
 		deleteParseResponse();
+	} else if (status == 400) {
+		_isTextContent = true;
+		_res = _htmlResponses[_request->getStatus()];
+		setContentHeaders();
+		setConnectionHeader(status);
 	} else {
 		setBody(status);
 		setContentHeaders();
 		setStatusSpecificHeaders(status);
+		setConnectionHeader(status);
 	}
 }
 

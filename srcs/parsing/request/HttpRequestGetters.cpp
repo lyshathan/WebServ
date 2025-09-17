@@ -20,13 +20,4 @@ bool HttpRequest::getHeadersParsed() const {return _areHeadersParsed;}
 
 bool HttpRequest::getAutoIndex() const { return _location->getAutoIndex(); }
 
-void HttpRequest::setHeadersParsed() { _areHeadersParsed = false; }
-
-void HttpRequest::setExtensions() {
-	_extensions["image/jpeg"] = ".jpg";
-	_extensions["image/png"] = ".png";
-	_extensions["image/gif"] = ".gif";
-	_extensions["application/pdf"] = ".pdf";
-	_extensions["text/plain"] = ".txt";
-	_extensions["application/octet-stream"] = ".bin";
-}
+size_t	HttpRequest::getMaxBody() const { return _location->getClientMaxBodySize(); }

@@ -14,6 +14,7 @@ HttpRequest::~HttpRequest() {};
 /******************************************************************************/
 
 void HttpRequest::requestHeaderParser(std::string data) {
+	// std::cout << "[Data..]\n\n" << data << "\n";
 	std::string	firstLine;
 	std::string	headers;
 
@@ -56,9 +57,6 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	}
 	if (!ss.eof() || i < NUM_TOKENS)
 		return false;
-	// if (firstLineTokens[0] != "GET" && firstLineTokens[0] != "POST"
-	// 	&& firstLineTokens[0] != "DELETE")
-	// 	return false;
 	if (firstLineTokens[1].size() > 8000
 		|| !validateVersion(firstLineTokens[2]))
 		return false;
@@ -81,6 +79,21 @@ bool HttpRequest::parseHeaders(std::string data) {
 		return false;
 	if (_headers.count("host") == 0)
 		return false;
+	return true;
+}
+
+bool HttpRequest::parseBody(std::string data) {
+	size_t headerEnd = data.find("\r\n\r\n");
+	if (headerEnd == std::string::npos)
+		return false;
+	std::string body = data.substr(headerEnd + 4);
+	std::map<std::string, std::string>::const_iterator it = _headers.find("content-type");
+	if (it != _headers.end()) {
+		if (it->second.find("multipart") != std::string::npos)
+			parseMultiPartBody(it, body);
+		else
+			_body[""] = body;
+	}
 	return true;
 }
 
@@ -122,17 +135,3 @@ bool HttpRequest::parseMultiPartBody(std::map<std::string, std::string>::const_i
 	return true;
 }
 
-bool HttpRequest::parseBody(std::string data) {
-	size_t headerEnd = data.find("\r\n\r\n");
-	if (headerEnd == std::string::npos)
-		return false;
-	std::string body = data.substr(headerEnd + 4);
-	std::map<std::string, std::string>::const_iterator it = _headers.find("content-type");
-	if (it != _headers.end()) {
-		if (it->second.find("multipart") != std::string::npos)
-			parseMultiPartBody(it, body);
-		else
-			_body[""] = body;
-	}
-	return true;
-}

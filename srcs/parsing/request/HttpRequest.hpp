@@ -26,6 +26,7 @@
 #define NOT_ALLOWED 405
 #define INTERNAL_ERROR 500
 #define NO_CONTENT 204
+#define PAYLOAD_TOO_LARGE 413
 
 typedef enum	e_servState {
 	NO_MATCH,
@@ -105,8 +106,10 @@ class HttpRequest {
 		bool								getHeadersParsed() const;
 		std::map<std::string, std::string>&	getHeaders();
 		bool								getAutoIndex() const;
+		size_t								getMaxBody() const;
 
 		void 				setHeadersParsed();
+		void				setStatus(int);
 
 		void				cleanReqInfo();
 };

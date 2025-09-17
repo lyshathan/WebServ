@@ -32,11 +32,13 @@ class Webserv {
 		int			connectAndRead();
 		int			acceptNewConnection(int &serverFd);
 		int			readDataFromSocket(std::vector<struct pollfd>::iterator & it);
+		int			sendResponse(int clientFd);
 		void		addClient(int newClientFd);
 		void		deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
+		int			processAndSendResponse(int clientFd);
 
 		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
-		
+
 	public :
 		Webserv(Config const &config);
 		~Webserv();

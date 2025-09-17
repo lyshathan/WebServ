@@ -38,19 +38,19 @@ bool Client::isReqComplete() const {
 	if (headerEnd == std::string::npos)
 		return false;
 
-	std::map<std::string, std::string>::const_iterator it = headers.find("content-length");
+	std::map<std::string, std::string>::const_iterator it = headers.find("transfer-encoding");
+	if (it != headers.end() && it->second.find("chunked") != std::string::npos) {
+		return _reqBuffer.find("0\r\n\r\n") != std::string::npos;
+	}
+
+	it = headers.find("content-length");
 	if (it != headers.end()) {
 		size_t contentLength = std::stoul(it->second);
 		size_t bodyReceived = _reqBuffer.length() - (headerEnd + 4);
-		// std::cout << "\n\nTrue or false - " << (bodyReceived >= contentLength) << "\n";
+		// if (bodyReceived > contentLength)
+		// 	// payload too large
 		return bodyReceived >= contentLength;
 	}
-
-	// it = headers.find("transfer-encoding");
-	// if (it != headers.end() && it->second.find("chunked") != std::string::npos) {
-	// 	// Look for chunked transfer end marker "0\r\n\r\n"
-	// 	return _reqBuffer.find("0\r\n\r\n") != std::string::npos;
-	// }
 
 	return true;
 }

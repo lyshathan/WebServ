@@ -16,3 +16,5 @@ bool LocationConfig::getExactMatch(void) const { return _isExactPath; }
 std::vector<std::string> LocationConfig::getAllowMethods() const { return _allowMethod; }
 
 std::string	LocationConfig::getUploadPath() const { return _uploadPath; }
+
+size_t	LocationConfig::getClientMaxBodySize() const { return _clientMaxBodySize; }

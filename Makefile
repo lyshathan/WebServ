@@ -22,7 +22,8 @@ PARSING = Client
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
 				HttpServerConfig HttpRequestError HttpRequestGetters \
 				HttpRequestHandler HttpRequestHandlerHelpers \
-				HttpRequestPostHandler HttpRequestDeleteHandler
+				HttpRequestPostHandler HttpRequestDeleteHandler \
+				HttpRequestSetters
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
 				HttpResponseSetters

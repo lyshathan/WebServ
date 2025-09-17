@@ -48,6 +48,7 @@ class LocationConfig {
 		std::map<int,std::string>	getErrorPages(void) const;
 		std::vector<std::string>	getAllowMethods(void) const;
 		std::string					getUploadPath(void) const;
+		size_t						getClientMaxBodySize() const;
 
 		void						setPath(std::string newPath);
 };
