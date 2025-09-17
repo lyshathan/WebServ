@@ -48,6 +48,7 @@ class HttpRequest {
 		std::string							_version;
 		std::map<std::string, std::string>	_headers;
 		std::map<std::string, std::string>	_body;
+		std::map<std::string, std::string>	_extensions;
 		int									_status;
 		int									_clientfd;
 		bool								_areHeadersParsed;
@@ -70,6 +71,7 @@ class HttpRequest {
 
 		bool		setUri(std::string &);
 		void		setErrorPage();
+		void		setExtensions();
 		bool		validateMethods();
 
 		void		pickServerConfig();
@@ -84,6 +86,7 @@ class HttpRequest {
 		bool		isUploadPathValid();
 		bool		isDeletePathValid();
 		bool		nameAttribute(std::string&, std::string &);
+		void		generateName(std::string &);
 
 		HttpRequest();
 	public:

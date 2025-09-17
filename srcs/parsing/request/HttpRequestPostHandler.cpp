@@ -28,8 +28,7 @@ bool HttpRequest::isUploadPathValid() {
 			}
 			if (!_uri.empty() && _uri[_uri.length() - 1] != '/') {
 				_uri += "/";
-				_status = MOVED_PERMANENTLY;
-				return false;
+				return true;
 			}
 			return true;
 		}
@@ -68,6 +67,20 @@ bool HttpRequest::nameAttribute(std::string& path, std::string& filename) {
 	return true;
 }
 
+void HttpRequest::generateName(std::string &finalName) {
+	std::ostringstream filename;
+	setExtensions();
+
+	std::map<std::string, std::string>::iterator contentType = _headers.find("content-type");
+	std::string extension = ".bin";
+
+	if (_extensions.count(contentType->second))
+		extension = _extensions[contentType->second];
+
+	filename << "upload_" << std::time(NULL) << extension;
+	finalName = filename.str();
+}
+
 bool HttpRequest::createFile() {
 	std::string path = _location->getUploadPath();
 
@@ -76,7 +89,7 @@ bool HttpRequest::createFile() {
 		std::string filepath = path;
 		std::string filename = it->first;
 		if (filename.empty())
-			filename = "Webserv";
+			generateName(filename);
 		if (!nameAttribute(filepath, filename)) return false;
 		std::ofstream file(filepath, std::ios::binary);
 		if (!file.is_open()) return false;
