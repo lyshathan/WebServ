@@ -35,7 +35,7 @@ void	LocationConfig::parseReturn(std::vector< t_token>::iterator &it)
 	if (_return.first != 0)
 		throwErrorToken(" Return already defined", *it);
 	double code_d = std::strtod(it->content.c_str(), &end);
-	if (*end || code_d < 0 || code_d > INT_MAX)					// Need to validate the rules here ----------------
+	if (*end || code_d < 301 || code_d > 308)					// Need to validate the rules here ----------------
 		throwErrorToken(" Invalid return code", *it);
 	int code = static_cast<int>(code_d);
 	if ((++it)->type != SEMICOLON)

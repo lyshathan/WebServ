@@ -75,6 +75,7 @@ class HttpRequest {
 		void		setErrorPage();
 		void		setExtensions();
 		bool		validateMethods();
+		bool		checkReturn();
 
 		void		pickServerConfig();
 		void		pickLocationConfig();

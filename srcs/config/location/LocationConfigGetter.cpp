@@ -18,3 +18,5 @@ std::vector<std::string> LocationConfig::getAllowMethods() const { return _allow
 std::string	LocationConfig::getUploadPath() const { return _uploadPath; }
 
 size_t	LocationConfig::getClientMaxBodySize() const { return _clientMaxBodySize; }
+
+std::pair<int, std::string> LocationConfig::getReturn() const { return _return; }

@@ -14,6 +14,7 @@ void HttpRequest::requestHandler() {
 		setErrorPage();
 		return;
 	}
+	if (checkReturn()) return;
 	if (_method == "POST")
 		postHandler();
 	else if (_method == "GET")
@@ -27,6 +28,18 @@ void HttpRequest::getHandler() {
 		setErrorPage();
 	if (!_status)
 		_status = OK;
+}
+
+bool HttpRequest::checkReturn() {
+	std::pair<int, std::string> returnCode = _location->getReturn();
+
+	if (returnCode.first) {
+		_status = returnCode.first;
+		if (!returnCode.second.empty())
+			_uri = returnCode.second;
+		return true;
+	}
+	return false;
 }
 
 bool HttpRequest::isLocationPathValid() {

@@ -49,6 +49,7 @@ class LocationConfig {
 		std::vector<std::string>	getAllowMethods(void) const;
 		std::string					getUploadPath(void) const;
 		size_t						getClientMaxBodySize() const;
+		std::pair<int, std::string>	getReturn() const;
 
 		void						setPath(std::string newPath);
 };
