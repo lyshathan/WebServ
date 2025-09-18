@@ -53,6 +53,7 @@ class HttpRequest {
 		int									_status;
 		int									_clientfd;
 		bool								_areHeadersParsed;
+		bool								_isProccessingError;
 
 
 		bool		parseFirstLine(std::string);
@@ -62,7 +63,7 @@ class HttpRequest {
 		void		parseOnePart(std::string);
 
 		bool		postHandler();
-		bool		getHandler();
+		void		getHandler();
 		bool		deleteHandler();
 		bool		createFile();
 		bool		deleteFile();

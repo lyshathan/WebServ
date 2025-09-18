@@ -14,23 +14,19 @@ void HttpRequest::requestHandler() {
 		setErrorPage();
 		return;
 	}
-	if (_method == "POST" && !postHandler()) {
-		return;
-	} else if (_method == "GET" && !getHandler()) {
-		return;
-	} else if (_method == "DELETE" && !deleteHandler()) {
-		return;
-	}
+	if (_method == "POST")
+		postHandler();
+	else if (_method == "GET")
+		getHandler();
+	else if (_method == "DELETE")
+		deleteHandler();
 }
 
-bool HttpRequest::getHandler() {
-	if (!isLocationPathValid()) {
+void HttpRequest::getHandler() {
+	if (!isLocationPathValid())
 		setErrorPage();
-		return false;
-	}
 	if (!_status)
 		_status = OK;
-	return true;
 }
 
 bool HttpRequest::isLocationPathValid() {

@@ -10,6 +10,7 @@ void HttpRequest::cleanReqInfo() {
 	_uri.clear();
 	_version.clear();
 	_headers.clear();
+	_isProccessingError = false;
 	_status = 0;
 }
 

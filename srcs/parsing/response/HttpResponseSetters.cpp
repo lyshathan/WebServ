@@ -49,7 +49,7 @@ void HttpResponse::setBody(int status) {
 	_mimeType = getMimeType();
 	addHeader("Last-Modified: ", getLastModifiedTime());
 	if (isTextContent())
-		setTextContent();
+		setTextContent(status);
 	else
 		setBinContent();
 }
@@ -80,11 +80,12 @@ void HttpResponse::setAutoIndex() {
 	closedir(dir);
 }
 
-void HttpResponse::setTextContent() {
+void HttpResponse::setTextContent(int status) {
+	(void)status;
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
 	if (!file.is_open()) {
-		if (_request->getAutoIndex())
+		if (_request->getAutoIndex() && status == 200)
 			setAutoIndex();
 		else if (!_htmlResponses[_request->getStatus()].empty()){
 			_res = _htmlResponses[_request->getStatus()];

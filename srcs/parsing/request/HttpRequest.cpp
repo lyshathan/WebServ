@@ -5,7 +5,7 @@
 /******************************************************************************/
 
 HttpRequest::HttpRequest(const Config& config, int &fd) : _config(config), _location(NULL), _status(0),
-_clientfd(fd), _areHeadersParsed(false) {};
+_clientfd(fd), _areHeadersParsed(false), _isProccessingError(false) {};
 
 HttpRequest::~HttpRequest() {};
 

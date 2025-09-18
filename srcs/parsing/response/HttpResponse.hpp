@@ -32,7 +32,7 @@ class HttpResponse {
 		void	initHtmlResponses();
 		void	initStatusPhrases();
 
-		void	setTextContent();
+		void	setTextContent(int);
 		void	setBinContent();
 		void	setBody(int);
 		void	addHeader(const std::string &, const std::string &);
