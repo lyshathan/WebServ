@@ -8,8 +8,6 @@ void HttpRequest::requestHandler() {
 	std::cout << "Request incoming from .." << _uri << "\n";
 	if (_uri.find("/.well-known/") == 0)
 		return ;
-	pickServerConfig();
-	pickLocationConfig();
 	if (!validateMethods()) {
 		setErrorPage();
 		return;

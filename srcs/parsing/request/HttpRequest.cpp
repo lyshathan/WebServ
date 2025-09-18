@@ -34,6 +34,8 @@ void HttpRequest::requestHeaderParser(std::string data) {
 		_status = BAD_REQUEST;
 		return;
 	}
+	pickServerConfig();
+	pickLocationConfig();
 	_areHeadersParsed = true;
 }
 

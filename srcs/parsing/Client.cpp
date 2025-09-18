@@ -43,14 +43,14 @@ bool Client::isReqComplete() const {
 		return _reqBuffer.find("0\r\n\r\n") != std::string::npos;
 	}
 
+	size_t maxBodySize = httpReq->getMaxBody();
 	it = headers.find("content-length");
 	if (it != headers.end()) {
 		size_t contentLength = std::stoul(it->second);
 		size_t bodyReceived = _reqBuffer.length() - (headerEnd + 4);
-		// if (bodyReceived > contentLength)
-		// 	// payload too large
+		if (contentLength > maxBodySize)
+			httpReq->setStatus(413);
 		return bodyReceived >= contentLength;
 	}
-
 	return true;
 }
