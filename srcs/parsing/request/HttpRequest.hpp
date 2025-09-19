@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <unistd.h>
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -96,9 +97,9 @@ class HttpRequest {
 		HttpRequest(const Config& config, int &);
 		~HttpRequest();
 
-		void	requestHeaderParser(std::string);
-		void	requestBodyParser(std::string);
-		void	requestHandler();
+		void								requestHeaderParser(std::string);
+		void								requestBodyParser(std::string);
+		void								requestHandler();
 
 		const std::string&					getMethod() const;
 		const std::string&					getUri() const;
@@ -110,10 +111,13 @@ class HttpRequest {
 		bool								getAutoIndex() const;
 		size_t								getMaxBody() const;
 
-		void 				setHeadersParsed();
-		void				setStatus(int);
+		void								checkGGI();
+		void								executeBin(std::string);
 
-		void				cleanReqInfo();
+		void 								setHeadersParsed();
+		void								setStatus(int);
+
+		void								cleanReqInfo();
 };
 
 #endif

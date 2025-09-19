@@ -19,6 +19,8 @@ void HttpRequest::requestHandler() {
 		getHandler();
 	else if (_method == "DELETE")
 		deleteHandler();
+	if (_status == OK && (_method == "GET" || _method == "POST"))
+		checkGGI();
 }
 
 void HttpRequest::getHandler() {

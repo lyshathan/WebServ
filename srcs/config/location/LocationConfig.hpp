@@ -50,6 +50,8 @@ class LocationConfig {
 		std::string					getUploadPath(void) const;
 		size_t						getClientMaxBodySize() const;
 		std::pair<int, std::string>	getReturn() const;
+		std::string					getCGIPath() const;
+		std::string					getCGIExtension() const;
 
 		void						setPath(std::string newPath);
 };
