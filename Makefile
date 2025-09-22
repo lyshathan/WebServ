@@ -23,7 +23,8 @@ HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
 				HttpServerConfig HttpRequestError HttpRequestGetters \
 				HttpRequestHandler HttpRequestHandlerHelpers \
 				HttpRequestPostHandler HttpRequestDeleteHandler \
-				HttpRequestSetters HttpRequestCGIHandler
+				HttpRequestSetters HttpRequestCGIHandler \
+				HttpRequestCGIHelpers
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
 				HttpResponseSetters

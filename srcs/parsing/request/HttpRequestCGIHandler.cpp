@@ -4,6 +4,18 @@
 /*								CGI HANDLER									  */
 /******************************************************************************/
 
+void	HttpRequest::cgiHandler() {
+	initEnv();
+
+	std::vector<std::string>::iterator it = _env.begin();
+	std::cout << "--Env variables --\n";
+	for (; it != _env.end(); ++it)
+		std::cout << *it << "\n";
+
+	if (!_status)
+		_status = OK;
+}
+
 void	HttpRequest::executeBin(std::string path) {
 	(void)path;
 	int		fd[2];
@@ -16,19 +28,4 @@ void	HttpRequest::executeBin(std::string path) {
 	if (pid == 0)
 		execve("/usr/bin/python3", (char* const*)argv, NULL);
 
-}
-
-void	HttpRequest::checkGGI() {
-	std::string cgiPath = _location->getCGIPath();
-	std::string cgiExtension = _location->getCGIExtension();
-
-	if (cgiPath.empty() || cgiExtension.empty())
-		return;
-
-	size_t pos = _uri.find_last_of(".");
-	if (pos != std::string::npos) {
-		std::string extension = _uri.substr(pos);
-		if (extension.compare(cgiExtension) == 0)
-			executeBin(cgiPath);
-	}
 }

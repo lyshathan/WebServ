@@ -51,6 +51,7 @@ class HttpRequest {
 		std::map<std::string, std::string>	_headers;
 		std::map<std::string, std::string>	_body;
 		std::map<std::string, std::string>	_extensions;
+		std::vector<std::string>			_env;
 		int									_status;
 		int									_clientfd;
 		bool								_areHeadersParsed;
@@ -68,6 +69,10 @@ class HttpRequest {
 		bool		deleteHandler();
 		bool		createFile();
 		bool		deleteFile();
+
+		void		cgiHandler();
+		bool		isCGIPath();
+		void		initEnv();
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
@@ -111,7 +116,7 @@ class HttpRequest {
 		bool								getAutoIndex() const;
 		size_t								getMaxBody() const;
 
-		void								checkGGI();
+		bool								checkGGI();
 		void								executeBin(std::string);
 
 		void 								setHeadersParsed();

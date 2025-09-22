@@ -13,14 +13,14 @@ void HttpRequest::requestHandler() {
 		return;
 	}
 	if (checkReturn()) return;
-	if (_method == "POST")
+	if (isCGIPath())
+		cgiHandler();
+	else if (_method == "POST")
 		postHandler();
 	else if (_method == "GET")
 		getHandler();
 	else if (_method == "DELETE")
 		deleteHandler();
-	if (_status == OK && (_method == "GET" || _method == "POST"))
-		checkGGI();
 }
 
 void HttpRequest::getHandler() {
