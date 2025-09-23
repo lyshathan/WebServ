@@ -5,7 +5,9 @@
 /******************************************************************************/
 
 void HttpRequest::cleanReqInfo() {
+	_cgiRes.clear();
 	_method.clear();
+	_argv.clear();
 	_body.clear();
 	_uri.clear();
 	_version.clear();

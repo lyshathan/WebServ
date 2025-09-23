@@ -32,7 +32,14 @@ void HttpResponse::parseResponse() {
 		_res = _htmlResponses[_request->getStatus()];
 		setContentHeaders();
 		setConnectionHeader(status);
-	} else {
+	} else if (status == 200 && !_request->getCGIRes().empty()) {
+		_isTextContent = true;
+		_res = _request->getCGIRes();
+		_mimeType = "text/html";
+		setContentHeaders();
+		setConnectionHeader(status);
+	}
+	else {
 		setBody(status);
 		setContentHeaders();
 		setStatusSpecificHeaders(status);

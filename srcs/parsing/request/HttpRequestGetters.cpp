@@ -12,6 +12,8 @@ const std::string& HttpRequest::getVersion() const {return _version;}
 
 const std::string HttpRequest::getRoot() const { return _location->getRoot(); }
 
+const std::string& HttpRequest::getCGIRes() const { return _cgiRes; };
+
 std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
 
 int	HttpRequest::getStatus() const {return _status;}

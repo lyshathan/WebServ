@@ -11,7 +11,7 @@ bool HttpRequest::isCGIPath() {
 
 	if (!stat(path.c_str(),&buf)) {
 		if (S_ISREG(buf.st_mode) && checkGGI()) {
-			if (access(path.c_str(),  R_OK) != 0) {
+			if (access(path.c_str(),  R_OK | X_OK) != 0) {
 				_status = FORBIDDEN;
 				return false;
 			}
@@ -44,18 +44,43 @@ bool	HttpRequest::checkGGI() {
 	size_t pos = _uri.find_last_of(".");
 	if (pos != std::string::npos) {
 		std::string extension = _uri.substr(pos);
-		if (extension.compare(cgiExtension) == 0)
+		if (extension.compare(cgiExtension) == 0) {
+			_argv.push_back(cgiPath);
+			_argv.push_back(_uri);
 			return true;
+		}
 	}
 	return false;
+}
+
+char** HttpRequest::getArgvArray() {
+	static std::vector<char*> argv_ptrs;
+	argv_ptrs.clear();
+
+	for (size_t i = 0; i < _argv.size(); ++i) {
+		argv_ptrs.push_back(const_cast<char*>(_argv[i].c_str()));
+	}
+	argv_ptrs.push_back(NULL);
+
+	return &argv_ptrs[0];
+}
+
+char** HttpRequest::getEnvArray() {
+	static std::vector<char*> env_ptrs;
+	env_ptrs.clear();
+
+	for (size_t i = 0; i < _env.size(); ++i) {
+		env_ptrs.push_back(const_cast<char*>(_env[i].c_str()));
+	}
+	env_ptrs.push_back(NULL);
+
+	return &env_ptrs[0];
 }
 
 void	HttpRequest::initEnv() {
 	std::map<std::string, std::string>::iterator it = _headers.begin();
 	std::stringstream ss;
 
-	for (; it != _headers.end(); ++it)
-		std::cout << it->first << " " << it->second << "\n";
 	_env.push_back("PATH_INFO=" + _uri);
 	_env.push_back("SCRIPT_NAME=" + _uri);
 	_env.push_back("REQUEST_METHOD=" + _method);

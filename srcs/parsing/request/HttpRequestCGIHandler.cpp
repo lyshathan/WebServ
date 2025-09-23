@@ -6,26 +6,76 @@
 
 void	HttpRequest::cgiHandler() {
 	initEnv();
-
-	std::vector<std::string>::iterator it = _env.begin();
-	std::cout << "--Env variables --\n";
-	for (; it != _env.end(); ++it)
-		std::cout << *it << "\n";
+	executeBin();
 
 	if (!_status)
 		_status = OK;
 }
 
-void	HttpRequest::executeBin(std::string path) {
-	(void)path;
-	int		fd[2];
+void	HttpRequest::childHandler(int stdin_fd[2], int stdout_fd[2]) {
+	if (dup2(stdin_fd[0], STDIN_FILENO) < 0)
+		return ;
+	if (dup2(stdout_fd[1], STDOUT_FILENO) < 0)
+		return ;
+	close(stdin_fd[0]);
+	close(stdin_fd[1]);
+	close(stdout_fd[0]);
+	close(stdout_fd[1]);
+	char** argv = getArgvArray();
+	char** envp = getEnvArray();
+	if (execve(argv[0], argv, &envp[0]) == -1)
+		return ;
+}
+
+void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
+	int		status;
+	size_t	length = 0;
+
+	std::map<std::string, std::string>::iterator it = _headers.find("content-length");
+	if (it != _headers.end()) {
+		length = std::stoul(it->second);
+	}
+
+	close(stdin_fd[0]);
+		close(stdout_fd[1]);
+		if (!_rawBody.empty() && length > 0)
+			write(stdin_fd[1], _rawBody.c_str(), length);
+		close(stdin_fd[1]);
+
+		if (waitpid(pid, &status, 0) < 0) {
+			_status = INTERNAL_ERROR;
+			return ;
+		}
+		readBuffer(stdout_fd);
+		close(stdout_fd[0]);
+}
+
+void	HttpRequest::readBuffer(int stdout_fd[2]) {
+	char buffer[4096];
+	ssize_t bytesRead;
+
+	while ((bytesRead = read(stdout_fd[0], buffer, sizeof(buffer))) > 0)
+		_cgiRes.append(buffer, bytesRead);
+	if (bytesRead < 0)
+		_status = INTERNAL_ERROR;
+}
+
+void	HttpRequest::executeBin() {
+	int		stdin_fd[2];
+	int		stdout_fd[2];
 	pid_t	pid;
 
-	pipe(fd);
+	if (pipe(stdin_fd) < 0 || pipe(stdout_fd) < 0) {
+		_status = INTERNAL_ERROR;
+		return ;
+	}
 	pid = fork();
-
-	const char *argv[] = {"/usr/bin/python3",  "var/www/cgi/hello.py", NULL};
+	if (pid < 0) {
+		_status = INTERNAL_ERROR;
+		return ;
+	}
 	if (pid == 0)
-		execve("/usr/bin/python3", (char* const*)argv, NULL);
-
+		childHandler(stdin_fd, stdout_fd);
+	else if (pid > 0)
+		parentHandler(stdin_fd, stdout_fd, pid);
 }

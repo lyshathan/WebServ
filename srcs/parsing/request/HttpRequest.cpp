@@ -93,8 +93,10 @@ bool HttpRequest::parseBody(std::string data) {
 	if (it != _headers.end()) {
 		if (it->second.find("multipart") != std::string::npos)
 			parseMultiPartBody(it, body);
-		else
+		else {
 			_body[""] = body;
+			_rawBody = body;
+		}
 	}
 	return true;
 }

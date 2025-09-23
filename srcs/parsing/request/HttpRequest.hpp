@@ -48,10 +48,13 @@ class HttpRequest {
 		std::string							_method;
 		std::string							_uri;
 		std::string							_version;
+		std::string							_cgiRes;
 		std::map<std::string, std::string>	_headers;
 		std::map<std::string, std::string>	_body;
+		std::string							_rawBody;
 		std::map<std::string, std::string>	_extensions;
 		std::vector<std::string>			_env;
+		std::vector<std::string>			_argv;
 		int									_status;
 		int									_clientfd;
 		bool								_areHeadersParsed;
@@ -73,6 +76,12 @@ class HttpRequest {
 		void		cgiHandler();
 		bool		isCGIPath();
 		void		initEnv();
+		void		childHandler(int fd[2], int fd2[2]);
+		void		parentHandler(int fd[2], int fd2[2], pid_t);
+		char**		getArgvArray();
+		char**		getEnvArray();
+		void		readBuffer(int fd[2]);
+
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
@@ -110,6 +119,7 @@ class HttpRequest {
 		const std::string&					getUri() const;
 		const std::string&					getVersion() const;
 		const std::string					getRoot() const;
+		const std::string&					getCGIRes() const;
 		int									getStatus() const;
 		bool								getHeadersParsed() const;
 		std::map<std::string, std::string>&	getHeaders();
@@ -117,7 +127,7 @@ class HttpRequest {
 		size_t								getMaxBody() const;
 
 		bool								checkGGI();
-		void								executeBin(std::string);
+		void								executeBin();
 
 		void 								setHeadersParsed();
 		void								setStatus(int);
