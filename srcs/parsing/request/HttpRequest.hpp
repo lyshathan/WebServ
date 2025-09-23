@@ -51,6 +51,7 @@ class HttpRequest {
 		std::string							_cgiRes;
 		std::map<std::string, std::string>	_headers;
 		std::map<std::string, std::string>	_body;
+		std::string							_queries;
 		std::string							_rawBody;
 		std::map<std::string, std::string>	_extensions;
 		std::vector<std::string>			_env;
@@ -59,6 +60,7 @@ class HttpRequest {
 		int									_clientfd;
 		bool								_areHeadersParsed;
 		bool								_isProccessingError;
+		bool								_isCGI;
 
 
 		bool		parseFirstLine(std::string);
@@ -66,6 +68,7 @@ class HttpRequest {
 		bool		parseBody(std::string);
 		bool		parseMultiPartBody(std::map<std::string, std::string>::const_iterator &it, std::string);
 		void		parseOnePart(std::string);
+		void		parseQueries();
 
 		bool		postHandler();
 		void		getHandler();
@@ -81,7 +84,6 @@ class HttpRequest {
 		char**		getArgvArray();
 		char**		getEnvArray();
 		void		readBuffer(int fd[2]);
-
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
@@ -124,6 +126,7 @@ class HttpRequest {
 		bool								getHeadersParsed() const;
 		std::map<std::string, std::string>&	getHeaders();
 		bool								getAutoIndex() const;
+		bool								isCGIActive() const;
 		size_t								getMaxBody() const;
 
 		bool								checkGGI();

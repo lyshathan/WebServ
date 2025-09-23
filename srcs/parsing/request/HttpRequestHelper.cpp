@@ -5,6 +5,7 @@
 /******************************************************************************/
 
 void HttpRequest::cleanReqInfo() {
+	_queries.clear();
 	_cgiRes.clear();
 	_method.clear();
 	_argv.clear();
@@ -13,6 +14,10 @@ void HttpRequest::cleanReqInfo() {
 	_version.clear();
 	_headers.clear();
 	_isProccessingError = false;
+	_isCGI = false;
+	_rawBody.clear();
+	_extensions.clear();
+	_env.clear();
 	_status = 0;
 }
 

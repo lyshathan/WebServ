@@ -16,6 +16,7 @@ bool HttpRequest::isCGIPath() {
 				return false;
 			}
 			_uri = path;
+			_isCGI = true;
 			return true;
 		}
 		else if (S_ISDIR(buf.st_mode)) {
@@ -25,8 +26,10 @@ bool HttpRequest::isCGIPath() {
 			}
 			if (!_uri.empty() && _uri[_uri.length() - 1] != '/')
 				path += "/";
-			if (setUri(path) && checkGGI())
+			if (setUri(path) && checkGGI()) {
+				_isCGI = true;
 				return  true;
+			}
 			else
 				_uri = tmp;
 		}
@@ -96,7 +99,9 @@ void	HttpRequest::initEnv() {
 	const std::vector<int> listenPort = _server->getListenPort();
 	ss << listenPort[0];
 	if (!serverNames.empty())
-		_env.push_back("SERVER_PORT=" +(ss.str()));
+		_env.push_back("SERVER_PORT=" + (ss.str()));
+	if (!_queries.empty())
+		_env.push_back("QUERY_STRING=" + _queries);
 }
 
 // "QUERY_STRING" name=john&age=25

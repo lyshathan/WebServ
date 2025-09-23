@@ -32,22 +32,30 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 	size_t	length = 0;
 
 	std::map<std::string, std::string>::iterator it = _headers.find("content-length");
-	if (it != _headers.end()) {
+	if (it != _headers.end())
 		length = std::stoul(it->second);
-	}
 
 	close(stdin_fd[0]);
-		close(stdout_fd[1]);
-		if (!_rawBody.empty() && length > 0)
-			write(stdin_fd[1], _rawBody.c_str(), length);
-		close(stdin_fd[1]);
+	close(stdout_fd[1]);
 
-		if (waitpid(pid, &status, 0) < 0) {
-			_status = INTERNAL_ERROR;
-			return ;
+	if (!_body.empty()) {
+		std::string firstValue = _body.begin()->second;
+		if (length > 0) {
+			it = _headers.find("content-type");
+			if (it != _headers.end()) {
+				std::cout << "Second " << it->second << "\n";
+				write(stdin_fd[1], firstValue.c_str(), length);
+			}
 		}
-		readBuffer(stdout_fd);
-		close(stdout_fd[0]);
+	}
+	close(stdin_fd[1]);
+
+	if (waitpid(pid, &status, 0) < 0) {
+		_status = INTERNAL_ERROR;
+		return ;
+	}
+	readBuffer(stdout_fd);
+	close(stdout_fd[0]);
 }
 
 void	HttpRequest::readBuffer(int stdout_fd[2]) {

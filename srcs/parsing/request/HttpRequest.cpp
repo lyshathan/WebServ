@@ -5,7 +5,7 @@
 /******************************************************************************/
 
 HttpRequest::HttpRequest(const Config& config, int &fd) : _config(config), _location(NULL), _status(0),
-_clientfd(fd), _areHeadersParsed(false), _isProccessingError(false) {};
+_clientfd(fd), _areHeadersParsed(false), _isProccessingError(false), _isCGI(false) {};
 
 HttpRequest::~HttpRequest() {};
 
@@ -44,6 +44,16 @@ void HttpRequest::requestBodyParser(std::string data) {
 		_status = BAD_REQUEST;
 }
 
+void HttpRequest::parseQueries() {
+	size_t pos = _uri.find("?");
+	if (pos == std::string::npos) return;
+
+	std::string base = _uri.substr(0, pos);
+	std::string queries = _uri.substr(pos + 1);
+	_uri = base;
+	_queries = queries;
+}
+
 bool HttpRequest::parseFirstLine(std::string data) {
 	const int NUM_TOKENS = 3;
 	std::istringstream ss(data);
@@ -65,6 +75,9 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	_method = firstLineTokens[0];
 	_uri = firstLineTokens[1];
 	_version = firstLineTokens[2];
+	parseQueries();
+	if (_status)
+		return false;
 	return true;
 }
 
@@ -93,10 +106,8 @@ bool HttpRequest::parseBody(std::string data) {
 	if (it != _headers.end()) {
 		if (it->second.find("multipart") != std::string::npos)
 			parseMultiPartBody(it, body);
-		else {
+		else
 			_body[""] = body;
-			_rawBody = body;
-		}
 	}
 	return true;
 }

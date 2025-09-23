@@ -20,6 +20,8 @@ int	HttpRequest::getStatus() const {return _status;}
 
 bool HttpRequest::getHeadersParsed() const {return _areHeadersParsed;}
 
+bool HttpRequest::isCGIActive() const { return _isCGI; }
+
 bool HttpRequest::getAutoIndex() const { return _location->getAutoIndex(); }
 
 size_t	HttpRequest::getMaxBody() const { return _location->getClientMaxBodySize(); }
