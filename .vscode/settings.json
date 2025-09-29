@@ -133,5 +133,6 @@
   },
   "github.copilot.enable": {
     "*": false
-  }
+  },
+  "files.autoSave": "afterDelay"
 }

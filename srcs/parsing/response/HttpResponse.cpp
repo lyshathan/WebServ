@@ -45,6 +45,7 @@ void HttpResponse::parseResponse() {
 		setStatusSpecificHeaders(status);
 		setConnectionHeader(status);
 	}
+	std::cout << PURPLE << "[RESPONSE] " << status << RESET << std::endl;
 }
 
 void HttpResponse::deleteParseResponse() {

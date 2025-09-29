@@ -5,7 +5,6 @@
 /******************************************************************************/
 
 void HttpRequest::requestHandler() {
-	std::cout << "Request incoming from .." << _uri << "\n";
 	if (_uri.find("/.well-known/") == 0)
 		return ;
 	if (!validateMethods()) {
@@ -45,7 +44,6 @@ bool HttpRequest::checkReturn() {
 bool HttpRequest::isLocationPathValid() {
 	std::string	path = _location->getRoot() + _uri;
 
-	std::cout << "Path " << path << "\n";
 	struct stat buf;
 	if (!stat(path.c_str(),&buf)) {
 		if (S_ISREG(buf.st_mode)) {

@@ -91,7 +91,7 @@ bool HttpRequest::createFile() {
 		if (filename.empty())
 			generateName(filename);
 		if (!nameAttribute(filepath, filename)) return false;
-		std::ofstream file(filepath, std::ios::binary);
+		std::ofstream file(filepath.c_str(), std::ios::binary);
 		if (!file.is_open()) return false;
 		file.write(it->second.data(), it->second.size());
 		if (file.fail()) {

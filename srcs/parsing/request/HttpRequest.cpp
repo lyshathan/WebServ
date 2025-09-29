@@ -76,6 +76,7 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	_uri = firstLineTokens[1];
 	_version = firstLineTokens[2];
 	parseQueries();
+	std::cout << PURPLE << "[INFO] " << _method << " " << _uri << " " << _version << RESET << std::endl;
 	if (_status)
 		return false;
 	return true;
