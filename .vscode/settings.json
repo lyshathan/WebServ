@@ -129,7 +129,8 @@
     "charconv": "cpp",
     "span": "cpp",
     "format": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "ranges": "cpp"
   },
   "github.copilot.enable": {
     "*": false

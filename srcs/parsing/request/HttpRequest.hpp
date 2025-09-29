@@ -72,6 +72,7 @@ class HttpRequest {
 		bool		parseMultiPartBody(std::map<std::string, std::string>::const_iterator &it, std::string);
 		void		parseOnePart(std::string);
 		void		parseQueries();
+		bool		parseChunk(std::string);
 
 		bool		postHandler();
 		void		getHandler();
