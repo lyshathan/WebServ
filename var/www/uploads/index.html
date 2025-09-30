@@ -3,207 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload - GreenLeaf</title>
-    <meta name="description" content="Upload your plant images and documents to the GreenLeaf collection.">
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Upload File - Webserv</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 540px;
+            width: 100%;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #06c;
+            text-decoration: none;
+            font-size: 17px;
+            margin-bottom: 32px;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 48px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        h1 {
+            font-size: 40px;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 17px;
+            color: #6e6e73;
+            margin-bottom: 40px;
+        }
+
+        .upload-area {
+            border: 2px dashed #d2d2d7;
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .upload-area:hover {
+            border-color: #06c;
+            background: #f5f9ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-info {
+            display: none;
+            padding: 16px;
+            background: #f5f5f7;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+
+        button {
+            width: 100%;
+            background: #06c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0077ed;
+        }
+
+        button:disabled {
+            background: #d2d2d7;
+            cursor: not-allowed;
+        }
+
+        .method {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .message {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="/index.html" class="logo">🌿 GreenLeaf</a>
-            <ul class="nav-links">
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/catalog/index.html">Plant Catalog</a></li>
-                <li><a href="/uploads/">Upload</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+        
+        <div class="card">
+            <span class="method">POST</span>
+            <h1>Upload File</h1>
+            <p class="subtitle">Select a file to upload to the server</p>
 
-    <main class="container">
-        <section class="hero">
-            <h1>Share Your Plant Collection</h1>
-            <p>Upload your beautiful plant photos and documents to share with the GreenLeaf community. Help us grow our botanical database!</p>
-        </section>
-
-        <!-- Upload Section -->
-        <section class="upload-section">
-            <div class="upload-card">
-                <h2>📤 Upload Files</h2>
-                <form id="uploadForm" action="/uploads/" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="fileInput">Choose files to upload:</label>
-                        <div class="file-input-wrapper">
-                            <input type="file" id="fileInput" name="files" multiple accept="image/*,application/pdf,.txt,.md,.doc,.docx">
-                            <label for="fileInput" class="file-input-label">
-                                <span class="file-icon">📁</span>
-                                <span class="file-text">Click to choose files or drag & drop</span>
-                            </label>
-                        </div>
-                        <div class="file-info">
-                            <small>Supported formats: Images (JPG, PNG, GIF), Documents (PDF, TXT, DOC), and more</small>
-                        </div>
-                    </div>
-
-                    <div class="upload-actions">
-                        <button type="submit" class="upload-button">
-                            <span class="upload-icon">🌱</span>
-                            Upload Files
-                        </button>
-                        <button type="reset" class="reset-button">Clear Form</button>
-                    </div>
-                </form>
-
-                <div id="uploadStatus" class="upload-status" style="display: none;">
-                    <div class="status-message"></div>
-                    <div class="upload-progress">
-                        <div class="progress-bar"></div>
-                    </div>
+            <form id="uploadForm" action="/upload/" method="POST" enctype="multipart/form-data">
+                <label for="fileInput" class="upload-area">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Click to select a file</div>
+                </label>
+                <input type="file" id="fileInput" name="file" required>
+                
+                <div class="file-info" id="fileInfo">
+                    <div class="file-name" id="fileName"></div>
                 </div>
 
-                <div id="selectedFiles" class="selected-files" style="display: none;">
-                    <h3>Selected Files:</h3>
-                    <ul id="fileList"></ul>
-                </div>
-            </div>
-        </section>
+                <button type="submit" id="submitBtn" disabled>Upload File</button>
+            </form>
 
-        <section class="upload-tips">
-            <h2>Upload Guidelines</h2>
-            <div class="tips-grid">
-                <div class="tip-card">
-                    <h3>📸 Image Quality</h3>
-                    <p>Upload high-quality images with good lighting to showcase your plants' beauty</p>
-                </div>
-                <div class="tip-card">
-                    <h3>📝 File Names</h3>
-                    <p>Use descriptive file names that include the plant species or document type</p>
-                </div>
-                <div class="tip-card">
-                    <h3>🗂️ Organization</h3>
-                    <p>Select the appropriate category to help organize the uploaded content</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 GreenLeaf Plant Catalog. Bringing nature closer to home.</p>
-    </footer>
+            <div class="message" id="message"></div>
+        </div>
+    </div>
 
     <script>
         const fileInput = document.getElementById('fileInput');
-        const selectedFiles = document.getElementById('selectedFiles');
-        const fileList = document.getElementById('fileList');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const submitBtn = document.getElementById('submitBtn');
         const uploadForm = document.getElementById('uploadForm');
-        const uploadStatus = document.getElementById('uploadStatus');
-        const statusMessage = uploadStatus.querySelector('.status-message');
+        const message = document.getElementById('message');
 
+        fileInput.addEventListener('change', handleFileSelect);
 
-        // Handle file selection for upload
-        fileInput.addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            if (files.length > 0) {
-                selectedFiles.style.display = 'block';
-                fileList.innerHTML = '';
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(uploadForm);
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+            message.classList.remove('show', 'success', 'error');
 
-                files.forEach(file => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span class="file-name">${file.name}</span>
-                        <span class="file-size">(${formatFileSize(file.size)})</span>
-                    `;
-                    fileList.appendChild(li);
+            try {
+                const response = await fetch('/uploads/', {
+                    method: 'POST',
+                    body: formData
                 });
 
-                // Update file input label
-                const fileText = document.querySelector('.file-text');
-                fileText.textContent = `${files.length} file(s) selected`;
-            } else {
-                selectedFiles.style.display = 'none';
-                document.querySelector('.file-text').textContent = 'Click to choose files or drag & drop';
+                if (response.ok) {
+                    showMessage('✓ File uploaded successfully!', 'success');
+                    uploadForm.reset();
+                    fileInfo.classList.remove('show');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Upload File';
+                } else {
+                    showMessage(`✗ Upload failed: ${response.status} ${response.statusText}`, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload File';
+                }
+            } catch (error) {
+                showMessage('✗ Upload failed: Network error', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload File';
             }
         });
 
-        // Handle form submission
-        uploadForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(uploadForm);
-
-            // Show upload status
-            uploadStatus.style.display = 'block';
-            statusMessage.textContent = 'Uploading files...';
-            statusMessage.className = 'status-message uploading';
-
-            // Upload to the files directory
-            fetch('/uploads/', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    statusMessage.textContent = 'Files uploaded successfully! 🎉';
-                    statusMessage.className = 'status-message success';
-                    uploadForm.reset();
-                    selectedFiles.style.display = 'none';
-                    document.querySelector('.file-text').textContent = 'Click to choose files or drag & drop';
-                } else {
-                    throw new Error('Upload failed');
-                }
-            })
-            .catch(error => {
-                statusMessage.textContent = 'Upload failed. Please try again.';
-                statusMessage.className = 'status-message error';
-            });
-        });
-
-        // Drag and drop functionality
-        const fileInputWrapper = document.querySelector('.file-input-wrapper');
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            fileInputWrapper.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
+        function handleFileSelect() {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileName.textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+                fileInfo.classList.add('show');
+                submitBtn.disabled = false;
+                message.classList.remove('show');
+            }
         }
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            fileInputWrapper.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            fileInputWrapper.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight(e) {
-            fileInputWrapper.classList.add('drag-over');
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.classList.add('show', type);
         }
 
-        function unhighlight(e) {
-            fileInputWrapper.classList.remove('drag-over');
-        }
-
-        fileInputWrapper.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            fileInput.files = files;
-
-            // Trigger change event
-            const event = new Event('change', { bubbles: true });
-            fileInput.dispatchEvent(event);
-        }
-
-        // Format file size helper
         function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
         }
     </script>
 </body>
