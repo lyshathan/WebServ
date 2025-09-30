@@ -44,10 +44,12 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 
 	if (!_body.empty()) {
 		std::string firstValue = _body.begin()->second;
-		if (length > 0) {
+		if (length > 0 && !firstValue.empty()) {
 			it = _headers.find("content-type");
-			if (it != _headers.end())
-				write(stdin_fd[1], firstValue.c_str(), length);
+			if (it != _headers.end()) {
+				size_t actualLength = std::min(length, firstValue.length());
+				write(stdin_fd[1], firstValue.c_str(), actualLength);
+			}
 		}
 	}
 	close(stdin_fd[1]);
