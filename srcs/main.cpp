@@ -4,19 +4,20 @@
 
 #include <signal.h>
 
-volatile sig_atomic_t running;
+volatile sig_atomic_t g_running;
 
 void sigint_handler(int sig)
 {
 	(void)sig;
-	running = 0;
-	std::cout << "SIGNAL" << std::endl;
+	g_running = 0;
+	std::cout << "\n[Server] Shutting down gracefully..." << std::endl;
 }
 
 int main(void)
 {
-	running = 1;
+	g_running = 1;
 	signal(SIGINT, sigint_handler);
+	signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE to handle broken pipes gracefully
 	Config config;
 	try
 	{

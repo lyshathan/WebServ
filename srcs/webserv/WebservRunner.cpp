@@ -6,13 +6,17 @@ int	Webserv::runningServ(void)
 
 	int	status;
 	int	timeout = 3000;	// 3 seconds
-	while (1)
+	while (g_running)
 	{
 		// check if any socket is ready, else wait
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
+		{
+			if (!g_running) // Check if shutdown was requested
+				break;
 			return (handleFunctionError("poll"));
-		else if (status == 0) // Is this condition useful?
+		}
+		else if (status == 0) // Timeout - this is useful for checking g_running
 		{
 			//std::cout << "[Server] Waiting ..." << std::endl;
 			continue;
@@ -23,6 +27,8 @@ int	Webserv::runningServ(void)
 		if (connectAndRead() < 0)
 			return(1);
 	}
+	std::cout << "[Server] Server loop ended gracefully" << std::endl;
+	return (0);
 }
 
 int	Webserv::connectAndRead(void)
@@ -118,33 +124,55 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 }
 
 int Webserv::processAndSendResponse(int clientFd) {
+	if (_clients.find(clientFd) == _clients.end())
+		return -1;
+	
 	_clients[clientFd]->httpRes->parseResponse();
 	int status = sendResponse(clientFd);
+	
+	if (status == -1) {
+		// Client likely disconnected, clean up gracefully
+		std::vector<struct pollfd>::iterator it = _pollFds.begin();
+		for (; it != _pollFds.end(); ++it) {
+			if (it->fd == clientFd) {
+				deleteClient(clientFd, it);
+				break;
+			}
+		}
+		return 1; // Continue processing other clients
+	}
+	
 	_clients[clientFd]->clearBuffer();
-	if (status == -1)
-		return (handleFunctionError("Send"));
 	return 1;
 }
 
 int Webserv::sendResponse(int clientFd) {
 	int status;
 
+	// Check if client still exists
+	if (_clients.find(clientFd) == _clients.end())
+		return -1;
+
 	std::string resHeaders = _clients[clientFd]->httpRes->getResHeaders().c_str();
-	status = send(clientFd, resHeaders.c_str(), resHeaders.length(), 0);
+	status = send(clientFd, resHeaders.c_str(), resHeaders.length(), MSG_NOSIGNAL);
 	if (status == -1)
-		return (handleFunctionError("Send"));
+		return -1; // Client likely disconnected
 
 	bool isTextContent = _clients[clientFd]->httpRes->getIsTextContent();
 	if (!isTextContent) {
 		std::vector<char> binaryContent = _clients[clientFd]->httpRes->getBinRes();
-		status = send(clientFd, &binaryContent[0], binaryContent.size(), 0);
-		if (status == -1)
-			return (handleFunctionError("Send"));
+		if (binaryContent.size() > 0) {
+			status = send(clientFd, &binaryContent[0], binaryContent.size(), MSG_NOSIGNAL);
+			if (status == -1)
+				return -1; // Client likely disconnected
+		}
 	} else {
 		std::string textContent = _clients[clientFd]->httpRes->getRes().c_str();
-		status = send(clientFd, textContent.c_str(), textContent.size(), 0);
-		if (status == -1)
-			return (handleFunctionError("Send"));
+		if (textContent.size() > 0) {
+			status = send(clientFd, textContent.c_str(), textContent.size(), MSG_NOSIGNAL);
+			if (status == -1)
+				return -1; // Client likely disconnected
+		}
 	}
 	return (0);
 }
