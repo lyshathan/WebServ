@@ -1,5 +1,6 @@
 #include "ServerConfig.hpp"
 #include "../utils/Utils.hpp"
+#include "../../ProjectTools.hpp"
 
 void	ServerConfig::parseListenPort(std::vector< t_token>::iterator &it)
 {
@@ -20,6 +21,13 @@ void	ServerConfig::parseListenPort(std::vector< t_token>::iterator &it)
 	{
 		IP = "0.0.0.0";
 		content = it->content;
+	}
+
+	// Validate IP format (must have exactly 4 octets between 0-255)
+	try {
+		fromIPToIntHost(IP);
+	} catch (const std::runtime_error& e) {
+		throwErrorToken(" Invalid IP address format", *it);
 	}
 
 	double port_d = std::strtod(content.c_str(), &end);
@@ -78,7 +86,7 @@ void	ServerConfig::parseErrorPage(std::vector< t_token>::iterator &it)
 	while (it != itErrorPage)
 	{
 		double code_d = std::strtod(it->content.c_str(), &end);
-		if (*end || code_d < 0 || code_d > INT_MAX)					// Need to validate the rules here ----------------
+		if (*end || code_d < 300 || code_d > 599)
 			throwErrorToken(" Invalid error code", *it);
 		int code = static_cast<int>(code_d);
 		if (_errorPages.find(code) != _errorPages.end())

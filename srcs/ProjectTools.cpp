@@ -26,6 +26,13 @@ uint32_t	fromIPToIntHost(const std::string &IPstr)
 			}
 		}
 	}
+
+	// Check that there's no extra content after the 4 octets
+	std::string remaining;
+	iss >> remaining;
+	if (!remaining.empty()) {
+		throw std::runtime_error( "Invalid IP address - Extra content after IP" );
+	}
 	return IPint;
 }
 

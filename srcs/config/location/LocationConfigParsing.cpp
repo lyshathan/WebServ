@@ -77,7 +77,7 @@ void	LocationConfig::parseErrorPage(std::vector< t_token>::iterator &it)
 	while (it != itErrorPage)
 	{
 		double code_d = std::strtod(it->content.c_str(), &end);
-		if (*end || code_d < 0 || code_d > INT_MAX)					// Need to validate the rules here ----------------
+		if (*end || code_d < 300 || code_d > 599)
 			throwErrorToken(" Invalid error code", *it);
 		int code = static_cast<int>(code_d);
 		if (_errorPages.find(code) != _errorPages.end())
