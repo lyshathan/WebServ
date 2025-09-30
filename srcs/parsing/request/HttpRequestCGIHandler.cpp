@@ -36,6 +36,7 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 		std::istringstream iss(it->second);
         size_t contentLength = 0;
         iss >> contentLength;
+        length = contentLength;
 	}
 
 	close(stdin_fd[0]);
@@ -45,10 +46,8 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 		std::string firstValue = _body.begin()->second;
 		if (length > 0) {
 			it = _headers.find("content-type");
-			if (it != _headers.end()) {
-				std::cout << "Second " << it->second << "\n";
+			if (it != _headers.end())
 				write(stdin_fd[1], firstValue.c_str(), length);
-			}
 		}
 	}
 	close(stdin_fd[1]);

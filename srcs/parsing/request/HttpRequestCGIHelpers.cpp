@@ -10,14 +10,17 @@ bool HttpRequest::isCGIPath() {
 	std::string tmp = _uri;
 
 	if (!stat(path.c_str(),&buf)) {
-		if (S_ISREG(buf.st_mode) && checkGGI()) {
-			if (access(path.c_str(),  R_OK | X_OK) != 0) {
+		if (S_ISREG(buf.st_mode)) {
+			if (access(path.c_str(),  R_OK) != 0) {
 				_status = FORBIDDEN;
 				return false;
 			}
 			_uri = path;
-			_isCGI = true;
-			return true;
+			if (checkGGI()) {
+				_isCGI = true;
+				return true;
+			}
+			_uri = tmp;
 		}
 		else if (S_ISDIR(buf.st_mode)) {
 			if (access(path.c_str(),  R_OK | X_OK) != 0) {
@@ -103,5 +106,3 @@ void	HttpRequest::initEnv() {
 	if (!_queries.empty())
 		_env.push_back("QUERY_STRING=" + _queries);
 }
-
-// "QUERY_STRING" name=john&age=25
