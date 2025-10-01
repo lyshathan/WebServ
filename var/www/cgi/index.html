@@ -197,23 +197,33 @@
             margin: 24px 0;
             font-size: 14px;
         }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .button-group button {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="/" class="back-link">← Back to Home</a>
-        
+
         <div class="card">
             <span class="method">CGI</span>
             <h1>CGI Script</h1>
             <p class="subtitle">Test CGI with query parameters and body</p>
 
-            <form action="/cgi/index.py" method="POST" enctype="multipart/form-data">
+            <form id="cgiForm" method="POST" enctype="multipart/form-data">
                 <div class="input-group">
                     <label for="query">Query Parameter</label>
-                    <input 
-                        type="text" 
-                        id="query" 
+                    <input
+                        type="text"
+                        id="query"
                         name="query"
                         placeholder="test=value"
                     >
@@ -229,33 +239,41 @@
                         <div class="upload-text">Click to select a file (optional)</div>
                     </label>
                     <input type="file" id="fileInput" name="file">
-                    
+
                     <div class="file-info" id="fileInfo">
                         <span class="file-name" id="fileName"></span>
                         <span class="clear-file" onclick="clearFile()">✕ Remove</span>
                     </div>
                 </div>
 
-                <button type="submit">Run CGI Script</button>
+                <div class="button-group">
+                    <button type="submit" onclick="setAction('/cgi/index.py')" style="margin-bottom: 12px;">
+                        🐍 Run Python CGI
+                    </button>
+                    <button type="submit" onclick="setAction('/cgi/index.php')" style="background: #af52de;">
+                        🔷 Run PHP CGI
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
-        const form = document.querySelector('form');
+        const form = document.getElementById('cgiForm');
         const queryInput = document.getElementById('query');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
 
-        // Handle query parameter
-        form.addEventListener('submit', (e) => {
+        // Set form action dynamically
+        function setAction(actionUrl) {
             const query = queryInput.value.trim();
             if (query) {
-                const action = form.action.split('?')[0];
-                form.action = `${action}?${query}`;
+                form.action = `${actionUrl}?${query}`;
+            } else {
+                form.action = actionUrl;
             }
-        });
+        }
 
         // Handle file selection
         fileInput.addEventListener('change', () => {

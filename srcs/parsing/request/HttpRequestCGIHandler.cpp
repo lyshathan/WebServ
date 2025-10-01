@@ -34,9 +34,9 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 	std::map<std::string, std::string>::iterator it = _headers.find("content-length");
 	if (it != _headers.end()) {
 		std::istringstream iss(it->second);
-        size_t contentLength = 0;
-        iss >> contentLength;
-        length = contentLength;
+		size_t contentLength = 0;
+		iss >> contentLength;
+		length = contentLength;
 	}
 
 	close(stdin_fd[0]);

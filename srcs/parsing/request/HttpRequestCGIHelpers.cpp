@@ -41,19 +41,20 @@ bool HttpRequest::isCGIPath() {
 }
 
 bool	HttpRequest::checkGGI() {
-	std::string cgiPath = _location->getCGIPath();
-	std::string cgiExtension = _location->getCGIExtension();
+	std::map<std::string, std::string>	cgiData = _location->getCGIData();
 
-	if (cgiPath.empty() || cgiExtension.empty())
-		return false;
-
-	size_t pos = _uri.find_last_of(".");
-	if (pos != std::string::npos) {
-		std::string extension = _uri.substr(pos);
-		if (extension.compare(cgiExtension) == 0) {
-			_argv.push_back(cgiPath);
-			_argv.push_back(_uri);
-			return true;
+	if (!cgiData.empty()) {
+		size_t pos = _uri.find_last_of(".");
+		if (pos != std::string::npos) {
+			std::string extension = _uri.substr(pos);
+			std::map<std::string, std::string>::iterator it = cgiData.begin();
+			for (; it != cgiData.end(); ++it) {
+				if (extension.compare(it->first) == 0) {
+					_argv.push_back(it->second);
+					_argv.push_back(_uri);
+					return true;
+				}
+			}
 		}
 	}
 	return false;

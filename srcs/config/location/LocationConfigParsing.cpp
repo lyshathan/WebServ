@@ -2,6 +2,26 @@
 #include "LocationConfig.hpp"
 #include "../utils/Utils.hpp"
 
+void	LocationConfig::parseCGI(std::vector< t_token>::iterator &it) {
+	std::istringstream	ss(it->content);
+	struct stat			statbuf;
+	std::string			extension;
+	std::string			path;
+	std::string			extra;
+
+	if (!(ss >> extension >> path))
+		throwErrorToken("Failed to parse CGI directive", *it);
+	if (ss >> extra)
+		throwErrorToken("Too many arguments for CGI directive", *it);
+	if (_cgiData.find(extension) != _cgiData.end())
+		throwErrorToken("CGI extension already defined", *it);
+	if (!extension.empty() && !path.empty())
+		_cgiData[extension] = path;
+	if (stat(path.c_str(), &statbuf) != 0)
+		throwErrorToken("CGI executable does not exist", *it);
+	if (!(statbuf.st_mode & S_IXUSR))
+		throwErrorToken("CGI executable is not executable", *it);
+}
 
 void	LocationConfig::parsePath(std::vector< t_token>::iterator &it)
 {
@@ -17,10 +37,8 @@ void	LocationConfig::parsePath(std::vector< t_token>::iterator &it)
 	// }
 	if (pathType == "upload_path")
 		setString(_uploadPath, it->content, *it);
-	else if (pathType == "cgi_extension")
-		setString(_cgiExtension, it->content, *it);
-	else if (pathType == "cgi_path")
-		setString(_cgiPath, it->content, *it);
+	else if (pathType == "cgi")
+		parseCGI(it);
 	else if (pathType == "root")
 		setString(_root, it->content, *it);
 	checkForSemicolon(it, _tokens);

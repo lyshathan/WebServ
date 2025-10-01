@@ -21,6 +21,4 @@ size_t	LocationConfig::getClientMaxBodySize() const { return _clientMaxBodySize;
 
 std::pair<int, std::string> LocationConfig::getReturn() const { return _return; }
 
-std::string LocationConfig::getCGIExtension() const { return _cgiExtension; }
-
-std::string LocationConfig::getCGIPath() const { return _cgiPath; }
+std::map<std::string, std::string> LocationConfig::getCGIData(void) const { return _cgiData;}

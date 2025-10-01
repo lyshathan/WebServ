@@ -24,8 +24,7 @@ void Config::initValidDirectives(void)
 	LocationDir.push_back("index");
 	LocationDir.push_back("allow_methods");
 	LocationDir.push_back("autoindex");
-	LocationDir.push_back("cgi_extension");
-	LocationDir.push_back("cgi_path");
+	LocationDir.push_back("cgi");
 	LocationDir.push_back("upload_path");
 	LocationDir.push_back("return");
 	LocationDir.push_back("root");

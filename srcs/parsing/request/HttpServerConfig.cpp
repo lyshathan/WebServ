@@ -47,25 +47,25 @@ void HttpRequest::pickServerConfig() {
 					{
 						state = EXACT_MATCH;
 						_server = &(*itServer);
-						std::cout << GREEN << "Server config perfect match !" << RESET << std::endl;
+						// std::cout << GREEN << "Server config perfect match !" << RESET << std::endl;
 					}
 					else if (foundServerName != serverNames.end() && itPortAndIP->second == "0.0.0.0")
 					{
 						state = EXACT_MATCH_DEFAULT_IP;
 						_server = &(*itServer);
-						std::cout << GREEN << "Set default server matching port AND server_name with DEFAULT IP" << RESET << std::endl;
+						// std::cout << GREEN << "Set default server matching port AND server_name with DEFAULT IP" << RESET << std::endl;
 					}
 					else if (configIP == serverIP)
 					{
 						state = MATCH_PORT_IP;
 						_server = &(*itServer);
-						std::cout << GREEN << "Set default server matching port AND IP " << _server->getID() <<  RESET << std::endl;
+						// std::cout << GREEN << "Set default server matching port AND IP " << _server->getID() <<  RESET << std::endl;
 					}
 					else if (state < MATCH_PORT_DEFAULT_IP)
 					{
 						state = MATCH_PORT_DEFAULT_IP;
 						_server = &(*itServer);
-						std::cout << GREEN << "Set default server matching port AND DEFAULT IP " << _server->getID() <<  RESET << std::endl;
+						// std::cout << GREEN << "Set default server matching port AND DEFAULT IP " << _server->getID() <<  RESET << std::endl;
 					}
 				}
 				else if (_server == NULL)
@@ -86,7 +86,7 @@ void HttpRequest::pickServerConfig() {
 		const std::vector< ServerConfig > &config = _config.getServerConfig();
 		_server = &(*config.begin());
 	}
-	std::cout << GREEN << "--> Chosen server config : " << _server->getID() << RESET << std::endl;
+	// std::cout << GREEN << "--> Chosen server config : " << _server->getID() << RESET << std::endl;
 	// _server->printServer();
 
 }

@@ -44,8 +44,6 @@ LocationConfig & LocationConfig::operator=(LocationConfig const &otherLocationCo
 	this->_clientMaxBodySize = otherLocationConfig._clientMaxBodySize;
 	this->_path = otherLocationConfig._path;
 	this->_uploadPath = otherLocationConfig._uploadPath;
-	this->_cgiExtension = otherLocationConfig._cgiExtension;
-	this->_cgiPath = otherLocationConfig._cgiPath;
 	this->_root = otherLocationConfig._root;
 	this->_allowMethod = otherLocationConfig._allowMethod;
 	this->_validMethod = otherLocationConfig._validMethod;
@@ -86,7 +84,7 @@ void	LocationConfig::locationConfigParser(std::vector< t_token>::iterator &it)
 		else if (it->type == DIRECTIVE && it->content == "index") // index files
 			addListToVector(_indexFiles, it, _tokens, NULL);
 		else if (it->type == DIRECTIVE				// paths
-			&& (it->content == "upload_path" || it->content == "cgi_extension" || it->content == "cgi_path" || it->content == "root"))
+			&& (it->content == "upload_path" || it->content == "cgi" || it->content == "root"))
 				parsePath(it);
 		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")	// client_max_body_size
 			parseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
@@ -113,8 +111,6 @@ void	LocationConfig::check(ServerConfig &server)
 		_errorPages = server.getErrorPages();				// Set error pages inherited
 	if (std::find(_allowMethod.begin(), _allowMethod.end(), "POST") != _allowMethod.end() && _uploadPath.empty())
 		throwError(" Missing upload path for POST method");
-	if (!_cgiExtension.empty() && _cgiPath.empty())
-		throwError(" Missing CGI path for CGI extension");
 }
 
 
@@ -138,8 +134,11 @@ void	LocationConfig::printLocation(void) const
 	}
 	std::cout << indent << "Auto Index : " << _autoIndex << std::endl;
 	std::cout << indent << "Upload path : " << (_uploadPath == "" ? "UNDEFINED" : _uploadPath) << std::endl;
-	std::cout << indent << "CGI Extension : "  << (_cgiExtension == "" ? "UNDEFINED" : _cgiExtension) << std::endl;
-	std::cout << indent << "CGI Path : "  << (_cgiPath == "" ? "UNDEFINED" : _cgiPath) << std::endl;
+	std::cout << indent << "CGI: " << std::endl;
+	std::map<std::string, std::string>::const_iterator it = _cgiData.begin();
+	for (; it != _cgiData.end(); ++it) {
+		std::cout << list << it->first << " | " << it->second << std::endl;
+	}
 	std::cout << indent << "Root : "  << (_root == "" ? "UNDEFINED" : _root) << std::endl;
 	std::cout << indent << "Client body size max : " << _clientMaxBodySize << std::endl;
 	std::cout << indent << "Error pages : " << std::endl;
