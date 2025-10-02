@@ -9,6 +9,12 @@
 #include "../request/HttpRequest.hpp"
 #include <sys/stat.h>
 
+struct UserData {
+	std::string username;
+	std::string age;
+	std::string city;
+};
+
 class HttpResponse {
 	private:
 		HttpRequest *_request;
@@ -23,6 +29,7 @@ class HttpResponse {
 		std::string							_res;
 		std::vector<char>					_binRes;
 		std::string							_mimeType;
+		static std::map<std::string, UserData>	_sessions;
 
 	public:
 		HttpResponse(HttpRequest *);
@@ -42,6 +49,13 @@ class HttpResponse {
 		void	setStatusSpecificHeaders(int);
 		void	setAutoIndex();
 
+		std::string	generateSession();
+		std::string	buildSimpleHTML(const UserData& data);
+
+		bool	handleCookie(int);
+		bool	handleCookieGet(std::map<std::string, std::string>::iterator& cookieIt);
+		bool	handleCookiePost(std::map<std::string, std::string>::iterator& cookieIt);
+		static std::map<std::string, UserData>& getSessions();
 		void	postParseResponse(int);
 		void	deleteParseResponse();
 

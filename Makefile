@@ -27,7 +27,7 @@ HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
 				HttpRequestCGIHelpers HttpRequestBodyParser
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
-				HttpResponseSetters
+				HttpResponseSetters HttpResponseCookie
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/webserv/, $(WEBSERV))) \

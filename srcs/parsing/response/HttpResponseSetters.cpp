@@ -45,7 +45,6 @@ void HttpResponse::setContentHeaders() {
 }
 
 void HttpResponse::setBody(int status) {
-	(void)status;
 	_mimeType = getMimeType();
 	addHeader("Last-Modified: ", getLastModifiedTime());
 	if (isTextContent())
@@ -81,7 +80,6 @@ void HttpResponse::setAutoIndex() {
 }
 
 void HttpResponse::setTextContent(int status) {
-	(void)status;
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
 	if (!file.is_open()) {

@@ -65,7 +65,6 @@ class HttpRequest {
 		bool								_isProccessingError;
 		bool								_isCGI;
 
-
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
 		bool		parseBody(std::string);
@@ -129,6 +128,7 @@ class HttpRequest {
 		int									getStatus() const;
 		bool								getHeadersParsed() const;
 		std::map<std::string, std::string>&	getHeaders();
+		std::map<std::string, std::string>&	getBody();
 		bool								getAutoIndex() const;
 		bool								isCGIActive() const;
 		size_t								getMaxBody() const;

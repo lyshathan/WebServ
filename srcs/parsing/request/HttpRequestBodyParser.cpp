@@ -61,7 +61,11 @@ bool HttpRequest::parseChunk(std::string body) {
 void HttpRequest::parseOnePart(std::string part) {
 	std::string str = "filename=";
 	size_t pos = part.find(str);
-	if (pos == std::string::npos) return;
+	if (pos == std::string::npos) {
+		str = "name=";
+		pos = part.find(str);
+		if (pos == std::string::npos) return;
+	}
 
 	size_t start = pos + str.length() + 1;
 	if (start >= part.length()) return;

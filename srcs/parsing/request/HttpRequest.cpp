@@ -103,7 +103,7 @@ bool HttpRequest::parseBody(std::string data) {
 	if (headerEnd == std::string::npos)
 		return false;
 	std::string body = data.substr(headerEnd + 4);
-	
+
 	std::map<std::string, std::string>::const_iterator transferEncoding = _headers.find("transfer-encoding");
 	if (transferEncoding != _headers.end()) {
 		if (transferEncoding->second.find("chunked") != std::string::npos)
@@ -111,7 +111,7 @@ bool HttpRequest::parseBody(std::string data) {
 		_status = 501;
 		return false;
 	}
-	
+
 	std::map<std::string, std::string>::const_iterator contentType = _headers.find("content-type");
 	if (contentType != _headers.end()) {
 		if (contentType->second.find("multipart") != std::string::npos) {

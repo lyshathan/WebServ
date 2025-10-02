@@ -130,7 +130,10 @@
     "span": "cpp",
     "format": "cpp",
     "cinttypes": "cpp",
-    "ranges": "cpp"
+    "ranges": "cpp",
+    "condition_variable": "cpp",
+    "text_encoding": "cpp",
+    "thread": "cpp"
   },
   "github.copilot.enable": {
     "*": false

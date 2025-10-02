@@ -1,5 +1,7 @@
 #include "HttpResponse.hpp"
 
+std::map<std::string, UserData> HttpResponse::_sessions;
+
 /******************************************************************************/
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
@@ -23,7 +25,8 @@ void HttpResponse::parseResponse() {
 
 	setStatusLine(status);
 	if (status == 201) {
-		postParseResponse(status);
+		if (!handleCookie(status))
+			postParseResponse(status);
 	}
 	else if (status == 204) {
 		deleteParseResponse();
@@ -40,7 +43,8 @@ void HttpResponse::parseResponse() {
 		setConnectionHeader(status);
 	}
 	else {
-		setBody(status);
+		if (!handleCookie(status))
+			setBody(status);
 		setContentHeaders();
 		setStatusSpecificHeaders(status);
 		setConnectionHeader(status);

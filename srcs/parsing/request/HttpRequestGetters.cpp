@@ -16,6 +16,8 @@ const std::string& HttpRequest::getCGIRes() const { return _cgiRes; };
 
 std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
 
+std::map<std::string, std::string>& HttpRequest::getBody() {return _body;}
+
 int	HttpRequest::getStatus() const {return _status;}
 
 bool HttpRequest::getHeadersParsed() const {return _areHeadersParsed;}
