@@ -29,28 +29,38 @@ void HttpResponse::parseResponse() {
 		if (!handleCookie(status))
 			postParseResponse(status);
 	}
-	else if (status == 204) {
+	else if (status == 204)
 		deleteParseResponse();
-	} else if (status == 400) {
-		_isTextContent = true;
-		_res = _htmlResponses[_request->getStatus()];
-		setContentHeaders();
-		setConnectionHeader(status);
-	} else if (status == 200 && _request->isCGIActive()) {
-		_isTextContent = true;
-		_res = _request->getCGIRes();
-		_mimeType = "text/html";
-		setContentHeaders();
-		setConnectionHeader(status);
-	}
-	else {
-		if (!handleCookie(status))
-			setBody(status);
-		setContentHeaders();
-		setStatusSpecificHeaders(status);
-		setConnectionHeader(status);
-	}
+	else if (status == 400 || status == 500)
+		errorParseResponse(status);
+	else if (status == 200 && _request->isCGIActive())
+		cgiParseResponse(status);
+	else
+		successParseResponse(status);
 	printLog(PURPLE, "INFO", "Response Sent Status Code: " + std::to_string(status));
+}
+
+void HttpResponse::successParseResponse(int status) {
+	if (!handleCookie(status))
+		setBody(status);
+	setContentHeaders();
+	setStatusSpecificHeaders(status);
+	setConnectionHeader(status);
+}
+
+void HttpResponse::cgiParseResponse(int status) {
+	_isTextContent = true;
+	_res = _request->getCGIRes();
+	_mimeType = "text/html";
+	setContentHeaders();
+	setConnectionHeader(status);
+}
+
+void HttpResponse::errorParseResponse(int status) {
+	_isTextContent = true;
+	_res = _htmlResponses[_request->getStatus()];
+	setContentHeaders();
+	setConnectionHeader(status);
 }
 
 void HttpResponse::deleteParseResponse() {

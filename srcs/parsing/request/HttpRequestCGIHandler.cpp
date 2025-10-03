@@ -14,9 +14,9 @@ void	HttpRequest::cgiHandler() {
 
 void	HttpRequest::childHandler(int stdin_fd[2], int stdout_fd[2]) {
 	if (dup2(stdin_fd[0], STDIN_FILENO) < 0)
-		return ;
+		exit(1);
 	if (dup2(stdout_fd[1], STDOUT_FILENO) < 0)
-		return ;
+		exit(1);
 	close(stdin_fd[0]);
 	close(stdin_fd[1]);
 	close(stdout_fd[0]);
@@ -24,7 +24,7 @@ void	HttpRequest::childHandler(int stdin_fd[2], int stdout_fd[2]) {
 	char** argv = getArgvArray();
 	char** envp = getEnvArray();
 	if (execve(argv[0], argv, &envp[0]) == -1)
-		return ;
+		exit(1);
 }
 
 void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
@@ -55,6 +55,16 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 	close(stdin_fd[1]);
 
 	if (waitpid(pid, &status, 0) < 0) {
+		_status = INTERNAL_ERROR;
+		return ;
+	}
+	if (WIFEXITED(status)) {
+		int exit_code = WEXITSTATUS(status);
+		if (exit_code != 0) {
+			_status = INTERNAL_ERROR;
+			return ;
+		}
+	} else if (WIFSIGNALED(status)) {
 		_status = INTERNAL_ERROR;
 		return ;
 	}

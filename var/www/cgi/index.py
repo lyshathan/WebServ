@@ -85,7 +85,7 @@ print("""<!DOCTYPE html>
     <div class="container">
         <h1>CGI Environment</h1>
         <p class="subtitle">Environment variables and request body</p>
-        
+
         <div class="card">
             <h2>Environment Variables</h2>
             <table>
@@ -101,7 +101,7 @@ for key, value in sorted(os.environ.items()):
 
 print("""            </table>
         </div>
-        
+
         <div class="card">
             <h2>Request Body</h2>
 """)

@@ -58,6 +58,9 @@ class HttpResponse {
 		static std::map<std::string, UserData>& getSessions();
 		void	postParseResponse(int);
 		void	deleteParseResponse();
+		void	errorParseResponse(int);
+		void	cgiParseResponse(int);
+		void	successParseResponse(int);
 
 		std::string getTime() const;
 		std::string getMimeType() const;
