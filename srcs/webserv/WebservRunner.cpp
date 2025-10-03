@@ -1,5 +1,6 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
+#include "../ProjectTools.hpp"
 
 int	Webserv::runningServ(void)
 {
@@ -27,7 +28,6 @@ int	Webserv::runningServ(void)
 		if (connectAndRead() < 0)
 			return(1);
 	}
-	std::cout << "[Server] Server loop ended gracefully" << std::endl;
 	return (0);
 }
 
@@ -47,7 +47,6 @@ int	Webserv::connectAndRead(void)
 		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
 		if (find != _serverFds.end())
 		{
-			//std::cout << "Accept new connection [" << it->fd << "]" << std::endl;
 			status = acceptNewConnection(*find);
 			if (status == -1)
 				return (-1);
@@ -76,6 +75,7 @@ int Webserv::acceptNewConnection(int &serverFd)
 	// Add new client to pollFds and to _client map
 	addClient(clientFd);
 
+	printLog(YELLOW, "INFO", "New Client #" + std::to_string(clientFd) + " On Socket #" + std::to_string(serverFd));
 	//std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << "for server " << serverFd << RESET << std::endl;
 	return (0);
 }
@@ -99,9 +99,9 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
-			std::cerr << YELLOW << "[server] Client #" << senderFd << " closed connection" << RESET << std::endl;
+			printLog(YELLOW, "INFO", "Client #" + std::to_string(senderFd) + " Closed Connection");
 		else
-			std::cerr << YELLOW << "[server] Client #" << senderFd << " recv error: " << strerror(errno) << RESET << std::endl;
+			printLog(RED, "ERROR",  "Client #" + std::to_string(senderFd) + " recv error: " + strerror(errno));
 		deleteClient(it->fd, it);
 	}
 	else
@@ -126,10 +126,10 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 int Webserv::processAndSendResponse(int clientFd) {
 	if (_clients.find(clientFd) == _clients.end())
 		return -1;
-	
+
 	_clients[clientFd]->httpRes->parseResponse();
 	int status = sendResponse(clientFd);
-	
+
 	if (status == -1) {
 		// Client likely disconnected, clean up gracefully
 		std::vector<struct pollfd>::iterator it = _pollFds.begin();
@@ -141,7 +141,7 @@ int Webserv::processAndSendResponse(int clientFd) {
 		}
 		return 1; // Continue processing other clients
 	}
-	
+
 	_clients[clientFd]->clearBuffer();
 	return 1;
 }

@@ -51,7 +51,7 @@ void	ServerConfig::parseServerConfig(std::vector< t_token>::iterator &it)
 		}
 		else if (it->type == DIRECTIVE && it->content == "listen")	// listen port
 			parseListenPort(it);
-		else if (it->type == DIRECTIVE && it->content == "server_name")	// server names
+		else if (it->type == DIRECTIVE && it->content == "server_name") // server names
 			addListToVector(_serverNames, it, _tokens, NULL);
 		else if (it->type == DIRECTIVE && it->content == "index")	// index files
 			addListToVector(_indexFiles, it, _tokens, NULL);

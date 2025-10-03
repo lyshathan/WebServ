@@ -1,4 +1,5 @@
 #include "HttpRequest.hpp"
+#include "../../ProjectTools.hpp"
 
 /******************************************************************************/
 /*						CONSTRUCTORS & DESTRUCTORS							  */
@@ -76,7 +77,7 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	_uri = firstLineTokens[1];
 	_version = firstLineTokens[2];
 	parseQueries();
-	std::cout << PURPLE << "[INFO] " << _method << " " << _uri << " " << _version << RESET << std::endl;
+	printLog(PURPLE, "INFO", "Request received: " + _method + " " + _uri + " " + _version);
 	if (_status)
 		return false;
 	return true;

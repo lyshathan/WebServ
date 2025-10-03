@@ -41,3 +41,19 @@ uint32_t	fromIPToIntNetwork(const std::string &IPstr)
     // Convert from host byte order to network byte order
 	return (htonl(fromIPToIntHost(IPstr)));
 }
+
+std::string	getCurrentTimeLocal() {
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer [80];
+
+	time (&rawtime);
+	timeinfo = localtime (&rawtime);
+	strftime (buffer,80,"%Y-%m-%d %H:%M:%S", timeinfo);
+	return std::string(buffer);
+}
+
+void printLog(std::string color, std::string type, std::string str) {
+	std::cout << color << "[" << getCurrentTimeLocal() << "] "
+	<< "[" << type << "] " << str << RESET << std::endl;
+}
