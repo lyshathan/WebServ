@@ -4,12 +4,10 @@
 
 int	Webserv::runningServ(void)
 {
-
 	int	status;
 	int	timeout = 3000;	// 3 seconds
 	while (g_running)
 	{
-		// check if any socket is ready, else wait
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
 		{
@@ -22,8 +20,6 @@ int	Webserv::runningServ(void)
 			//std::cout << "[Server] Waiting ..." << std::endl;
 			continue;
 		}
-
-		//std::cout << "Sockets are ready" << std::endl;
 		// Loop check for each socket
 		if (connectAndRead() < 0)
 			return(1);
@@ -40,8 +36,6 @@ int	Webserv::connectAndRead(void)
 		if (! (it->revents & POLLIN)) // Socket i is not ready for now
 			continue;
 
-		//std::cout << BLUE << "[Server] Socket #" << it->fd << " is ready for I/O operation" << RESET << std::endl;
-
 		it->revents = 0; // Reset revents to 0 so we can see if it has changed next time
 
 		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
@@ -54,7 +48,6 @@ int	Webserv::connectAndRead(void)
 		}
 		else
 		{
-			//std::cout << "Read data [" << it->fd << "]" << std::endl;
 			status = readDataFromSocket(it);
 			if (status <= 0)
 				return (-1);
@@ -79,13 +72,6 @@ int Webserv::acceptNewConnection(int &serverFd)
 	//std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << "for server " << serverFd << RESET << std::endl;
 	return (0);
 }
-
-// const ServerConfig* Webserv::getConfigForPort(int serverFd) {
-// 	std::map<int, const ServerConfig*>::const_iterator it = _portToConfig.find(serverFd);
-// 	if (it != _portToConfig.end())
-// 		return it->second;
-// 	return NULL;
-// }
 
 int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 {

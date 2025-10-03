@@ -27,7 +27,6 @@ bool HttpRequest::deleteFile() {
 bool HttpRequest::isDeletePathValid() {
 	std::string	path = _location->getRoot() + _uri;
 
-	// std::cout << "Delete Path " << path << "\n";
 	struct stat buf;
 	if (stat(path.c_str(), &buf) == 0) {
 		if (S_ISREG(buf.st_mode)) {

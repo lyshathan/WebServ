@@ -1,6 +1,5 @@
 #include "GlobalConfig.hpp"
 
-
 void GlobalConfig::setSizeDefined(bool status)
 {
 	this->_sizeDefined = status;

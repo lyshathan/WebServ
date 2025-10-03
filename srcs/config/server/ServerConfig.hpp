@@ -27,8 +27,6 @@ class ServerConfig {
 		void	setDefaultLocation(void);
 		void	sortLocation();
 
-
-
 	public :
 		ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< ServerConfig >	&serversConfig);
 		~ServerConfig();

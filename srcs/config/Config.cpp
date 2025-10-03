@@ -7,9 +7,7 @@
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-Config::Config(void): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _quoteState(OUT)
-{
-}
+Config::Config(void): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _quoteState(OUT) {}
 
 Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _configFileName(filename), _quoteState(OUT)
 {
@@ -23,9 +21,7 @@ Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLO
 	checkConfig();
 }
 
-Config::~Config(void)
-{
-}
+Config::~Config(void) {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods

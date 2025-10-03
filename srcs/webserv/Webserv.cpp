@@ -9,26 +9,16 @@
 
 Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.getServerConfig()), _listenBackLog(10)
 {
-	// std::cout << "---- SERVER ----" << std::endl;
-
-	// initServerInfo();
-
 	if (createServerSocket() < 0)
 		return ;
-
-
 	if (setupListen() < 0)
 		return ;
-
 	setupPollServer();
 
 	runningServ();
 }
 
-Webserv::~Webserv()
-{
-	// std::cout << RED << "Webserv destructor calling" << RESET << std::endl;
-}
+Webserv::~Webserv() {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods
@@ -36,7 +26,6 @@ Webserv::~Webserv()
 
 int Webserv::createServerSocket()
 {
-	// std::cout << BLUE << "[Server] Create and bind server sockets :" << RESET << std::endl;
 	for (size_t servIndex = 0 ; servIndex < _serverConfigs.size() ; servIndex++)
 	{
 		const std::map< uint16_t, std::string>& portAndIP = _serverConfigs[servIndex].getPortAndIP();
@@ -111,9 +100,6 @@ void Webserv::setupPollServer()
 		ServerPollFd.events = POLLIN;
 		ServerPollFd.revents = 0;
 		_pollFds.push_back(ServerPollFd);
-
-		// std::map< int, std::pair< uint16_t, std::string> >::iterator find = _serverInfos.find(_serverFds[i]);
-		// std::cout << PURPLE << "[Server] Server fd added to _pollFds : " << "[" << _serverFds[i] << "] > "<< find->second.second << ":" << find->second.first << RESET << std::endl;
 	}
 
 }

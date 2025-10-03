@@ -34,55 +34,26 @@ void	ServerConfig::parseListenPort(std::vector< t_token>::iterator &it)
 	if (*end || port_d < 1 || port_d > 65535 || std::isinf(port_d))
 		throwErrorToken(" Invalid port", *it);
 	port = static_cast<int>(port_d);
-	// for (std::vector<ServerConfig>::iterator itServ = _serversConfig.begin(); itServ != _serversConfig.end(); ++itServ)
-	// {
-	// 	for (std::map<uint16_t , std::string>::iterator itPort = itServ->_portAndIP.begin() ; itPort != itServ->_portAndIP.end() ; itPort++)
-	// 	{
-	// 		if (itPort->first == port && itPort->second == IP)
-	// 			throwErrorToken(" Port already used", *it);
-	// 	}
-	// }
 	_portAndIP[port] = IP;
 	_listenPorts.push_back(port);
 	checkForSemicolon(it, _tokens);
 }
 
-
 void	ServerConfig::parseRoot(std::vector< t_token>::iterator &it)
 {
 	if (!_root.empty())
 		throwErrorToken(" Root is already set", *it);
-	// size_t check = isValidDirPath((++it)->content);
-	// if (check != VALID)
-	// {
-	// 	if (check == NO_EXIST)
-	// 		throwErrorToken(" Path does not exist", *it);
-	// 	else if  (check == NOT_A_DIRECTORY)
-	// 		throwErrorToken(" Directory does not exist", *it);
-	// 	throwErrorToken(" Directory permission denied", *it);
-	// }
 	_root = (++it)->content;
 	checkForSemicolon(it, _tokens);
 }
 
-
-
-
 void	ServerConfig::parseErrorPage(std::vector< t_token>::iterator &it)
 {
 	char *end;
-	// size_t	check;
 
 	it++;
 	size_t	nbOfErrorCode = CountErrorCodes(_tokens, it);
 	std::vector< t_token>::iterator itErrorPage = it + nbOfErrorCode - 1;
-	// check = isValidFile(itErrorPage->content);
-	// if (check != VALID)
-	// {
-	// 	if (check == NO_EXIST)
-	// 		throwErrorToken(" Error file does not exist", *it);
-	// 	throwErrorToken(" Error file permission denied", *it);
-	// }
 	while (it != itErrorPage)
 	{
 		double code_d = std::strtod(it->content.c_str(), &end);

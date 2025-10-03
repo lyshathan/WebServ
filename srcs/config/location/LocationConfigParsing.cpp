@@ -26,15 +26,6 @@ void	LocationConfig::parseCGI(std::vector< t_token>::iterator &it) {
 void	LocationConfig::parsePath(std::vector< t_token>::iterator &it)
 {
 	std::string pathType = (it++)->content;
-	// size_t check = isValidDirPath(it->content);
-	// if (check != VALID)
-	// {
-	// 	if (check == NO_EXIST)
-	// 		throwErrorToken(" Path does not exist", *it);
-	// 	else if  (check == NOT_A_DIRECTORY)
-	// 		throwErrorToken(" Directory does not exist", *it);
-	// 	throwErrorToken(" Directory permission denied", *it);
-	// }
 	if (pathType == "upload_path")
 		setString(_uploadPath, it->content, *it);
 	else if (pathType == "cgi")
@@ -58,13 +49,6 @@ void	LocationConfig::parseReturn(std::vector< t_token>::iterator &it)
 	int code = static_cast<int>(code_d);
 	if ((++it)->type != SEMICOLON)
 	{
-		// size_t check = isValidFile(it->content);
-		// if (check != VALID)
-		// {
-		// 	if (check == NO_EXIST)
-		// 		throwErrorToken(" Error file does not exist", *it);
-		// 	throwErrorToken(" Error file permission denied", *it);
-		// }
 		_return.second = it->content;
 		checkForSemicolon(it, _tokens);
 	}

@@ -90,7 +90,6 @@ size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::i
 
 	while (it != tokenList.end() && it->type == VALUE)
 	{
-		// std::cout << it->content << std::endl;
 		it++;
 		count++;
 	}

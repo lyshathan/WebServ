@@ -47,8 +47,8 @@ bool Client::isReqComplete() const {
 	it = headers.find("content-length");
 	if (it != headers.end()) {
 		std::istringstream iss(it->second);
-        size_t contentLength = 0;
-        iss >> contentLength;
+		size_t contentLength = 0;
+		iss >> contentLength;
 		size_t bodyReceived = _reqBuffer.length() - (headerEnd + 4);
 		if (contentLength > maxBodySize)
 			httpReq->setStatus(413);

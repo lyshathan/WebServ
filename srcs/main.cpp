@@ -21,20 +21,12 @@ int main(void)
 	signal(SIGINT, sigint_handler);
 	signal(SIGPIPE, SIG_IGN);
 	Config config;
-	try
-	{
+	try {
 		config = Config("simple.conf");
-		// config.PrintConfig();
-		// config.printTokens();
 		printLog(BLUE, "INFO", "Initializing Servers...");
 		Webserv webserv(config);
-	}
-	catch(const std::exception& e)
-	{
+	} catch(const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}
-
-	// std::cout << "End of program" << std::endl;
-
 	return (0);
 }

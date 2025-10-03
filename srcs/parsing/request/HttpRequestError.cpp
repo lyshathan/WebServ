@@ -7,7 +7,6 @@ void HttpRequest::setErrorPage() {
 	std::map<int, std::string> path = _location->getErrorPages();
 	std::string errorPath = _location->getRoot();
 
-	// std::cout << "Looking for error pages..\n";
 	if (!path.empty()) {
 		std::map<int, std::string>::iterator it = path.find(_status);
 		if (it != path.end()) {
