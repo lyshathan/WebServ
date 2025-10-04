@@ -69,8 +69,9 @@ int Webserv::createServerSocket()
 			info.first = PortIt->first;
 			info.second = PortIt->second;
 			_serverInfos[serverFd] = info;
-			std::string str = "Server Created: Host [" + info.second + "] Port [" + std::to_string(info.first) + "]";
-			printLog(BLUE, "INFO", str);
+			std::stringstream ss;
+			ss << info.first;
+			printLog(BLUE, "INFO", "Server Created: Host [" + info.second + "] Port [" + ss.str() + "]");
 			// std::cout << "fd = " << serverFd << "	|	port = " << info.first << "	|	IP = " << info.second << std::endl;
 		}
 	}
@@ -85,7 +86,9 @@ int Webserv::setupListen(void)
 		if (listen(_serverFds[i], _listenBackLog) == -1)
 			return (handleFunctionError("Listen"));
 		std::map< int, std::pair< uint16_t, std::string> >::iterator find = _serverInfos.find(_serverFds[i]);
-		printLog(BLUE, "INFO", "Listening on: " + find->second.second + ":" + std::to_string(find->second.first));
+		std::stringstream ss;
+		ss << find->second.first;
+		printLog(BLUE, "INFO", "Listening on: " + find->second.second + ":" + ss.str());
 	}
 	return (1);
 }

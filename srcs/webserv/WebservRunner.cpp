@@ -68,8 +68,11 @@ int Webserv::acceptNewConnection(int &serverFd)
 	// Add new client to pollFds and to _client map
 	addClient(clientFd);
 
-	printLog(YELLOW, "INFO", "New Client #" + std::to_string(clientFd) + " On Socket #" + std::to_string(serverFd));
-	//std::cout << BLUE << "[Server] Accept new conncetion on client socket : " << clientFd << "for server " << serverFd << RESET << std::endl;
+	std::stringstream ss;
+	ss << serverFd;
+	std::stringstream clientSs;
+	clientSs << clientFd;
+	printLog(YELLOW, "INFO", "New Client #" + clientSs.str() + " On Socket #" + ss.str());
 	return (0);
 }
 
@@ -84,10 +87,12 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
 	if (bytesRead <= 0)
 	{
+		std::stringstream senderSs;
+		senderSs << senderFd;
 		if (bytesRead == 0)
-			printLog(YELLOW, "INFO", "Client #" + std::to_string(senderFd) + " Closed Connection");
+			printLog(YELLOW, "INFO", "Client #" + senderSs.str() + " Closed Connection");
 		else
-			printLog(RED, "ERROR",  "Client #" + std::to_string(senderFd) + " recv error: " + strerror(errno));
+			printLog(RED, "ERROR",  "Client #" + senderSs.str() + " recv error: " + strerror(errno));
 		deleteClient(it->fd, it);
 	}
 	else
