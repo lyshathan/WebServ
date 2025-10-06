@@ -114,60 +114,7 @@
             margin-top: 8px;
         }
 
-        .upload-area {
-            border: 2px dashed #d2d2d7;
-            border-radius: 12px;
-            padding: 32px 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin-bottom: 24px;
-            display: block;
-        }
 
-        .upload-area:hover {
-            border-color: #06c;
-            background: #f5f9ff;
-        }
-
-        .upload-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-        }
-
-        .upload-text {
-            font-size: 15px;
-            color: #1d1d1f;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .file-info {
-            display: none;
-            padding: 12px 16px;
-            background: #f5f5f7;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 14px;
-        }
-
-        .file-info.show {
-            display: block;
-        }
-
-        .file-name {
-            font-weight: 500;
-            color: #1d1d1f;
-        }
-
-        .clear-file {
-            color: #ff3b30;
-            cursor: pointer;
-            font-size: 13px;
-            margin-left: 8px;
-        }
 
         button {
             width: 100%;
@@ -218,33 +165,15 @@
             <h1>CGI Script</h1>
             <p class="subtitle">Test CGI with query parameters and body</p>
 
-            <form id="cgiForm" method="POST" enctype="multipart/form-data">
-                <div class="input-group">
-                    <label for="query">Query Parameter</label>
-                    <input
-                        type="text"
-                        id="query"
-                        name="query"
-                        placeholder="test=value"
-                    >
-                    <div class="hint">Optional: Add query string (e.g., name=John&age=25)</div>
-                </div>
-
-                <div class="divider">or</div>
-
-                <div class="input-group">
-                    <label>Upload File</label>
-                    <label for="fileInput" class="upload-area">
-                        <div class="upload-icon">📎</div>
-                        <div class="upload-text">Click to select a file (optional)</div>
-                    </label>
-                    <input type="file" id="fileInput" name="file">
-
-                    <div class="file-info" id="fileInfo">
-                        <span class="file-name" id="fileName"></span>
-                        <span class="clear-file" onclick="clearFile()">✕ Remove</span>
-                    </div>
-                </div>
+                    <form id="cgiForm" method="POST">
+            <div class="form-group">
+                <label for="query">Query parameters:</label>
+                <input type="text" id="query" name="query" placeholder="Enter query parameters">
+            </div>
+            <div class="form-group">
+                <label for="message">Message to send:</label>
+                <textarea id="message" name="message" rows="4" cols="50" placeholder="Enter your message here"></textarea>
+            </div>
 
                 <div class="button-group">
                     <button type="submit" onclick="setAction('/cgi/index.py')" style="margin-bottom: 12px;">
@@ -261,38 +190,42 @@
     <script>
         const form = document.getElementById('cgiForm');
         const queryInput = document.getElementById('query');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
+        const messageInput = document.getElementById('message');
 
-        // Set form action dynamically
-        function setAction(actionUrl) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
             const query = queryInput.value.trim();
-            if (query) {
-                form.action = `${actionUrl}?${query}`;
-            } else {
-                form.action = actionUrl;
-            }
-        }
+            const message = messageInput.value;
+            const actionUrl = form.action;
 
-        // Handle file selection
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
-                fileInfo.classList.add('show');
+            let url = actionUrl;
+            if (query) {
+                url += `?${query}`;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: message
+                });
+
+                const result = await response.text();
+
+                const newWindow = window.open('', '_blank');
+                newWindow.document.write(result);
+                newWindow.document.close();
+
+            } catch (error) {
+                alert('Error: ' + error.message);
             }
         });
 
-        function clearFile() {
-            fileInput.value = '';
-            fileInfo.classList.remove('show');
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / 1048576).toFixed(1) + ' MB';
+        function setAction(actionUrl) {
+            form.action = actionUrl;
         }
     </script>
 </body>

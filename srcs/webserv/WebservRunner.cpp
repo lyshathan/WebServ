@@ -59,14 +59,17 @@ int	Webserv::connectAndRead(void)
 
 int Webserv::acceptNewConnection(int &serverFd)
 {
-	int			clientFd;
+	int					clientFd;
+	struct sockaddr_in	clientAddr;
 
-	clientFd = accept(serverFd, NULL, NULL); // Do we need to get the port and addresss of the new client socket ?
+	socklen_t clientAddrLen = sizeof(clientAddr);
+	clientFd = accept(serverFd, (struct sockaddr*)&clientAddr, &clientAddrLen);
 	if (clientFd == -1)
 		return (handleFunctionError("Accept"));
 
 	// Add new client to pollFds and to _client map
-	addClient(clientFd);
+	std::string clientIP = inet_ntoa(clientAddr.sin_addr);
+	addClient(clientFd, clientIP);
 
 	std::stringstream ss;
 	ss << serverFd;
@@ -81,7 +84,6 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	char	buffer[BUFSIZ];
 	int 	senderFd;
 	int		bytesRead;
-	// int		status;
 
 	senderFd = it->fd;
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
@@ -92,7 +94,7 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		if (bytesRead == 0)
 			printLog(YELLOW, "INFO", "Client #" + senderSs.str() + " Closed Connection");
 		else
-			printLog(RED, "ERROR",  "Client #" + senderSs.str() + " recv error: " + strerror(errno));
+			printLog(RED, "ERROR",  "Client #" + senderSs.str() + " recv failed");
 		deleteClient(it->fd, it);
 	}
 	else
@@ -138,32 +140,22 @@ int Webserv::processAndSendResponse(int clientFd) {
 }
 
 int Webserv::sendResponse(int clientFd) {
-	int status;
+	std::string completeResponse;
 
-	// Check if client still exists
 	if (_clients.find(clientFd) == _clients.end())
 		return -1;
 
-	std::string resHeaders = _clients[clientFd]->httpRes->getResHeaders().c_str();
-	status = send(clientFd, resHeaders.c_str(), resHeaders.length(), MSG_NOSIGNAL);
-	if (status == -1)
-		return -1; // Client likely disconnected
-
-	bool isTextContent = _clients[clientFd]->httpRes->getIsTextContent();
-	if (!isTextContent) {
-		std::vector<char> binaryContent = _clients[clientFd]->httpRes->getBinRes();
-		if (binaryContent.size() > 0) {
-			status = send(clientFd, &binaryContent[0], binaryContent.size(), MSG_NOSIGNAL);
-			if (status == -1)
-				return -1; // Client likely disconnected
-		}
+	completeResponse += _clients[clientFd]->httpRes->getResHeaders();
+	if (_clients[clientFd]->httpRes->getIsTextContent()) {
+		completeResponse += _clients[clientFd]->httpRes->getRes();
 	} else {
-		std::string textContent = _clients[clientFd]->httpRes->getRes().c_str();
-		if (textContent.size() > 0) {
-			status = send(clientFd, textContent.c_str(), textContent.size(), MSG_NOSIGNAL);
-			if (status == -1)
-				return -1; // Client likely disconnected
-		}
+		std::vector<char> binaryContent = _clients[clientFd]->httpRes->getBinRes();
+		completeResponse.append(binaryContent.begin(), binaryContent.end());
 	}
-	return (0);
+
+	ssize_t status = send(clientFd, completeResponse.c_str(), completeResponse.length(), MSG_NOSIGNAL);
+	if (status == -1 || status < (ssize_t)completeResponse.length())
+		return -1;
+
+	return 0;
 }

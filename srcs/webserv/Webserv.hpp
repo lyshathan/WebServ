@@ -35,7 +35,7 @@ class Webserv {
 		int			acceptNewConnection(int &serverFd);
 		int			readDataFromSocket(std::vector<struct pollfd>::iterator & it);
 		int			sendResponse(int clientFd);
-		void		addClient(int newClientFd);
+		void		addClient(int newClientFd, const std::string &clientIP);
 		void		deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
 		int			processAndSendResponse(int clientFd);
 

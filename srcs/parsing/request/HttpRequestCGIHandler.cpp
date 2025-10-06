@@ -48,13 +48,16 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 			it = _headers.find("content-type");
 			if (it != _headers.end()) {
 				size_t actualLength = std::min(length, firstValue.length());
-				write(stdin_fd[1], firstValue.c_str(), actualLength);
+				ssize_t written = write(stdin_fd[1], firstValue.c_str(), actualLength);
+				if (written == -1 || written < (ssize_t)actualLength) {
+					_status = INTERNAL_ERROR;
+				}
 			}
 		}
 	}
 	close(stdin_fd[1]);
 
-	if (waitpid(pid, &status, 0) < 0) {
+	if (!waitForChildWithTimeout(pid, &status, 5)) {
 		_status = INTERNAL_ERROR;
 		return ;
 	}
@@ -100,4 +103,21 @@ void	HttpRequest::executeBin() {
 		childHandler(stdin_fd, stdout_fd);
 	else if (pid > 0)
 		parentHandler(stdin_fd, stdout_fd, pid);
+}
+
+bool HttpRequest::waitForChildWithTimeout(pid_t pid, int* status, int timeout_seconds) {
+	int elapsed = 0;
+	pid_t result;
+
+	while (elapsed < timeout_seconds) {
+		result = waitpid(pid, status, WNOHANG);
+		if (result == pid)
+			return true;
+		else if (result == -1)
+			return false;
+		sleep(1);
+		elapsed++;
+	}
+	kill(pid, SIGTERM);
+	return false;
 }

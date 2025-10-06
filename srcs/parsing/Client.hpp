@@ -10,10 +10,11 @@ class Client {
 		int					_fd;
 		std::string			_reqBuffer;
 		size_t				_recvSize;
+		std::string			_clientIP;
 
 		Client();
 	public:
-		Client(int, const Config &);
+		Client(int, const Config &, const std::string &clientIP);
 		~Client();
 
 		bool				appendBuffer(const char *, size_t);

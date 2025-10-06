@@ -5,8 +5,9 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-HttpRequest::HttpRequest(const Config& config, int &fd) : _config(config), _location(NULL), _status(0),
-_clientfd(fd), _areHeadersParsed(false), _isProccessingError(false), _isCGI(false) {};
+HttpRequest::HttpRequest(const Config& config, int &fd, const std::string& clientIP) :
+_config(config), _location(NULL), _status(0), _clientfd(fd), _areHeadersParsed(false),
+_isProccessingError(false), _isCGI(false), _clientIP(clientIP) {};
 
 HttpRequest::~HttpRequest() {};
 

@@ -1,4 +1,5 @@
 #include "HttpRequest.hpp"
+#include <cctype>
 
 /******************************************************************************/
 /*								CGI HELPERS									  */
@@ -88,22 +89,42 @@ void	HttpRequest::initEnv() {
 	std::map<std::string, std::string>::iterator it = _headers.begin();
 	std::stringstream ss;
 
-	_env.push_back("PATH_INFO=" + _uri);
-	_env.push_back("SCRIPT_NAME=" + _uri);
+	_env.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	_env.push_back("REQUEST_METHOD=" + _method);
-	it = _headers.find("content-length");
-	if (it != _headers.end())
-		_env.push_back("CONTENT_LENGTH=" + it->second);
-	it = _headers.find("content-type");
-	if (it != _headers.end())
-		_env.push_back("CONTENT_TYPE=" + it->second);
+	_env.push_back("SCRIPT_NAME=" + _uri);
+	_env.push_back("PATH_INFO=" + _uri);
+	_env.push_back("SERVER_SOFTWARE=webserv/1.0");
+	_env.push_back("SERVER_PROTOCOL=HTTP/1.1");
+	_env.push_back("REMOTE_ADDR=" + _clientIP);
+	_env.push_back("REMOTE_HOST=" + _clientIP);
+
 	const std::vector<std::string> serverNames = _server->getServerName();
 	if (!serverNames.empty())
 		_env.push_back("SERVER_NAME=" + serverNames[0]);
+	else
+		_env.push_back("SERVER_NAME=localhost");
+
 	const std::vector<int> listenPort = _server->getListenPort();
 	ss << listenPort[0];
-	if (!serverNames.empty())
-		_env.push_back("SERVER_PORT=" + (ss.str()));
+	_env.push_back("SERVER_PORT=" + ss.str());
+
 	if (!_queries.empty())
 		_env.push_back("QUERY_STRING=" + _queries);
+	else
+		_env.push_back("QUERY_STRING=");
+
+	it = _headers.find("content-length");
+	if (it != _headers.end())
+		_env.push_back("CONTENT_LENGTH=" + it->second);
+	else if (!_body.empty()) {
+		std::stringstream contentLengthSs;
+		contentLengthSs << _body.size();
+		_env.push_back("CONTENT_LENGTH=" + contentLengthSs.str());
+	}
+	else
+		_env.push_back("CONTENT_LENGTH=0");
+
+	it = _headers.find("content-type");
+	if (it != _headers.end())
+		_env.push_back("CONTENT_TYPE=" + it->second);
 }

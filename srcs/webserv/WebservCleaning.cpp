@@ -28,7 +28,7 @@ void	Webserv::cleanServer(void)
 
 int	Webserv::handleFunctionError(std::string errFunction)
 {
-	std::cerr << RED << "[server] ERROR : " << errFunction << " error ( " << strerror(errno) << " )" << RESET << std::endl;
+	std::cerr << RED << "[server] ERROR : " << errFunction << " failed" << RESET << std::endl;
 	cleanServer();
 	return (-1);
 }

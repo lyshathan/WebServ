@@ -4,8 +4,9 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-Client::Client(int fd, const Config &config) :
-	 _fd(fd), _recvSize(0), httpReq(new HttpRequest(config, fd)), httpRes(new HttpResponse(httpReq)) {}
+Client::Client(int fd, const Config &config, const std::string &clientIP) :
+	 _fd(fd), _recvSize(0), _clientIP(clientIP), httpReq(new HttpRequest(config, fd, _clientIP)),
+	httpRes(new HttpResponse(httpReq)) {}
 
 Client::~Client() {
 	delete httpReq;

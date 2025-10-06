@@ -64,6 +64,7 @@ class HttpRequest {
 		bool								_areHeadersParsed;
 		bool								_isProccessingError;
 		bool								_isCGI;
+		std::string							_clientIP;
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
@@ -84,6 +85,7 @@ class HttpRequest {
 		void		initEnv();
 		void		childHandler(int fd[2], int fd2[2]);
 		void		parentHandler(int fd[2], int fd2[2], pid_t);
+		bool		waitForChildWithTimeout(pid_t pid, int* status, int timeout_seconds);
 		char**		getArgvArray();
 		char**		getEnvArray();
 		void		readBuffer(int fd[2]);
@@ -113,7 +115,7 @@ class HttpRequest {
 
 		HttpRequest();
 	public:
-		HttpRequest(const Config& config, int &);
+		HttpRequest(const Config& config, int &, const std::string& clientIP);
 		~HttpRequest();
 
 		void								requestHeaderParser(std::string);

@@ -2,9 +2,9 @@
 #include "../parsing/Client.hpp"
 
 
-void Webserv::addClient(int newClientFd)
+void Webserv::addClient(int newClientFd, const std::string &clientIP)
 {
-	_clients[newClientFd] = new Client(newClientFd, _config);
+	_clients[newClientFd] = new Client(newClientFd, _config, clientIP);
 	// Add to pollFds
 	struct pollfd newClientPollFd;
 	newClientPollFd.fd = newClientFd;
