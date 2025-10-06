@@ -8,7 +8,7 @@ RM = rm -rf
 
 SRCS_DIR = srcs
 MAIN = main ProjectTools
-WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning
+WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservHelpers
 
 CONFIG = Config
 CONFIG_GLOBAL = GlobalConfig GlobalConfigGetter GlobalConfigSetter

@@ -27,3 +27,5 @@ bool HttpRequest::isCGIActive() const { return _isCGI; }
 bool HttpRequest::getAutoIndex() const { return _location->getAutoIndex(); }
 
 size_t	HttpRequest::getMaxBody() const { return _location->getClientMaxBodySize(); }
+
+CgiState *HttpRequest::getCGIState() const { return _cgiState; }

@@ -17,7 +17,7 @@ bool HttpRequest::isCGIPath() {
 				return false;
 			}
 			_uri = path;
-			if (checkGGI()) {
+			if (checkCGI()) {
 				_isCGI = true;
 				return true;
 			}
@@ -30,7 +30,7 @@ bool HttpRequest::isCGIPath() {
 			}
 			if (!_uri.empty() && _uri[_uri.length() - 1] != '/')
 				path += "/";
-			if (setUri(path) && checkGGI()) {
+			if (setUri(path) && checkCGI()) {
 				_isCGI = true;
 				return  true;
 			}
@@ -41,7 +41,7 @@ bool HttpRequest::isCGIPath() {
 	return false;
 }
 
-bool	HttpRequest::checkGGI() {
+bool	HttpRequest::checkCGI() {
 	std::map<std::string, std::string>	cgiData = _location->getCGIData();
 
 	if (!cgiData.empty()) {
@@ -113,16 +113,20 @@ void	HttpRequest::initEnv() {
 	else
 		_env.push_back("QUERY_STRING=");
 
-	it = _headers.find("content-length");
-	if (it != _headers.end())
-		_env.push_back("CONTENT_LENGTH=" + it->second);
-	else if (!_body.empty()) {
+	// Always calculate actual body length, don't trust headers for CGI
+	if (!_body.empty()) {
 		std::stringstream contentLengthSs;
-		contentLengthSs << _body.size();
+		// Calculate total body length from all body parts
+		size_t totalLength = 0;
+		for (std::map<std::string, std::string>::const_iterator bodyIt = _body.begin(); bodyIt != _body.end(); ++bodyIt) {
+			totalLength += bodyIt->second.length();
+		}
+		contentLengthSs << totalLength;
 		_env.push_back("CONTENT_LENGTH=" + contentLengthSs.str());
 	}
-	else
+	else {
 		_env.push_back("CONTENT_LENGTH=0");
+	}
 
 	it = _headers.find("content-type");
 	if (it != _headers.end())

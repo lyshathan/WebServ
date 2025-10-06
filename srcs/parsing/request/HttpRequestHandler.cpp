@@ -5,23 +5,31 @@
 /******************************************************************************/
 
 void HttpRequest::requestHandler() {
-	if (_status)
+	if (_status) {
 		return;
-	if (_uri.find("/.well-known/") == 0)
+	}
+	if (_uri.find("/.well-known/") == 0) {
 		return ;
+	}
 	if (!validateMethods()) {
 		setErrorPage();
 		return;
 	}
-	if (checkReturn()) return;
-	if (isCGIPath())
+	if (checkReturn()) {
+		return;
+	}
+	if (isCGIPath()) {
 		cgiHandler();
-	else if (_method == "POST")
+	}
+	else if (_method == "POST") {
 		postHandler();
-	else if (_method == "GET")
+	}
+	else if (_method == "GET") {
 		getHandler();
-	else if (_method == "DELETE")
+	}
+	else if (_method == "DELETE") {
 		deleteHandler();
+	}
 }
 
 void HttpRequest::getHandler() {

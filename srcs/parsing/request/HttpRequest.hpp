@@ -31,6 +31,7 @@
 #define INTERNAL_ERROR 500
 #define NO_CONTENT 204
 #define PAYLOAD_TOO_LARGE 413
+#define CGI_PENDING 1000
 
 typedef enum	e_servState {
 	NO_MATCH,
@@ -40,6 +41,17 @@ typedef enum	e_servState {
 	EXACT_MATCH_DEFAULT_IP,
 	EXACT_MATCH,
 }				t_servState;
+
+struct CgiState {
+	pid_t pid;
+	int stdin_fd;
+	int stdout_fd;
+	std::string request_body;
+	size_t bytes_written;
+	std::string response_buffer;
+	time_t start_time;
+	enum { WRITING, READING, COMPLETED } state;
+};
 
 class ServerConfig;
 
@@ -65,6 +77,7 @@ class HttpRequest {
 		bool								_isProccessingError;
 		bool								_isCGI;
 		std::string							_clientIP;
+		CgiState							*_cgiState;
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
@@ -85,10 +98,8 @@ class HttpRequest {
 		void		initEnv();
 		void		childHandler(int fd[2], int fd2[2]);
 		void		parentHandler(int fd[2], int fd2[2], pid_t);
-		bool		waitForChildWithTimeout(pid_t pid, int* status, int timeout_seconds);
 		char**		getArgvArray();
 		char**		getEnvArray();
-		void		readBuffer(int fd[2]);
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
@@ -134,12 +145,15 @@ class HttpRequest {
 		bool								getAutoIndex() const;
 		bool								isCGIActive() const;
 		size_t								getMaxBody() const;
+		CgiState							*getCGIState() const;
 
-		bool								checkGGI();
+		bool								checkCGI();
 		void								executeBin();
 
 		void 								setHeadersParsed();
 		void								setStatus(int);
+		void								setCGIResult(const std::string &result);
+		void								setCGIState(CgiState*);
 
 		void								cleanReqInfo();
 };
