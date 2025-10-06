@@ -22,6 +22,7 @@ const std::string &Client::getRes() const { return _reqBuffer;}
 void	Client::clearBuffer() {
 	_reqBuffer = "";
 	_recvSize = 0;
+	_clientIP = "";
 	httpReq->setHeadersParsed();
 	httpReq->cleanReqInfo();
 }

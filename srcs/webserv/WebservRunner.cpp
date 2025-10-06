@@ -72,10 +72,8 @@ int Webserv::acceptNewConnection(int &serverFd)
 	addClient(clientFd, clientIP);
 
 	std::stringstream ss;
-	ss << serverFd;
-	std::stringstream clientSs;
-	clientSs << clientFd;
-	printLog(YELLOW, "INFO", "New Client #" + clientSs.str() + " On Socket #" + ss.str());
+	ss << clientIP;
+	printLog(BLUE, "INFO", "New Client IP " + ss.str() + " connected");
 	return (0);
 }
 
