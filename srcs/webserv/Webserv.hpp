@@ -48,9 +48,9 @@ class Webserv {
 		void		cleanupCGI(int, CgiState*);
 		void		removeFdFromPoll(int fd);
 		void		closeCGIStdin(CgiState *cgiState);
-		void		parseCGIResponse(CgiState *cgiState);
 		void		parseCGIHeaders(CgiState *, size_t);
-		bool		hasCGIContentLength(const std::string& cgiOutput, size_t& contentLength);
+		void		parseSimpleCGIHeaders(CgiState *cgiState, size_t headerEnd);
+		void		tryParseCGIHeaders(CgiState *cgiState);
 
 		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
 

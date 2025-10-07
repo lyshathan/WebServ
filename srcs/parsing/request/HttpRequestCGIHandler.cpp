@@ -31,6 +31,8 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 	_cgiState->pid = pid;
 	_cgiState->stdin_fd = stdin_fd[1];
 	_cgiState->stdout_fd = stdout_fd[0];
+	_cgiState->headerPos = 0;
+	_cgiState->headers_parsed = false;
 
 	close(stdin_fd[0]);
 	close(stdout_fd[1]);
