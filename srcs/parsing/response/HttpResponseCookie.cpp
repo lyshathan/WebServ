@@ -89,6 +89,7 @@ bool	HttpResponse::handleCookieGet(std::map<std::string, std::string>::iterator&
 
 	if (sessionIt != _sessions.end()) {
 		std::string html = buildSimpleHTML(sessionIt->second);
+		addHeader("Content-Type:", "text/html");
 		_res = html;
 		_isTextContent = true;
 		return true;

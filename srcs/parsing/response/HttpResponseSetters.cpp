@@ -38,7 +38,8 @@ void HttpResponse::setContentHeaders() {
 
 	addHeader("Server: ", "webserv");
 	addHeader("Date: ", getTime());
-	addHeader("Content-Type: ", _mimeType);
+	if (!_mimeType.empty())
+		addHeader("Content-Type: ", _mimeType);
 	if (_isTextContent) ss << _res.size();
 	else ss << _binRes.size();
 	addHeader("Content-Length: ", ss.str());

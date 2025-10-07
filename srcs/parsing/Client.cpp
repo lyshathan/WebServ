@@ -42,7 +42,12 @@ bool Client::isReqComplete() const {
 
 	std::map<std::string, std::string>::const_iterator it = headers.find("transfer-encoding");
 	if (it != headers.end() && it->second.find("chunked") != std::string::npos) {
-		return _reqBuffer.find("0\r\n\r\n") != std::string::npos;
+		size_t zeroChunkPos = _reqBuffer.find("0\r\n");
+		if (zeroChunkPos != std::string::npos) {
+			size_t finalEnd = _reqBuffer.find("\r\n\r\n", zeroChunkPos);
+			return finalEnd != std::string::npos;
+		}
+		return false;
 	}
 
 	size_t maxBodySize = httpReq->getMaxBody();

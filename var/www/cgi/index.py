@@ -2,6 +2,12 @@
 import os
 import sys
 
+print("Content-Type: text/html")
+print("Content-Length: 4523")
+print("Cache-Control: no-cache")
+print("X-Powered-By: WebServ-CGI")
+print()
+
 # HTML page
 print("""<!DOCTYPE html>
 <html lang="en">

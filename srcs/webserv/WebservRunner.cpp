@@ -144,7 +144,7 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 			if (newStatus == CGI_PENDING) {
 				addCGIToPoll(senderFd);
 				it = _pollFds.begin();
-			} else {
+			} else if (newStatus) {
 				return processAndSendResponse(it->fd);
 			}
 		}

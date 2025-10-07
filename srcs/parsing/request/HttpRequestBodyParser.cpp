@@ -55,7 +55,7 @@ bool HttpRequest::parseChunk(std::string body) {
 		_body[""] += chunkData;
 		pos = chunkDataEnd + 2;
 	}
-	return false;
+	return true;
 }
 
 void HttpRequest::parseOnePart(std::string part) {
