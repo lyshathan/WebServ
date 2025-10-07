@@ -42,23 +42,22 @@ void	ServerConfig::parseServerConfig(std::vector< t_token>::iterator &it)
 			it++;
 			continue;
 		}
-		else if (it->type == DIRECTIVE && it->content == "listen")	// listen port
+		else if (it->type == DIRECTIVE && it->content == "listen")
 			parseListenPort(it);
-		else if (it->type == DIRECTIVE && it->content == "server_name") // server names
+		else if (it->type == DIRECTIVE && it->content == "server_name")
 			addListToVector(_serverNames, it, _tokens, NULL);
-		else if (it->type == DIRECTIVE && it->content == "index")	// index files
+		else if (it->type == DIRECTIVE && it->content == "index")
 			addListToVector(_indexFiles, it, _tokens, NULL);
-		else if (it->type == DIRECTIVE && it->content == "root")	// root
+		else if (it->type == DIRECTIVE && it->content == "root")
 			parseRoot(it);
-		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")	// client_max_body_size
+		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")
 			parseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
-		else if (it->type == DIRECTIVE && it->content == "error_page")	// error_page
+		else if (it->type == DIRECTIVE && it->content == "error_page")
 			parseErrorPage(it);
-		else if (it->type == DIRECTIVE && it->content == "location")	// location
+		else if (it->type == DIRECTIVE && it->content == "location")
 		{
 			LocationConfig newLocation(_tokens, it, _locations);
 			_locations.push_back(newLocation);
-			// newLocation.printLocation();
 		}
 		else
 			throwErrorToken(" Unknown directive", *it);

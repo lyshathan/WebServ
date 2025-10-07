@@ -34,6 +34,9 @@ void	ServerConfig::parseListenPort(std::vector< t_token>::iterator &it)
 	if (*end || port_d < 1 || port_d > 65535 || std::isinf(port_d))
 		throwErrorToken(" Invalid port", *it);
 	port = static_cast<int>(port_d);
+	std::vector<int>::iterator found  = std::find(_listenPorts.begin(), _listenPorts.end(), port);
+	if (found != _listenPorts.end())
+		throwErrorToken(" Port already exist", *it);
 	_portAndIP[port] = IP;
 	_listenPorts.push_back(port);
 	checkForSemicolon(it, _tokens);

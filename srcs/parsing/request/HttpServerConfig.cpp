@@ -13,19 +13,19 @@ void HttpRequest::pickServerConfig() {
 	socklen_t			addrLen = sizeof(serverAddr);
 	getsockname(_clientfd, (struct sockaddr*)&serverAddr, &addrLen);
 	uint32_t serverIP = ntohl(serverAddr.sin_addr.s_addr);
-	std::string serverIPstr = inet_ntoa(serverAddr.sin_addr);  // "127.0.0.1"
-	uint16_t serverPort = ntohs(serverAddr.sin_port);	//port
+	std::string serverIPstr = inet_ntoa(serverAddr.sin_addr);
+	uint16_t serverPort = ntohs(serverAddr.sin_port);
 
 	const std::string host = _headers.find("host")->second;
 	std::string searchedName = host.substr(0, host.find(':', 0));
 
-	const std::vector< ServerConfig > &serverList = _config.getServerConfig();  //
-	std::vector< ServerConfig >::const_iterator itServer = serverList.begin();  //
-	for (; (itServer != serverList.end() && state != EXACT_MATCH) ; ++itServer)                           // iterate through server list
+	const std::vector< ServerConfig > &serverList = _config.getServerConfig();
+	std::vector< ServerConfig >::const_iterator itServer = serverList.begin();
+	for (; (itServer != serverList.end() && state != EXACT_MATCH) ; ++itServer)
 	{
 		const std::map< uint16_t, std::string> portAndIPMap = itServer->getPortAndIP();
 		std::map< uint16_t, std::string>::const_iterator itPortAndIP = portAndIPMap.begin();
-		for (; (itPortAndIP != portAndIPMap.end() && state != EXACT_MATCH) ; ++itPortAndIP)    // iterate through map of Port+IP
+		for (; (itPortAndIP != portAndIPMap.end() && state != EXACT_MATCH) ; ++itPortAndIP)
 		{
 			uint32_t configIP = fromIPToIntHost(itPortAndIP->second);
 
