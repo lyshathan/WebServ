@@ -10,8 +10,6 @@
 #include <algorithm>
 #include <utility>
 
-
-#include <errno.h>
 #include <netdb.h>
 #include <poll.h>
 #include <stdio.h>

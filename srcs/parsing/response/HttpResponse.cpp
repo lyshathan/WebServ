@@ -1,4 +1,7 @@
 #include "HttpResponse.hpp"
+#include "../../ProjectTools.hpp"
+
+std::map<std::string, UserData> HttpResponse::_sessions;
 
 /******************************************************************************/
 /*						CONSTRUCTORS & DESTRUCTORS							  */
@@ -6,7 +9,8 @@
 
 HttpResponse::HttpResponse() {};
 
-HttpResponse::HttpResponse(HttpRequest *req) : _request(req), _isTextContent(false), _res(""), _mimeType("") {
+HttpResponse::HttpResponse(HttpRequest *req) : _request(req),
+	_isTextContent(false), _res(""), _mimeType("") {
 	initStatusPhrases();
 	initHtmlResponses();
 };
@@ -20,125 +24,65 @@ HttpResponse::~HttpResponse() {};
 void HttpResponse::parseResponse() {
 	int	status = _request->getStatus();
 
-	setBody(status);
-	setDefaultHeaders(status);
-
-	if (status == OK)
-		addHeader("Connection: ", "keep-alive");
-	else if (status == NOT_FOUND)
-		addHeader("Connection: ", "close");
-	else if (status == MOVED_PERMANENTLY || status == MOVED_PERMANENTLY_302) {
-		addHeader("Connection: ", "keep-alive");
-		addHeader("Location: ", _request->getUri());
+	setStatusLine(status);
+	if (status == 201) {
+		if (!handleCookie(status))
+			postParseResponse(status);
 	}
-	// if (status == BAD_REQUmEST)
-	// 	badRequest();
-	// if (status == NOT_FOUND)
-	// 	notFound();
+	else if (status == 204)
+		deleteParseResponse();
+	else if (status == 400 || status == 500)
+		errorParseResponse(status);
+	else if (status == 200 && _request->isCGIActive())
+		cgiParseResponse(status);
+	else
+		successParseResponse(status);
+	std::stringstream ss;
+	ss << status;
+	printLog(PURPLE, "INFO", "Response Sent Status Code: " + ss.str());
 }
 
-// void HttpResponse::successfulRequest() {
-// 	_mimeType = getMimeType();
-// 	if (isTextContent()) {
-// 		setTextRes();
-// 	} else {
-// 		setBinRes();
-// 	}
-// }
+void HttpResponse::successParseResponse(int status) {
+	if (!handleCookie(status))
+		setBody(status);
+	setContentHeaders();
+	setStatusSpecificHeaders(status);
+	setConnectionHeader(status);
+}
 
-// void HttpResponse::setTextRes() {
-// 	std::ostringstream	headers;
+void HttpResponse::cgiParseResponse(int status) {
+	_isTextContent = true;
+	_res = _request->getCGIRes();
+	_mimeType = "text/html";
+	setContentHeaders();
+	setConnectionHeader(status);
+}
 
-// 	setTextContent();
+void HttpResponse::errorParseResponse(int status) {
+	_isTextContent = true;
+	_res = _htmlResponses[_request->getStatus()];
+	setContentHeaders();
+	setConnectionHeader(status);
+}
 
-// 	headers << _request->getVersion() + " 200 OK\r\n"
-// 	<< "Server: webserv\r\n"
-// 	<< "Date: " << getTime() << "\r\n"
-// 	<< "Content-Type: " << _mimeType << "\r\n"
-// 	<< "Content-Length: " << _res.size() << "\r\n"
-// 	<< "Last-Modified: " << getLastModifiedTime() << "\r\n"
-// 	<< "Connection: keep-alive" << "\r\n\r\n";
+void HttpResponse::deleteParseResponse() {
 
-// 	_headers = headers.str();
-// }
+	_isTextContent = true;
+	_res = "";
+	addHeader("Server: ", "webserv");
+	addHeader("Date: ", getTime());
+	addHeader("Content-Length: ", "0");
+	addHeader("Connection: ", "close");
+}
 
-// void HttpResponse::setBinRes() {
-// 	std::ostringstream	headers;
+void HttpResponse::postParseResponse(int status) {
+	std::stringstream ss;
 
-// 	setBinContent();
-
-// 	headers << _request->getVersion() + " 200 OK\r\n"
-// 	<< "Server: webserv\r\n"
-// 	<< "Date: " << getTime() << "\r\n"
-// 	<< "Content-Type: " << _mimeType << "\r\n"
-// 	<< "Content-Length: " << _binRes.size() << "\r\n"
-// 	<< "Last-Modified: " << getLastModifiedTime() << "\r\n"
-// 	<< "Connection: keep-alive" << "\r\n\r\n";
-
-// 	_headers = headers.str();
-// }
-
-// std::string HttpResponse::responseHeader() {
-// 	std::ostringstream html;
-
-// 	return html.str();
-// }
-
-// void HttpResponse::notFound() {
-// 	std::ostringstream headers;
-// 	std::ostringstream html;
-
-
-
-
-// 	html << "<html><head><title>404 Not Found</title></head><body>"
-// 		<< "<center><h1>404 Not Found</h1></center>"
-// 		<< "<hr>"
-// 		<< "<p><strong>Requested URI:</strong> " << _request->getUri() << "</p>"
-// 		<< "<p><strong>Method:</strong> " << _request->getMethod() << "</p>"
-// 		<< "<p><strong>Time:</strong> " << getTime() << "</p>"
-// 		<< "<center>webserv</center>"
-// 		<< "</body></html>";
-
-// 	std::string htmlCode = html.str();
-// 	_res = htmlCode;
-
-// 	headers << _request->getVersion() + " 404 Not Found\r\n"
-// 	<< "Server: webserv\r\n"
-// 	<< "Date: " << getTime() << "\r\n"
-// 	<< "Content-Type: " << getMimeType() << "\r\n"
-// 	<< "Content-Length: "<< _res.size() << "\r\n"
-// 	<< "Connection: closed" << "\r\n\r\n";
-
-// 	_headers = headers.str();
-// }
-
-// void HttpResponse::badRequest() {
-// 	std::ostringstream headers;
-// 	std::ostringstream html;
-
-// 	html << "<html><head><title>400 Bad Request</title></head><body>"
-// 	<< "<center><h1>400 Bad Request</h1></center>"
-// 	<< "<hr>"
-// 	<< "<p><strong>Requested URI:</strong> " << _request->getUri() << "</p>"
-// 	<< "<p><strong>Method:</strong> " << _request->getMethod() << "</p>"
-// 	<< "<p><strong>Time:</strong> " << getTime() << "</p>"
-// 	<< "<center>webserv</center>"
-// 	<< "</body></html>";
-
-// 	std::string htmlCode = html.str();
-// 	_binRes.clear();
-// 	_binRes.insert(_binRes.end(), htmlCode.begin(), htmlCode.end());
-
-// 	headers << _request->getVersion() + " 400 Bad Request\r\n"
-// 	<< "Server: webserv\r\n"
-// 	<< "Date: " << getTime() << "\r\n"
-// 	<< "Content-Type: " << getMimeType() << "\r\n"
-// 	<< "Content-Length: "<< _binRes.size() << "\r\n"
-// 	<< "Connection: closed" << "\r\n\r\n";
-
-// 	_headers = headers.str();
-// }
-
-
-
+	_isTextContent = true;
+	_res = _htmlResponses[status];
+	addHeader("Server: ", "webserv");
+	addHeader("Date: ", getTime());
+	addHeader("Content-Type: ", "text/html");
+	ss << _res.size();
+	addHeader("Content-Length: ", ss.str());
+}

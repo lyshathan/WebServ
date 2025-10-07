@@ -56,3 +56,7 @@ std::string HttpResponse::getMimeType() const {
 	}
 	return "application/octet-stream";
 }
+
+std::map<std::string, UserData>& HttpResponse::getSessions() {
+	return _sessions;
+}

@@ -5,10 +5,19 @@
 /******************************************************************************/
 
 void HttpRequest::cleanReqInfo() {
+	_queries.clear();
+	_cgiRes.clear();
 	_method.clear();
+	_argv.clear();
+	_body.clear();
 	_uri.clear();
 	_version.clear();
 	_headers.clear();
+	_isProccessingError = false;
+	_isCGI = false;
+	_rawBody.clear();
+	_extensions.clear();
+	_env.clear();
 	_status = 0;
 }
 
@@ -19,6 +28,20 @@ bool HttpRequest::extractUntil(std::string &line,
 		return false;
 	line = data.substr(0, pos);
 	data = data.substr(pos + del.length());
+	return true;
+}
+
+bool HttpRequest::validateUri() {
+	if (_uri[0] != '/') return false;
+	if (_uri.find("..") != std::string::npos) return false;
+	if (_uri.find('\0') != std::string::npos) return false;
+	for (size_t i = 0; i < _uri.length(); ++i) {
+		if (!std::isalnum(_uri[i])) {
+			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
+				continue;
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -76,13 +99,3 @@ bool HttpRequest::validateVersion(std::string str){
 	std::string version = str.substr(PREFIX.length());
 	return (version == VALID_VERSIONS[0] || version == VALID_VERSIONS[1]);
 }
-
-const std::string& HttpRequest::getMethod()const {return _method;}
-
-const std::string& HttpRequest::getUri() const {return _uri;}
-
-const std::string& HttpRequest::getVersion() const {return _version;}
-
-std::map<std::string, std::string>& HttpRequest::getHeaders() {return _headers;}
-
-int	HttpRequest::getStatus() const {return _status;}

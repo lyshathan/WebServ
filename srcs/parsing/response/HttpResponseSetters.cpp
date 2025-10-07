@@ -4,73 +4,88 @@
 /*								SETTERS										  */
 /******************************************************************************/
 
-void HttpResponse::setDefaultHeaders(int status) {
+void HttpResponse::addHeader(const std::string &key, const std::string &value) {
+	_headers[key] = value + "\r\n";
+}
+
+void HttpResponse::setConnectionHeader(int status) {
+	if (status >= 400) {
+		addHeader("Connection: ", "close");
+	} else {
+		addHeader("Connection: ", "keep-alive");
+	}
+}
+
+void HttpResponse::setStatusSpecificHeaders(int status) {
+	switch(status) {
+		case MOVED_PERMANENTLY:
+		case MOVED_PERMANENTLY_302:
+			addHeader("Location: ", _request->getUri());
+			break;
+	}
+}
+
+void HttpResponse::setStatusLine(int status) {
 	std::stringstream ss;
 
 	ss << status;
 	_responseStatus = _request->getVersion() + " " +
 		ss.str() + " " + _statusPhrases[status] + "\r\n";
+}
+
+void HttpResponse::setContentHeaders() {
+	std::stringstream ss;
+
 	addHeader("Server: ", "webserv");
 	addHeader("Date: ", getTime());
 	addHeader("Content-Type: ", _mimeType);
-	ss.clear();
-	ss.str("");
-	if (_isTextContent)
-		ss << _res.size();
-	else
-		ss << _binRes.size();
+	if (_isTextContent) ss << _res.size();
+	else ss << _binRes.size();
 	addHeader("Content-Length: ", ss.str());
-}
-
-void HttpResponse::addHeader(const std::string &key, const std::string &value) {
-	_headers[key] = value + "\r\n";
 }
 
 void HttpResponse::setBody(int status) {
 	_mimeType = getMimeType();
-	if (status == OK || (status == NOT_FOUND && !(_request->getUri().empty()))){
-		addHeader("Last-Modified: ", getLastModifiedTime());
-		if (isTextContent())
-			setTextContent();
-		else
-			setBinContent();
-	} else {
-		_isTextContent = true;
-		_res = _htmlResponses[status];
+	addHeader("Last-Modified: ", getLastModifiedTime());
+	if (isTextContent())
+		setTextContent(status);
+	else
+		setBinContent();
+}
+
+void HttpResponse::setAutoIndex() {
+	std::string	uri = _request->getUri();
+	std::stringstream ss;
+
+	ss << "<html><head><title>Index of " << uri
+	<< "</title></head><body> <h1>Index of " << uri
+	<< "</h1><hr><pre>";
+
+	std::string path = _request->getRoot() + _request->getUri();
+	DIR *dir = opendir(path.c_str());
+	if (!dir) {
+		std::cout << "Error opening directory\n";
+		return ;
 	}
+
+	struct dirent *entry;
+	while ((entry = readdir(dir)) != NULL) {
+		if (std::string(entry->d_name) == ".")
+			continue;
+		ss << "<a href=\"" << entry->d_name << "\">" << entry->d_name << "</a><br>\n";
+	}
+	ss << "</pre><hr></body></html>";
+	_res = ss.str();
+	closedir(dir);
 }
 
-void HttpResponse::initStatusPhrases(){
-	_statusPhrases[200] = "OK";
-	_statusPhrases[301] = "Moved Permanently";
-	_statusPhrases[403] = "Forbidden";
-	_statusPhrases[404] = "Not Found";
-	_statusPhrases[500] = "Internal Server Error";
-	_statusPhrases[400] = "Bad Request";
-}
-
-void HttpResponse::initHtmlResponses(){
-	_htmlResponses[200] = "<!DOCTYPE html><html><head><title>OK</title></head>"
-		"<body><h1>200 OK</h1><p>Your request has succeeded.</p></body></html>";
-	_htmlResponses[301] = "<!DOCTYPE html><html><head><title>Moved Permanently</title></head>"
-		"<body><h1>301 Moved Permanently</h1><p>The requested resource has been moved.</p></body></html>";
-	_htmlResponses[403] = "<!DOCTYPE html><html><head><title>Forbidden</title></head>"
-		"<body><h1>403 Forbidden</h1><p>You don't have permission to access this resource.</p></body></html>";
-	_htmlResponses[404] = "<!DOCTYPE html><html><head><title>Not Found</title></head>"
-		"<body><h1>404 Not Found</h1><p>The requested resource could not be found on this server.</p></body></html>";
-	_htmlResponses[500] = "<!DOCTYPE html><html><head><title>Internal Server Error</title></head>"
-		"<body><h1>500 Internal Server Error</h1><p>The server encountered an unexpected condition.</p></body></html>";
-	_htmlResponses[400] = "<!DOCTYPE html><html><head><title>Bad Request</title></head>"
-		"<body><h1>400 Bad Request</h1><p>The server encountered an unexpected condition.</p></body></html>";
-	_htmlResponses[302] = "<!DOCTYPE html><html><head><title>302 Found</title></head>"
-		"<body><h1>302 Found</h1><p>The server encountered an unexpected condition.</p></body></html>";
-}
-
-void HttpResponse::setTextContent() {
+void HttpResponse::setTextContent(int status) {
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
 	if (!file.is_open()) {
-		if (!_htmlResponses[_request->getStatus()].empty()){
+		if (_request->getAutoIndex() && status == 200)
+			setAutoIndex();
+		else if (!_htmlResponses[_request->getStatus()].empty()){
 			_res = _htmlResponses[_request->getStatus()];
 		}
 		return ;
@@ -79,7 +94,6 @@ void HttpResponse::setTextContent() {
 	char buffer[4096];
 	std::string chunk;
 	while (file.read(buffer, sizeof(buffer))) {
-		std::cout << "Buffer " << buffer << "\n";
 		chunk.assign(buffer, file.gcount());
 		_res += chunk;
 	}

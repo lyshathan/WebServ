@@ -11,10 +11,7 @@ ServerConfig::ServerConfig(std::vector<t_token> &tokenList, std::vector< t_token
 	parseServerConfig(it);
 }
 
-ServerConfig::~ServerConfig(void)
-{
-
-}
+ServerConfig::~ServerConfig(void) {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods
@@ -32,8 +29,6 @@ ServerConfig & ServerConfig::operator=(ServerConfig const &otherServerConfig)
 	return (*this);
 }
 
-
-
 void	ServerConfig::parseServerConfig(std::vector< t_token>::iterator &it)
 {
 	it++;
@@ -42,8 +37,6 @@ void	ServerConfig::parseServerConfig(std::vector< t_token>::iterator &it)
 
 	while (!(it->type == CLOSE_BRACE && it->level == _currentLevel))
 	{
-		// std::cout << "[ServerConfig] it->content : " << it->content << RESET << std::endl;
-
 		if (it->type == SEMICOLON)
 		{
 			it++;
@@ -51,7 +44,7 @@ void	ServerConfig::parseServerConfig(std::vector< t_token>::iterator &it)
 		}
 		else if (it->type == DIRECTIVE && it->content == "listen")	// listen port
 			parseListenPort(it);
-		else if (it->type == DIRECTIVE && it->content == "server_name")	// server names
+		else if (it->type == DIRECTIVE && it->content == "server_name") // server names
 			addListToVector(_serverNames, it, _tokens, NULL);
 		else if (it->type == DIRECTIVE && it->content == "index")	// index files
 			addListToVector(_indexFiles, it, _tokens, NULL);
@@ -138,8 +131,6 @@ void	ServerConfig::sortLocation(void)
 	}
 }
 
-
-
 void	ServerConfig::printServer(void) const
 {
 	std::string indent = "|	|___ ";
@@ -148,10 +139,7 @@ void	ServerConfig::printServer(void) const
 	std::cout << "|" << std::endl;
 	std::cout << "|" << PURPLE << "==== SERVER " << _ID << "========" << RESET << std::endl;
 	std::cout << indent << "Listen IP:port :" << std::endl;
-	// for (std::vector<int>::iterator it = _listenPorts.begin() ; it != _listenPorts.end() ; it++)
-	// {
-	// 	std::cout << list << *it << std::endl;
-	// }
+
 
 	for (std::map<uint16_t, std::string>::const_iterator it = _portAndIP.begin() ; it != _portAndIP.end() ; it++)
 	{

@@ -1,17 +1,20 @@
 #include "HttpRequest.hpp"
 
 void HttpRequest::setErrorPage() {
+	if (_isProccessingError)
+		return ;
+	_isProccessingError = true;
 	std::map<int, std::string> path = _location->getErrorPages();
 	std::string errorPath = _location->getRoot();
 
-	std::cout << "Looking for error pages..\n";
 	if (!path.empty()) {
 		std::map<int, std::string>::iterator it = path.find(_status);
 		if (it != path.end()) {
 			std::string errorPath = it->second;
 			if (errorPath[0] == '/') {
-				std::cout << "Error found " << it->second << "\n";
+				_method = "GET";
 				_uri = it->second;
+				pickLocationConfig();
 				requestHandler();
 			} else {
 				_status = MOVED_PERMANENTLY_302;

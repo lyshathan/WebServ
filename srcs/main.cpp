@@ -1,36 +1,32 @@
 #include "config/Config.hpp"
 #include "webserv/Webserv.hpp"
 #include "parsing/Client.hpp"
+#include "ProjectTools.hpp"
 
 #include <signal.h>
 
-volatile sig_atomic_t running;
+volatile sig_atomic_t g_running;
 
 void sigint_handler(int sig)
 {
 	(void)sig;
-	running = 0;
-	std::cout << "SIGNAL" << std::endl;
+	g_running = 0;
+	std::cout << "\n";
+	printLog(BLUE, "INFO", "Shutting down gracefully...");
 }
 
 int main(void)
 {
-	running = 1;
+	g_running = 1;
 	signal(SIGINT, sigint_handler);
+	signal(SIGPIPE, SIG_IGN);
 	Config config;
-	try
-	{
+	try {
 		config = Config("simple.conf");
-		// config.PrintConfig();
-		// config.printTokens();
+		printLog(BLUE, "INFO", "Initializing Servers...");
 		Webserv webserv(config);
-	}
-	catch(const std::exception& e)
-	{
+	} catch(const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}
-
-	std::cout << "End of program" << std::endl;
-
 	return (0);
 }

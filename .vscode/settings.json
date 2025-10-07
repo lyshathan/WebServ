@@ -125,9 +125,18 @@
     "fstream": "cpp",
     "iomanip": "cpp",
     "numbers": "cpp",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "charconv": "cpp",
+    "span": "cpp",
+    "format": "cpp",
+    "cinttypes": "cpp",
+    "ranges": "cpp",
+    "condition_variable": "cpp",
+    "text_encoding": "cpp",
+    "thread": "cpp"
   },
   "github.copilot.enable": {
     "*": false
-  }
+  },
+  "files.autoSave": "afterDelay"
 }

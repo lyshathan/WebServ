@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <unistd.h>
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -11,6 +12,9 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/wait.h>
+#include <ctime>
+#include <fstream>
 
 #include "../../webserv/Webserv.hpp"
 #include "../../config/server/ServerConfig.hpp"
@@ -19,9 +23,15 @@
 #define BAD_REQUEST 400
 #define NOT_FOUND 404
 #define MOVED_PERMANENTLY 301
-#define OK 200
-#define FORBIDDEN 403
 #define MOVED_PERMANENTLY_302 302
+#define OK 200
+#define CREATED 201
+#define FORBIDDEN 403
+#define NOT_ALLOWED 405
+#define INTERNAL_ERROR 500
+#define NO_CONTENT 204
+#define PAYLOAD_TOO_LARGE 413
+#define CGI_PENDING 1000
 
 typedef enum	e_servState {
 	NO_MATCH,
@@ -31,6 +41,17 @@ typedef enum	e_servState {
 	EXACT_MATCH_DEFAULT_IP,
 	EXACT_MATCH,
 }				t_servState;
+
+struct CgiState {
+	pid_t pid;
+	int stdin_fd;
+	int stdout_fd;
+	std::string request_body;
+	size_t bytes_written;
+	std::string response_buffer;
+	time_t start_time;
+	enum { WRITING, READING, COMPLETED } state;
+};
 
 class ServerConfig;
 
@@ -42,26 +63,55 @@ class HttpRequest {
 		std::string							_method;
 		std::string							_uri;
 		std::string							_version;
+		std::string							_cgiRes;
 		std::map<std::string, std::string>	_headers;
-		std::string							_body;
+		std::map<std::string, std::string>	_body;
+		std::string							_queries;
+		std::string							_rawBody;
+		std::map<std::string, std::string>	_extensions;
+		std::vector<std::string>			_env;
+		std::vector<std::string>			_argv;
 		int									_status;
 		int									_clientfd;
-
+		bool								_areHeadersParsed;
+		bool								_isProccessingError;
+		bool								_isCGI;
+		std::string							_clientIP;
+		CgiState							*_cgiState;
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
 		bool		parseBody(std::string);
+		bool		parseMultiPartBody(std::map<std::string, std::string>::const_iterator &it, std::string);
+		void		parseOnePart(std::string);
+		void		parseQueries();
+		bool		parseChunk(std::string);
 
-		void		requestHandler();
-		bool		requestParser(std::string);
+		bool		postHandler();
+		void		getHandler();
+		bool		deleteHandler();
+		bool		createFile();
+		bool		deleteFile();
+
+		void		cgiHandler();
+		bool		isCGIPath();
+		void		initEnv();
+		void		childHandler(int fd[2], int fd2[2]);
+		void		parentHandler(int fd[2], int fd2[2], pid_t);
+		char**		getArgvArray();
+		char**		getEnvArray();
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
 
-		bool		pickServerConfig();
-		bool		pickLocationConfig();
 		bool		setUri(std::string &);
 		void		setErrorPage();
+		void		setExtensions();
+		bool		validateMethods();
+		bool		checkReturn();
+
+		void		pickServerConfig();
+		void		pickLocationConfig();
 
 		bool		extractUntil(std::string &, std::string &, const std::string &);
 		std::string	trim(const std::string &);
@@ -69,38 +119,43 @@ class HttpRequest {
 		bool		isValidTchar(char c);
 
 		bool		isLocationPathValid();
+		bool		isUploadPathValid();
+		bool		isDeletePathValid();
+		bool		nameAttribute(std::string&, std::string &);
+		void		generateName(std::string &);
 
 		HttpRequest();
 	public:
-		HttpRequest(const Config& config, int &);
+		HttpRequest(const Config& config, int &, const std::string& clientIP);
 		~HttpRequest();
 
-		void	handleRequest(std::string);
+		void								requestHeaderParser(std::string);
+		void								requestBodyParser(std::string);
+		void								requestHandler();
 
-		const std::string&	getMethod() const;
-		const std::string&	getUri() const;
-		const std::string&	getVersion() const;
-		void				cleanReqInfo();
-		int					getStatus() const;
-		std::map<std::string, std::string>& getHeaders();
+		const std::string&					getMethod() const;
+		const std::string&					getUri() const;
+		const std::string&					getVersion() const;
+		const std::string					getRoot() const;
+		const std::string&					getCGIRes() const;
+		int									getStatus() const;
+		bool								getHeadersParsed() const;
+		std::map<std::string, std::string>&	getHeaders();
+		std::map<std::string, std::string>&	getBody();
+		bool								getAutoIndex() const;
+		bool								isCGIActive() const;
+		size_t								getMaxBody() const;
+		CgiState							*getCGIState() const;
+
+		bool								checkCGI();
+		void								executeBin();
+
+		void 								setHeadersParsed();
+		void								setStatus(int);
+		void								setCGIResult(const std::string &result);
+		void								setCGIState(CgiState*);
+
+		void								cleanReqInfo();
 };
 
 #endif
-
-// "GET /index.html HTTP/1.1\r\nHost:localhost:8080\r\nUser-Agent:Mozilla/5.0\r\n\r\n"
-
-// Request-Line = GET /index.html HTTP/1.1\r\n
-
-// Headers = Host:localhost:8080\r\nUser-Agent:Mozilla/5.0
-
-// {
-// 	method:"GET"
-// 	path:"/index.html"
-// 	version:"HTTP/1.1"
-// 	headers: {
-// 		"Host":"localhost:8080",
-// 		"User-Agent":"Mozilla/5.0"
-// 	}
-// 	body:NULL
-// 	valid:true
-// }

@@ -4,15 +4,9 @@
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-GlobalConfig::GlobalConfig(void) : _sizeDefined(false)
-{
+GlobalConfig::GlobalConfig(void) : _sizeDefined(false) {}
 
-}
-
-GlobalConfig::~GlobalConfig(void)
-{
-
-}
+GlobalConfig::~GlobalConfig(void) {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods
@@ -25,7 +19,6 @@ GlobalConfig &GlobalConfig::operator=(GlobalConfig const &otherGlobalConfig)
 	this->_sizeDefined = otherGlobalConfig._sizeDefined;
 	return (*this);
 }
-
 
 void GlobalConfig::check(void)
 {

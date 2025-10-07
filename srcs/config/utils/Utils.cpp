@@ -1,4 +1,5 @@
 #include "Utils.hpp"
+#include "../../ProjectTools.hpp"
 
 int	isValidDirPath(std::string &dir)
 {
@@ -7,7 +8,7 @@ int	isValidDirPath(std::string &dir)
 		str = '.' + dir;
 	else
 		str = dir;
-		
+
 	struct stat sb;
 	if (stat(str.c_str(), &sb) != 0)
 		return (NO_EXIST);
@@ -87,7 +88,6 @@ size_t	CountErrorCodes(std::vector<t_token> &tokenList, std::vector< t_token>::i
 
 	while (it != tokenList.end() && it->type == VALUE)
 	{
-		// std::cout << it->content << std::endl;
 		it++;
 		count++;
 	}
@@ -98,7 +98,9 @@ void	throwErrorToken(const char* msg, t_token &token)
 {
 	std::ostringstream errorMsg;
 
-	errorMsg << RED << "[Config file] " << msg << " at line : " << token.line << " \'" << token.content << "\'" << RESET <<std::endl;
+	errorMsg << RED << "[" << getCurrentTimeLocal() << "] [CONFIG ERROR] "
+	<< msg << " at line : " << token.line << " \'" << token.content << "\'"
+	<< RESET <<std::endl;
 	throw std::invalid_argument(errorMsg.str());
 }
 
@@ -106,6 +108,7 @@ void	throwError(const char* msg)
 {
 	std::ostringstream errorMsg;
 
-	errorMsg << RED << "[Config file] " << msg << RESET <<std::endl;
+	errorMsg << RED << "[" << getCurrentTimeLocal() << "] [CONFIG ERROR] "
+	<< msg << RESET <<std::endl;
 	throw std::invalid_argument(errorMsg.str());
 }

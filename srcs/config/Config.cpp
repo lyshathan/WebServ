@@ -1,21 +1,19 @@
 #include "Config.hpp"
 #include "server/ServerConfig.hpp"
 #include "utils/Utils.hpp"
+#include "../ProjectTools.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-Config::Config(void): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _quoteState(OUT)
-{
-}
+Config::Config(void): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _quoteState(OUT) {}
 
 Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLOBAL), _expectedToken(DIRECTIVE), _configFileName(filename), _quoteState(OUT)
 {
 	std::ifstream	configFile(filename.c_str());
 
-	std::cout << BLUE << "Reading from config file : " << filename << RESET <<std::endl;
-
+	printLog(BLUE, "INFO", "Reading Config File: " + filename);
 	initValidDirectives();
 	initToken(configFile);
 
@@ -23,9 +21,7 @@ Config::Config(std::string filename): _braceLevel(0), _lineNumber(0), _level(GLO
 	checkConfig();
 }
 
-Config::~Config(void)
-{
-}
+Config::~Config(void) {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods

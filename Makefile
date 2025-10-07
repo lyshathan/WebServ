@@ -8,10 +8,10 @@ RM = rm -rf
 
 SRCS_DIR = srcs
 MAIN = main ProjectTools
-WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservConversion
+WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservHelpers
 
 CONFIG = Config
-CONFIG_GLOBAL = GlobalConfig GlobalConfigGetter GlobalConfigSetter 
+CONFIG_GLOBAL = GlobalConfig GlobalConfigGetter GlobalConfigSetter
 CONFIG_LOCATION = LocationConfig LocationConfigGetter LocationConfigSetter LocationConfigParsing
 CONFIG_SERVER = ServerConfig ServerConfigGetter ServerConfigParsing
 CONFIG_UTILS = Utils
@@ -20,10 +20,14 @@ CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 PARSING = Client
 
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
-				HttpServerConfig HttpRequestNotFound
+				HttpServerConfig HttpRequestError HttpRequestGetters \
+				HttpRequestHandler HttpRequestHandlerHelpers \
+				HttpRequestPostHandler HttpRequestDeleteHandler \
+				HttpRequestSetters HttpRequestCGIHandler \
+				HttpRequestCGIHelpers HttpRequestBodyParser
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
-				HttpResponseSetters
+				HttpResponseSetters HttpResponseCookie
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/webserv/, $(WEBSERV))) \
@@ -38,7 +42,7 @@ SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(HTTPRESPONSE)))
 
 H_WEBSERV = Includes Webserv
-H_CONFIG = Config 
+H_CONFIG = Config
 H_CONFIG_GLOBAL = GlobalConfig
 H_CONFIG_LOCATION = LocationConfig
 H_CONFIG_SERVER = ServerConfig

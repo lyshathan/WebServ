@@ -5,11 +5,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-
-bool HttpRequest::pickServerConfig() {
+void HttpRequest::pickServerConfig() {
 	_server = NULL;
 	t_servState	state = NO_MATCH;
-
 
 	struct sockaddr_in	serverAddr;
 	socklen_t			addrLen = sizeof(serverAddr);
@@ -21,10 +19,6 @@ bool HttpRequest::pickServerConfig() {
 	const std::string host = _headers.find("host")->second;
 	std::string searchedName = host.substr(0, host.find(':', 0));
 
-	// std::cout << "Pick right server config, looking for : " << std::endl;
-	// std::cout << "    - port : " << serverPort << "\n    - IP : " <<  serverIP << "\n    - server_name : " << searchedName << std::endl;
-
-
 	const std::vector< ServerConfig > &serverList = _config.getServerConfig();  //
 	std::vector< ServerConfig >::const_iterator itServer = serverList.begin();  //
 	for (; (itServer != serverList.end() && state != EXACT_MATCH) ; ++itServer)                           // iterate through server list
@@ -34,8 +28,6 @@ bool HttpRequest::pickServerConfig() {
 		for (; (itPortAndIP != portAndIPMap.end() && state != EXACT_MATCH) ; ++itPortAndIP)    // iterate through map of Port+IP
 		{
 			uint32_t configIP = fromIPToIntHost(itPortAndIP->second);
-			// std::cout << "Check for : " << std::endl;
-			// std::cout << "  - port : " << itPortAndIP->first << "\n  - IP : " << itPortAndIP->second << "(" << configIP << ")" << std::endl;
 
 			if (itPortAndIP->first == serverPort)
 			{
@@ -47,49 +39,33 @@ bool HttpRequest::pickServerConfig() {
 					{
 						state = EXACT_MATCH;
 						_server = &(*itServer);
-						std::cout << GREEN << "Server config perfect match !" << RESET << std::endl;
 					}
 					else if (foundServerName != serverNames.end() && itPortAndIP->second == "0.0.0.0")
 					{
 						state = EXACT_MATCH_DEFAULT_IP;
-						_server = &(*itServer);	
-						std::cout << GREEN << "Set default server matching port AND server_name with DEFAULT IP" << RESET << std::endl;
+						_server = &(*itServer);
 					}
 					else if (configIP == serverIP)
 					{
 						state = MATCH_PORT_IP;
 						_server = &(*itServer);
-						std::cout << GREEN << "Set default server matching port AND IP " << _server->getID() <<  RESET << std::endl;
 					}
 					else if (state < MATCH_PORT_DEFAULT_IP)
 					{
 						state = MATCH_PORT_DEFAULT_IP;
 						_server = &(*itServer);
-						std::cout << GREEN << "Set default server matching port AND DEFAULT IP " << _server->getID() <<  RESET << std::endl;
 					}
 				}
 				else if (_server == NULL)
-				{
-					// state = MATCH_PORT;
-					// std::cout << GREEN << "Set default server matching port" << RESET <<std::endl;
-
 					_server = &(*itServer);
-				}
 			}
 		}
 	}
 	if (state == NO_MATCH)
 	{
-
-		// std::cout << GREEN << "Not matching any server config, use first one as default" << RESET << std::endl;
-
 		const std::vector< ServerConfig > &config = _config.getServerConfig();
 		_server = &(*config.begin());
 	}
-	std::cout << GREEN << "--> Chosen server config : " << _server->getID() << RESET << std::endl;
-	// _server->printServer();
-
-	return false;
 }
 
 

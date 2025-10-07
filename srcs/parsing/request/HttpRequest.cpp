@@ -1,10 +1,13 @@
 #include "HttpRequest.hpp"
+#include "../../ProjectTools.hpp"
 
 /******************************************************************************/
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-HttpRequest::HttpRequest(const Config& config, int &fd) : _config(config), _location(NULL), _status(0), _clientfd(fd) {};
+HttpRequest::HttpRequest(const Config& config, int &fd, const std::string& clientIP) :
+_config(config), _location(NULL), _status(0), _clientfd(fd), _areHeadersParsed(false),
+_isProccessingError(false), _isCGI(false), _clientIP(clientIP), _cgiState(NULL) {};
 
 HttpRequest::~HttpRequest() {};
 
@@ -12,27 +15,45 @@ HttpRequest::~HttpRequest() {};
 /*							PARSE FUNCTIONS									  */
 /******************************************************************************/
 
-void HttpRequest::handleRequest(std::string data) {
-	if (!requestParser(data))
-		return ;
-	requestHandler();
-}
-
-bool	HttpRequest::requestParser(std::string data) {
+void HttpRequest::requestHeaderParser(std::string data) {
+	// std::cout << "[Data..]\n\n" << data << "\n";
 	std::string	firstLine;
 	std::string	headers;
 
-	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine))
+	size_t headerEnd = data.find("\r\n\r\n");
+	if (headerEnd == std::string::npos)
+		return ;
+
+	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine)) {
 		_status = BAD_REQUEST;
-	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers))
+		return ;
+	}
+	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers)) {
 		_status = BAD_REQUEST;
+		return;
+	}
+	if (!validateUri()) {
+		_status = BAD_REQUEST;
+		return;
+	}
+	pickServerConfig();
+	pickLocationConfig();
+	_areHeadersParsed = true;
+}
+
+void HttpRequest::requestBodyParser(std::string data) {
 	if (!data.empty() && !parseBody(data))
 		_status = BAD_REQUEST;
-	if (!validateUri())
-		_status = BAD_REQUEST;
-	if (_status == BAD_REQUEST)
-		return false;
-	return true;
+}
+
+void HttpRequest::parseQueries() {
+	size_t pos = _uri.find("?");
+	if (pos == std::string::npos) return;
+
+	std::string base = _uri.substr(0, pos);
+	std::string queries = _uri.substr(pos + 1);
+	_uri = base;
+	_queries = queries;
 }
 
 bool HttpRequest::parseFirstLine(std::string data) {
@@ -50,15 +71,16 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	}
 	if (!ss.eof() || i < NUM_TOKENS)
 		return false;
-	if (firstLineTokens[0] != "GET" && firstLineTokens[0] != "POST"
-		&& firstLineTokens[0] != "DELETE")
-		return false;
 	if (firstLineTokens[1].size() > 8000
 		|| !validateVersion(firstLineTokens[2]))
 		return false;
 	_method = firstLineTokens[0];
 	_uri = firstLineTokens[1];
 	_version = firstLineTokens[2];
+	parseQueries();
+	printLog(PURPLE, "INFO", "Request received: " + _method + " " + _uri + " " + _version);
+	if (_status)
+		return false;
 	return true;
 }
 
@@ -78,21 +100,30 @@ bool HttpRequest::parseHeaders(std::string data) {
 	return true;
 }
 
-bool HttpRequest::validateUri() {
-	if (_uri[0] != '/') return false;
-	if (_uri.find("..") != std::string::npos) return false;
-	if (_uri.find('\0') != std::string::npos) return false;
-	for (size_t i = 0; i < _uri.length(); ++i) {
-		if (!std::isalnum(_uri[i])) {
-			if (_uri[i] == '/' || _uri[i] == '.' || _uri[i] == '-' || _uri[i] == '_')
-				continue;
-			return false;
+bool HttpRequest::parseBody(std::string data) {
+	size_t headerEnd = data.find("\r\n\r\n");
+	if (headerEnd == std::string::npos)
+		return false;
+	std::string body = data.substr(headerEnd + 4);
+
+	std::map<std::string, std::string>::const_iterator transferEncoding = _headers.find("transfer-encoding");
+	if (transferEncoding != _headers.end()) {
+		if (transferEncoding->second.find("chunked") != std::string::npos)
+			return parseChunk(body);
+		_status = 501;
+		return false;
+	}
+
+	std::map<std::string, std::string>::const_iterator contentType = _headers.find("content-type");
+	if (contentType != _headers.end()) {
+		if (contentType->second.find("multipart") != std::string::npos) {
+			parseMultiPartBody(contentType, body);
+		} else {
+			_body[""] = body;
 		}
+	} else {
+		_body[""] = body;
 	}
 	return true;
 }
 
-bool HttpRequest::parseBody(std::string data) {
-	(void)data;
-	return true;
-}

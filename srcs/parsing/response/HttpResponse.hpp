@@ -9,6 +9,12 @@
 #include "../request/HttpRequest.hpp"
 #include <sys/stat.h>
 
+struct UserData {
+	std::string username;
+	std::string age;
+	std::string city;
+};
+
 class HttpResponse {
 	private:
 		HttpRequest *_request;
@@ -23,6 +29,7 @@ class HttpResponse {
 		std::string							_res;
 		std::vector<char>					_binRes;
 		std::string							_mimeType;
+		static std::map<std::string, UserData>	_sessions;
 
 	public:
 		HttpResponse(HttpRequest *);
@@ -32,24 +39,33 @@ class HttpResponse {
 		void	initHtmlResponses();
 		void	initStatusPhrases();
 
-		void	successfulRequest();
-		void	badRequest();
-		void	notFound();
-
-		void	setTextRes();
-		void	setBinRes();
-		void	setTextContent();
+		void	setTextContent(int);
 		void	setBinContent();
 		void	setBody(int);
 		void	addHeader(const std::string &, const std::string &);
-		void	setDefaultHeaders(int);
+		void	setContentHeaders();
+		void	setStatusLine(int);
+		void	setConnectionHeader(int);
+		void	setStatusSpecificHeaders(int);
+		void	setAutoIndex();
+
+		std::string	generateSession();
+		std::string	buildSimpleHTML(const UserData& data);
+
+		bool	handleCookie(int);
+		bool	handleCookieGet(std::map<std::string, std::string>::iterator& cookieIt);
+		bool	handleCookiePost(std::map<std::string, std::string>::iterator& cookieIt);
+		static std::map<std::string, UserData>& getSessions();
+		void	postParseResponse(int);
+		void	deleteParseResponse();
+		void	errorParseResponse(int);
+		void	cgiParseResponse(int);
+		void	successParseResponse(int);
 
 		std::string getTime() const;
 		std::string getMimeType() const;
 		std::string getLastModifiedTime() const;
 		bool		getIsTextContent() const;
-
-		std::string responseHeader();
 
 		const std::string &getRes() const;
 		const std::vector<char> &getBinRes() const;

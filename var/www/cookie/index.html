@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Information - Webserv</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 540px;
+            width: 100%;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #06c;
+            text-decoration: none;
+            font-size: 17px;
+            margin-bottom: 32px;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 48px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        h1 {
+            font-size: 40px;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 17px;
+            color: #6e6e73;
+            margin-bottom: 40px;
+        }
+
+        .method {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #06c;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        input::placeholder {
+            color: #6e6e73;
+        }
+
+        button {
+            width: 100%;
+            background: #06c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 16px;
+        }
+
+        button:hover {
+            background: #0077ed;
+        }
+
+        button:disabled {
+            background: #d2d2d7;
+            cursor: not-allowed;
+        }
+
+        .icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .form-description {
+            font-size: 15px;
+            color: #6e6e73;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">
+            ← Back to Home
+        </a>
+
+        <div class="card">
+            <span class="method post">POST</span>
+            <div class="icon">🍪</div>
+            <h1>User Information</h1>
+            <p class="subtitle">Cookie & Session Management</p>
+            <p class="form-description">
+                Please provide your information to personalize your experience.
+                We'll use cookies to remember your preferences.
+            </p>
+
+            <form action="/cookie" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input
+                        type="number"
+                        id="age"
+                        name="age"
+                        placeholder="Enter your age"
+                        min="1"
+                        max="150"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        placeholder="Enter your city"
+                        required
+                    >
+                </div>
+
+                <button type="submit">
+                    Save Information
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Simple form validation and enhancement
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const button = this.querySelector('button[type="submit"]');
+            button.textContent = 'Saving...';
+            button.disabled = true;
+
+            // Re-enable button after a delay in case of error
+            setTimeout(() => {
+                button.textContent = 'Save Information';
+                button.disabled = false;
+            }, 3000);
+        });
+
+        // Enhanced input interactions
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
