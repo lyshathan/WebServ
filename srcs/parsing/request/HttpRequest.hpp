@@ -49,7 +49,7 @@ struct CgiState {
 	std::string request_body;
 	size_t bytes_written;
 	std::string response_buffer;
-	time_t start_time;
+	std::map<std::string, std::string> _headers;
 	enum { WRITING, READING, COMPLETED } state;
 };
 
