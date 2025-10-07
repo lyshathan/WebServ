@@ -18,7 +18,9 @@ Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.g
 	runningServ();
 }
 
-Webserv::~Webserv() {}
+Webserv::~Webserv() {
+	cleanServer();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //										Methods

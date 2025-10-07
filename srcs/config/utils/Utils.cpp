@@ -44,14 +44,12 @@ void setString(std::string &element, std::string &value, t_token &token)
 		throwErrorToken(" Directive already set", token);
 }
 
-void	addListToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it,
-	std::vector< t_token> &tokenList, std::vector<std::string> *validValue)
+void	addListToVector(std::vector< std::string > &vec, std::vector< t_token>::iterator &it, std::vector< t_token> &tokenList, std::vector<std::string> *validValue)
 {
 	it++;
-	size_t line = it->line;
-	while (it != tokenList.end() &&  it->type == VALUE && it->line == line)
+	while (it != tokenList.end() &&  it->type == VALUE)
 	{
-		if (validValue && std::find((*validValue).begin(),(*validValue).end(), it->content) == (*validValue).end())
+		if (validValue && std::find((*validValue).begin(), (*validValue).end(), it->content) == (*validValue).end())
 			throwErrorToken(" Invalid value (not allowed)", *it);
 		if (std::find(vec.begin(), vec.end(), it->content) != vec.end())
 			throwErrorToken(" Invalid value (already existing)", *it);
@@ -59,7 +57,7 @@ void	addListToVector(std::vector< std::string > &vec, std::vector< t_token>::ite
 		it++;
 	}
 	if (it == tokenList.end() || it->type != SEMICOLON)
-		throwErrorToken(" Missing semicolon", *--it);
+		throwErrorToken(" Missing semicolon", *it);
 }
 
 void	parseClientMaxBodySize(std::vector< t_token>::iterator &it, size_t &clientMaxBodySize, std::vector< t_token> &tokenList)
