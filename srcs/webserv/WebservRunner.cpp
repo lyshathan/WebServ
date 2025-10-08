@@ -5,7 +5,7 @@
 int	Webserv::runningServ(void)
 {
 	int	status;
-	int	timeout = 3000;
+	int	timeout = 1000;
 	while (g_running)
 	{
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
@@ -119,10 +119,12 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		std::stringstream senderSs;
 		senderSs << senderFd;
 		if (bytesRead == 0)
+		{
 			printLog(BLUE, "INFO", "Client #" + senderSs.str() + " Closed Connection");
+			deleteClient(senderFd, it);
+		}
 		else
-			printLog(RED, "ERROR",  "Client #" + senderSs.str() + " recv failed");
-		deleteClient(senderFd, it);
+			deleteClient(senderFd, it);
 	}
 	else
 	{

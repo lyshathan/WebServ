@@ -7,7 +7,7 @@
 //								Constructor & Destructor
 ////////////////////////////////////////////////////////////////////////////////////
 
-Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.getServerConfig()), _listenBackLog(10)
+Webserv::Webserv(Config const &config): _config(config), _serverConfigs(config.getServerConfig()), _listenBackLog(100)
 {
 	if (createServerSocket() < 0)
 		return ;

@@ -45,7 +45,7 @@ void HttpRequest::pickServerConfig() {
 						state = EXACT_MATCH_DEFAULT_IP;
 						_server = &(*itServer);
 					}
-					else if (configIP == serverIP)
+					else if (configIP == serverIP && state < MATCH_PORT_IP)
 					{
 						state = MATCH_PORT_IP;
 						_server = &(*itServer);
@@ -66,6 +66,9 @@ void HttpRequest::pickServerConfig() {
 		const std::vector< ServerConfig > &config = _config.getServerConfig();
 		_server = &(*config.begin());
 	}
+	std::stringstream ss;
+	ss << _server->getID();
+	printLog(PURPLE, "INFO", "Chosen server configuration : " + ss.str());
 }
 
 
