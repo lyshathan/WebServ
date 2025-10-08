@@ -137,7 +137,7 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 		if (httpStatus == CGI_PENDING) {
 			it = _pollFds.begin();
 		} else if (httpStatus != 0) {
-			processAndSendResponse(it->fd);  // CHECK HERE
+			processAndSendResponse(it->fd);
 			deleteClient(senderFd, it);
 			return 1;
 		} else if (_clients[senderFd]->isReqComplete()) {

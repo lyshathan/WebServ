@@ -23,6 +23,8 @@ const std::string& HttpResponse::getResHeaders() {
 std::string HttpResponse::getMimeType() const {
 	std::string uri = _request->getUri();
 
+	if (_request->getStatus() >= 400)
+		return "text/html";
 	size_t pos = uri.find_last_of(".");
 	if (pos == std::string::npos) {
 		return "text/html";

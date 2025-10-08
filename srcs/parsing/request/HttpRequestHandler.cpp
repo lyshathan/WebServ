@@ -5,9 +5,6 @@
 /******************************************************************************/
 
 void HttpRequest::requestHandler() {
-	// if (!_status) {  //-- Check here
-	// 	return;             
-	// }
 	if (_uri.find("/.well-known/") == 0) {
 		return ;
 	}

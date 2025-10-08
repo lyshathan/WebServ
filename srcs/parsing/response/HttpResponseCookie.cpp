@@ -68,7 +68,6 @@ bool	HttpResponse::handleCookie(int status) {
 	std::string uri = _request->getUri();
 	if (uri.find("/cookie") == std::string::npos)
 		return false;
-
 	cleanupOldSessions();
 
 	std::map<std::string, std::string>::iterator it = _request->getHeaders().find("cookie");

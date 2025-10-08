@@ -30,7 +30,9 @@ void HttpRequest::pickLocationConfig() {
 	}
 	if (bestMatch != locations.end()) {
 		_location = &(*bestMatch);
-		// std::cout << "Location chosen " << _location->getPath() << "\n";
-	} else
+	} else if (!locations.empty()) {
 		_location = &(*locations.begin());
+	} else {
+		_location = NULL;
+	}
 }
