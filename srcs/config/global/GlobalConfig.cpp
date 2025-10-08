@@ -23,7 +23,7 @@ GlobalConfig &GlobalConfig::operator=(GlobalConfig const &otherGlobalConfig)
 void GlobalConfig::check(void)
 {
 	if (_error_log.empty())
-		_error_log = "./log/error.log";		// set default error log file
+		_error_log = "./log/error.log";		// set default error log file  -  CHECK
 	if (_sizeDefined == false)
 		_clientMaxBodySize = 1000000;
 }

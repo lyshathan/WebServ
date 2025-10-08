@@ -71,26 +71,25 @@ void	LocationConfig::locationConfigParser(std::vector< t_token>::iterator &it)
 		throwErrorToken(" Missing open brace", *it);
 	while (!(it->type == CLOSE_BRACE && it->level == _currentLevel))
 	{
-		// std::cout << "	[LocationConfig] it->content : " << it->content << RESET << std::endl;
 		if (it->type == SEMICOLON)
 		{
 			it++;
 			continue;
 		}
-		else if (it->type == DIRECTIVE && it->content == "allow_methods")	// allowed Method
+		else if (it->type == DIRECTIVE && it->content == "allow_methods")
 			addListToVector(_allowMethod, it, _tokens, &_validMethod);
-		else if (it->type == DIRECTIVE && it->content == "autoindex")	// auto index
+		else if (it->type == DIRECTIVE && it->content == "autoindex")
 			parseAutoIndex(it);
-		else if (it->type == DIRECTIVE && it->content == "index") // index files
+		else if (it->type == DIRECTIVE && it->content == "index")
 			addListToVector(_indexFiles, it, _tokens, NULL);
-		else if (it->type == DIRECTIVE				// paths
+		else if (it->type == DIRECTIVE
 			&& (it->content == "upload_path" || it->content == "cgi" || it->content == "root"))
 				parsePath(it);
-		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")	// client_max_body_size
+		else if (it->type == DIRECTIVE && it->content == "client_max_body_size")
 			parseClientMaxBodySize(it, _clientMaxBodySize, _tokens);
-		else if (it->type == DIRECTIVE && it->content == "return")	// return
+		else if (it->type == DIRECTIVE && it->content == "return")
 			parseReturn(it);
-		else if (it->type == DIRECTIVE && it->content == "error_page")	// error_page
+		else if (it->type == DIRECTIVE && it->content == "error_page")
 			parseErrorPage(it);
 	}
 	if (it->type == CLOSE_BRACE && it->level == _currentLevel)

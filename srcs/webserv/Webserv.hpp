@@ -25,7 +25,6 @@ class Webserv {
 		int							_listenBackLog;
 		std::map<int, int>			_cgiToClient;
 
-		// uint32_t	fromHostToAddress(std::string hostname);
 		int			handleFunctionError(std::string errFunction);
 		void		cleanServer();
 		int			createServerSocket();
@@ -40,7 +39,6 @@ class Webserv {
 		void		addClient(int newClientFd, const std::string &clientIP);
 		void		deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
 		int			processAndSendResponse(int clientFd);
-
 		void		addCGIToPoll(int clientFd);
 		void		handleCGIWrite(int, CgiState*);
 		void		handleCGIRead(int, CgiState*);
@@ -48,7 +46,6 @@ class Webserv {
 		void		cleanupCGI(int, CgiState*);
 		void		removeFdFromPoll(int fd);
 		void		closeCGIStdin(CgiState *cgiState);
-
 		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
 
 	public :

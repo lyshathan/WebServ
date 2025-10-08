@@ -11,7 +11,6 @@ class Config {
 	private :
 		GlobalConfig				_globalConfig;
 		std::vector< ServerConfig >	_serversConfig;
-
 		int							_braceLevel;
 		size_t						_lineNumber;
 		size_t						_level;
@@ -19,7 +18,6 @@ class Config {
 		std::string					_configFileName;
 		std::vector<t_token>		_tokens;
 		std::vector< std::vector<std::string> >	_validDir;
-
 		t_quote						_quoteState;
 
 		// TOKENIZER
@@ -31,7 +29,6 @@ class Config {
 		void	analyzeCaseBrace(t_token &token);
 		void	analyzeCaseSemicolon(t_token &token);
 		void	analyzeCaseDirOrValue(t_token &token);
-
 		std::string handleQuotedToken(std::string &line, size_t *i);
 
 		// PARSER

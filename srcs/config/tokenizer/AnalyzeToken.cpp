@@ -84,7 +84,7 @@ void	Config::analyzeCaseDirOrValue(t_token &token)
 		token.type = DIRECTIVE;
 		if (token.content == "location")
 			_expectedToken = PATH;
-		else if (_level == GLOBAL && token.content == "server")	////
+		else if (_level == GLOBAL && token.content == "server")
 			_expectedToken = OPEN_BRACE;
 		else
 			_expectedToken = VALUE;
