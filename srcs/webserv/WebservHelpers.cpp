@@ -15,68 +15,6 @@ void Webserv::addCGIToPoll(int clientFd) {
     }
 }
 
-void Webserv::handleCGIWrite(int clientFd, CgiState *cgiState) {
-    size_t remaining = cgiState->request_body.size() - cgiState->bytes_written;
-
-    if (remaining <= 0) {
-        closeCGIStdin(cgiState);
-        return;
-    }
-
-    ssize_t written = write(cgiState->stdin_fd,
-                        cgiState->request_body.c_str() + cgiState->bytes_written,
-                        remaining);
-
-    if (written > 0) {
-        cgiState->bytes_written += written;
-        if (cgiState->bytes_written >= cgiState->request_body.size()) {
-            closeCGIStdin(cgiState);
-        }
-    } else {
-        _clients[clientFd]->httpReq->setStatus(INTERNAL_ERROR);
-        cleanupCGI(clientFd, cgiState);
-        processAndSendResponse(clientFd);
-    }
-}
-
-void Webserv::handleCGIRead(int clientFd, CgiState *cgiState) {
-    char buffer[4096];
-    ssize_t bytesRead = read(cgiState->stdout_fd, buffer, sizeof(buffer));
-
-    if (bytesRead > 0) {
-        cgiState->response_buffer.append(buffer, bytesRead);
-    } else if (bytesRead == 0) {
-        close(cgiState->stdout_fd);
-        cgiState->stdout_fd = -1;
-        handleCGICompletion(clientFd, cgiState);
-    } else {
-        _clients[clientFd]->httpReq->setStatus(INTERNAL_ERROR);
-        cleanupCGI(clientFd, cgiState);
-        processAndSendResponse(clientFd);
-    }
-}
-
-void Webserv::handleCGICompletion(int clientFd, CgiState *cgiState) {
-    int status;
-    pid_t result = waitpid(cgiState->pid, &status, WNOHANG);
-
-    if (result == cgiState->pid) {
-        if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-            _clients[clientFd]->httpReq->setCGIResult(cgiState->response_buffer);
-            _clients[clientFd]->httpReq->setStatus(OK);
-        } else {
-            _clients[clientFd]->httpReq->setStatus(INTERNAL_ERROR);
-        }
-
-        cleanupCGI(clientFd, cgiState);
-        processAndSendResponse(clientFd);
-    } else if (result == -1) {
-        _clients[clientFd]->httpReq->setStatus(INTERNAL_ERROR);
-        cleanupCGI(clientFd, cgiState);
-        processAndSendResponse(clientFd);
-    }
-}
-
 void Webserv::cleanupCGI(int clientFd, CgiState *cgiState) {
     if (cgiState->stdin_fd != -1) {
         close(cgiState->stdin_fd);

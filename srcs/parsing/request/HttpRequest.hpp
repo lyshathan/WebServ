@@ -43,13 +43,15 @@ typedef enum	e_servState {
 }				t_servState;
 
 struct CgiState {
-	pid_t pid;
-	int stdin_fd;
-	int stdout_fd;
-	std::string request_body;
-	size_t bytes_written;
-	std::string response_buffer;
-	time_t start_time;
+	pid_t				pid;
+	int					stdin_fd;
+	int					stdout_fd;
+	std::string			request_body;
+	size_t				bytes_written;
+	std::string			response_buffer;
+	std::map<std::string, std::string> _headers;
+	bool				headers_parsed;
+	size_t				headerPos;
 	enum { WRITING, READING, COMPLETED } state;
 };
 
