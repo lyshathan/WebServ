@@ -190,8 +190,7 @@ int Webserv::sendResponse(int clientFd) {
 	}
 
 	ssize_t status = send(clientFd, completeResponse.c_str(), completeResponse.length(), MSG_NOSIGNAL);
-	if (status == -1 || status < (ssize_t)completeResponse.length())
+	if (status == -1 || status < (ssize_t)completeResponse.length() || status == 0)
 		return -1;
-
 	return 0;
 }

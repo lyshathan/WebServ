@@ -18,6 +18,8 @@ void Webserv::handleCGIWrite(int clientFd, CgiState *cgiState) {
 		if (cgiState->bytes_written >= cgiState->request_body.size()) {
 			closeCGIStdin(cgiState);
 		}
+	} else if (written == 0) {
+		return ;
 	} else {
 		_clients[clientFd]->httpReq->setStatus(INTERNAL_ERROR);
 		cleanupCGI(clientFd, cgiState);
