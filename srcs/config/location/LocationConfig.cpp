@@ -7,18 +7,41 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 LocationConfig::LocationConfig(ServerConfig &server, std::vector< LocationConfig > &locations, std::vector<t_token> &tokenList) :
-_locations(locations), _tokens(tokenList), _currentLevel(0)
+	_locations(locations),
+	_tokens(tokenList),
+	_autoIndex(false),
+	_clientMaxBodySize(server.getClientMaxBodySize()),
+	_path("/"),
+	_uploadPath(""),
+	_cgiData(),
+	_root(server.getRoot()),
+	_indexFiles(server.getIndexFiles()),
+	_allowMethod(),
+	_validMethod(),
+	_return(std::make_pair(0, "")),
+	_errorPages(),
+	_currentLevel(0),
+	_isExactPath(false)
 {
-	this->_autoIndex = false;
-	this->_clientMaxBodySize = server.getClientMaxBodySize();
-	this->_path = "/";
-	this->_root = server.getRoot();
-	this->_indexFiles = server.getIndexFiles();
-	this->_allowMethod.push_back("GET");
+	_allowMethod.push_back("GET");
 }
 
 LocationConfig::LocationConfig(std::vector<t_token> &tokenList, std::vector< t_token>::iterator &it, std::vector< LocationConfig > &locations)
-: _locations(locations), _tokens(tokenList), _autoIndex(false), _clientMaxBodySize(0), _currentLevel(it->level), _isExactPath(false)
+: _locations(locations),
+	_tokens(tokenList),
+	_autoIndex(false),
+	_clientMaxBodySize(0),
+	_path(""),
+	_uploadPath(""),
+	_cgiData(),
+	_root(""),
+	_indexFiles(),
+	_allowMethod(),
+	_validMethod(),
+	_return(std::make_pair(0, "")),
+	_errorPages(),
+	_currentLevel(it->level),
+	_isExactPath(false)
 {
 	_validMethod.push_back("GET");
 	_validMethod.push_back("POST");

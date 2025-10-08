@@ -9,7 +9,7 @@ bool HttpRequest::postHandler() {
 		setErrorPage();
 		return false;
 	}
-	if (_uri.find("/cookie") == std::string::npos)
+	if (_uri.find("/cookie") == std::string::npos && _status < 400)
 		createFile();
 	if (!_status)
 		_status = CREATED;

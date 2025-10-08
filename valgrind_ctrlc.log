@@ -1,35 +1,41 @@
-==512484== Memcheck, a memory error detector
-==512484== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==512484== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==512484== Command: ./Webserv simple.conf
-==512484== Parent PID: 501062
-==512484== 
-==512484== 
-==512484== FILE DESCRIPTORS: 9 open (3 std) at exit.
-==512484== Open file descriptor 103: /usr/share/code/v8_context_snapshot.bin
-==512484==    <inherited from parent>
-==512484== 
-==512484== Open file descriptor 43: /dev/ptmx
-==512484==    <inherited from parent>
-==512484== 
-==512484== Open file descriptor 42: /dev/ptmx
-==512484==    <inherited from parent>
-==512484== 
-==512484== Open AF_UNIX socket 41: <unknown>
-==512484==    <inherited from parent>
-==512484== 
-==512484== Open file descriptor 40: /home/kricci-d/.config/Code/logs/20251008T080158/ptyhost.log
-==512484==    <inherited from parent>
-==512484== 
-==512484== Open file descriptor 3: /home/kricci-d/Downloads/WebServ/valgrind_ctrlc.log
-==512484==    <inherited from parent>
-==512484== 
-==512484== 
-==512484== HEAP SUMMARY:
-==512484==     in use at exit: 0 bytes in 0 blocks
-==512484==   total heap usage: 457 allocs, 457 frees, 149,751 bytes allocated
-==512484== 
-==512484== All heap blocks were freed -- no leaks are possible
-==512484== 
-==512484== For lists of detected and suppressed errors, rerun with: -s
-==512484== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==582228== Memcheck, a memory error detector
+==582228== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==582228== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==582228== Command: ./Webserv simple.conf
+==582228== Parent PID: 581903
+==582228== 
+==582228== 
+==582228== FILE DESCRIPTORS: 10 open (3 std) at exit.
+==582228== Open AF_INET socket 4: <unbound> <-> unbound
+==582228==    at 0x4CCEBAB: socket (syscall-template.S:120)
+==582228==    by 0x407F9C: Webserv::createServerSocket() (Webserv.cpp:55)
+==582228==    by 0x407B5D: Webserv::Webserv(Config const&) (Webserv.cpp:12)
+==582228==    by 0x407053: main (main.cpp:55)
+==582228== 
+==582228== Open file descriptor 103: /usr/share/code/v8_context_snapshot.bin
+==582228==    <inherited from parent>
+==582228== 
+==582228== Open file descriptor 44: /dev/ptmx
+==582228==    <inherited from parent>
+==582228== 
+==582228== Open file descriptor 43: /dev/ptmx
+==582228==    <inherited from parent>
+==582228== 
+==582228== Open AF_UNIX socket 41: <unknown>
+==582228==    <inherited from parent>
+==582228== 
+==582228== Open file descriptor 40: /home/kricci-d/.config/Code/logs/20251008T094522/ptyhost.log
+==582228==    <inherited from parent>
+==582228== 
+==582228== Open file descriptor 3: /home/kricci-d/Downloads/WebServ/valgrind_ctrlc.log
+==582228==    <inherited from parent>
+==582228== 
+==582228== 
+==582228== HEAP SUMMARY:
+==582228==     in use at exit: 0 bytes in 0 blocks
+==582228==   total heap usage: 502 allocs, 502 frees, 172,132 bytes allocated
+==582228== 
+==582228== All heap blocks were freed -- no leaks are possible
+==582228== 
+==582228== For lists of detected and suppressed errors, rerun with: -s
+==582228== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

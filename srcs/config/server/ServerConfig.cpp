@@ -83,6 +83,7 @@ void	ServerConfig::check(GlobalConfig &global)
 	}
 	else
 		setDefaultLocation();
+	
 
 }
 
