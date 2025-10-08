@@ -1,5 +1,6 @@
 #include "Utils.hpp"
 #include "../../ProjectTools.hpp"
+#include <climits>
 
 int	isValidDirPath(std::string &dir)
 {
@@ -66,19 +67,35 @@ void	parseClientMaxBodySize(std::vector< t_token>::iterator &it, size_t &clientM
 
 	if (clientMaxBodySize != 0)
 		throwErrorToken(" Size already set", *it);
-	size_t bodySize = std::strtod((++it)->content.c_str(), &end);
-	if (bodySize <= 0 || bodySize > INT_MAX || std::isinf(bodySize))
+	
+	std::string sizeStr = (++it)->content;
+	if (sizeStr.empty() || (!std::isdigit(sizeStr[0])))
 		throwErrorToken(" Invalid size", *it);
+	
+	unsigned long bodySize = std::strtoul(sizeStr.c_str(), &end, 10);
+	if (end == sizeStr.c_str() || bodySize == 0)
+		throwErrorToken(" Invalid size", *it);
+	
 	if ((*end && *end != 'K' && *end != 'M' && *end != 'G') || std::strlen(end) > 1)
 		throwErrorToken(" Invalid size", *it);
-	if (*end == 'K')
-		bodySize *= 100;
-	else if (*end == 'M')
-		bodySize *= 100000;
-	else if (*end == 'G')
-		bodySize *= 1000000000;
+	
+	if (*end == 'K') {
+		if (bodySize > ULONG_MAX / 1024)
+			throwErrorToken(" Size too large", *it);
+		bodySize *= 1024;
+	}
+	else if (*end == 'M') {
+		if (bodySize > ULONG_MAX / (1024 * 1024))
+			throwErrorToken(" Size too large", *it);
+		bodySize *= 1024 * 1024;
+	}
+	else if (*end == 'G') {
+		if (bodySize > ULONG_MAX / (1024UL * 1024UL * 1024UL))
+			throwErrorToken(" Size too large", *it);
+		bodySize *= 1024UL * 1024UL * 1024UL;
+	}
+	
 	clientMaxBodySize = bodySize;
-
 	checkForSemicolon(it, tokenList);
 }
 
