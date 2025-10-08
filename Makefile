@@ -1,7 +1,7 @@
 NAME = Webserv
 CC = c++
-FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3
-TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP -g3
+FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP
+TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP
 RM = rm -rf
 
 #============== SOURCES ==============#
@@ -81,7 +81,7 @@ OBJ_SUBDIRS = \
 	$(OBJDIR)/parsing/request \
 	$(OBJDIR)/parsing/response
 
-DEPS = $($(OBJDIR)/%.o=.d)
+DEPS = $(OBJS:.o=.d)
 
 #=============== RULES ===============#
 
@@ -95,7 +95,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)
 	@echo "\n\033[1;32mWebServ compiled\033[0m 🔥🚀\n"
 
-$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp $(HEADERS) Makefile | $(OBJ_SUBDIRS)
+$(OBJDIR)/%.o: $(SRCS_DIR)/%.cpp Makefile | $(OBJ_SUBDIRS)
 	$(CC) $(FLAGS) -c $< -o $@
 
 $(OBJ_SUBDIRS):
