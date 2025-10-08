@@ -2,7 +2,6 @@
 
 uint32_t	fromIPToIntHost(const std::string &IPstr)
 {
-	// std::string test = "127.0.0.1";
 	std::istringstream iss( IPstr );
 
 	uint32_t IPint = 0;
@@ -11,7 +10,7 @@ uint32_t	fromIPToIntHost(const std::string &IPstr)
 		uint32_t part;
 		iss >> part;
 		if ( iss.fail() || part > 255 ) {
-			throw std::runtime_error( "Invalid IP address - Expected [0, 255]" );
+			throw std::runtime_error( "[ERROR] Invalid IP address - Expected [0, 255]" );
 		}
 
 		// Shifts the octet to its correct position in the 32-bit integer (host byte order)
@@ -22,16 +21,16 @@ uint32_t	fromIPToIntHost(const std::string &IPstr)
 			char delimiter;
 			iss >> delimiter;
 			if ( iss.fail() || delimiter != '.' ) {
-				throw std::runtime_error( "Invalid IP address - Expected '.' delimiter" );
+				throw std::runtime_error( "[ERROR] Invalid IP address - Expected '.' delimiter" );
 			}
 		}
 	}
 
-	// Check that there's no extra content after the 4 octets
+	// Check for extra element after the 4 octets
 	std::string remaining;
 	iss >> remaining;
 	if (!remaining.empty()) {
-		throw std::runtime_error( "Invalid IP address - Extra content after IP" );
+		throw std::runtime_error( "[ERROR] Invalid IP address - Extra content after IP" );
 	}
 	return IPint;
 }

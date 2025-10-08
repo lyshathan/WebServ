@@ -5,7 +5,7 @@
 int	Webserv::runningServ(void)
 {
 	int	status;
-	int	timeout = 3000;	// 3 seconds
+	int	timeout = 3000;
 	while (g_running)
 	{
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
@@ -115,6 +115,7 @@ int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
 	if (bytesRead <= 0)
 	{
+	
 		std::stringstream senderSs;
 		senderSs << senderFd;
 		if (bytesRead == 0)

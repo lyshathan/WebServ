@@ -11,7 +11,6 @@ void Webserv::addClient(int newClientFd, const std::string &clientIP)
 	newClientPollFd.events = POLLIN;
 	newClientPollFd.revents = 0;
 	_pollFds.push_back(newClientPollFd);
-	//std::cout << "Validate client #" << newClientFd << std::endl;
 }
 
 void Webserv::deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it)

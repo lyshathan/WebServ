@@ -48,7 +48,6 @@ void	Config::parser()
 			{
 				ServerConfig newServer(_tokens, it, _serversConfig);
 				_serversConfig.push_back(newServer);
-				// newServer.printServer();
 			}
 			else if (it->content == "error_log")
 			{
