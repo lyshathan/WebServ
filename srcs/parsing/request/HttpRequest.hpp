@@ -52,7 +52,7 @@ struct CgiState {
 	std::map<std::string, std::string> _headers;
 	bool				headers_parsed;
 	size_t				headerPos;
-	enum { WRITING, READING, COMPLETED } state;
+	enum { PENDING_POLL, WRITING, READING, COMPLETED } state;
 };
 
 class ServerConfig;

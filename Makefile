@@ -17,7 +17,7 @@ CONFIG_SERVER = ServerConfig ServerConfigGetter ServerConfigParsing
 CONFIG_UTILS = Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 
-PARSING = Client
+PARSING = Client ClientHelpers
 
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
 				HttpServerConfig HttpRequestError HttpRequestGetters \

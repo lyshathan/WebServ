@@ -1,6 +1,5 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
-#include "../ProjectTools.hpp"
 
 int	Webserv::runningServ(void)
 {
@@ -23,140 +22,19 @@ int	Webserv::runningServ(void)
 	return (0);
 }
 
-int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
-{
-	char	buffer[BUFSIZ];
-	int 	senderFd;
-	int		bytesRead;
-
-	senderFd = it->fd;
-	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
-	if (bytesRead <= 0)
-	{
-	
-		std::stringstream senderSs;
-		senderSs << senderFd;
-		if (bytesRead == 0)
-		{
-			printLog(BLUE, "INFO", "Client #" + senderSs.str() + " Closed Connection");
-			deleteClient(senderFd, it);
-		}
-		else
-			deleteClient(senderFd, it);
-	}
-}
-
-void Webserv::handleReadEvent(struct pollfd &pfd) {
-	int status;
-
-	std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), pfd.fd);
-	if (find != _serverFds.end()) {
-		status = acceptNewConnec int sig)tion(*find);
-		if (status == -1)
-			return ;
-	}
-
-	Client *client = _clients[pfd.fd];
-	client->readRequest()
-	int ret = _clients[it->fd]->appendBuffer(buffer, bytesRead);
-
-	------
-
-	_clients[it->fd]->appendBuffer(buffer, bytesRead);
-	if (!_clients[senderFd]->httpReq->getHeadersParsed()) {
-		_clients[senderFd]->httpReq->requestHeaderParser(_clients[senderFd]->getRes());
-	}
-
-	int	httpStatus = _clients[senderFd]->httpReq->getStatus();
-	if (httpStatus == CGI_PENDING) {
-		it = _pollFds.begin();
-	} else if (httpStatus != 0) {
-		processAndSendResponse(it->fd);
-		deleteClient(senderFd, it);
-		return 1;
-	} else if (_clients[senderFd]->isReqComplete()) {
-		_clients[senderFd]->httpReq->requestBodyParser(_clients[senderFd]->getRes());
-		_clients[senderFd]->httpReq->requestHandler();
-		int newStatus = _clients[senderFd]->httpReq->getStatus();
-		if (newStatus == CGI_PENDING) {
-			addCGIToPoll(senderFd);
-			it = _pollFds.begin();
-		} else if (newStatus) {
-			return processAndSendResponse(it->fd);
-		}
-	}
-}
-
 int	Webserv::connectAndRead(void)
 {
-	int	status;
-
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
 
 		if (pfd.revents & POLLIN)
 			handleReadEvent(pfd);
-		// else if (pfd.revents & POLLOUT)
-		// 	handleWriteEvent(pdf);
-		// else if (pdf.revents & POLLHUP)
-		// 	disconnectClient(pfd.fd);
-
-
-
-
-		// if (!(it->revents & (POLLIN | POLLOUT | POLLHUP)))
-		// {
-		// 	++it;
-		// 	continue;
-		// }
-
-		// short events = it->revents;
-		// it->revents = 0;
-
-		// std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), it->fd);
-		// if (find != _serverFds.end())
-		// {
-		// 	status = acceptNewConnection(*find);
-		// 	if (status == -1)
-		// 		return (-1);
-		// 	it = _pollFds.begin() + 1;
-		// }
-		// else if (_cgiToClient.find(it->fd) != _cgiToClient.end()) {
-		// 	status = handleCGIEvents(it, events);
-		// 	if (status == -1)
-		// 		return (-1);
-		// }
-		// else {
-		// 	status = readDataFromSocket(it);
-		// 	if (status <= 0)
-		// 		return (-1);
-		// 	it = _pollFds.begin();
-		// }
+		else if (pfd.revents & POLLOUT)
+			handleWriteEvent(pfd);
+		else if (pfd.revents & POLLHUP)
+			disconnectClient(pfd.fd);
 	}
-	return (1);
-}
-
-int	Webserv::handleCGIEvents(std::vector<struct pollfd>::iterator &it, short events)
-{
-	int clientFd = _cgiToClient[it->fd];
-	CgiState *cgiState = _clients[clientFd]->httpReq->getCGIState();
-
-	if (events & POLLHUP) {
-		handleCGICompletion(clientFd, cgiState);
-		it = _pollFds.begin();
-	}
-	else if (it->fd == cgiState->stdin_fd && (events & POLLOUT)) {
-		handleCGIWrite(clientFd, cgiState);
-		it = _pollFds.begin();
-	}
-	else if (it->fd == cgiState->stdout_fd && (events & POLLIN)) {
-		handleCGIRead(clientFd, cgiState);
-		it = _pollFds.begin();
-	}
-	else
-		++it;
-
 	return (1);
 }
 
@@ -174,101 +52,85 @@ int Webserv::acceptNewConnection(int &serverFd)
 	std::string clientIP = inet_ntoa(clientAddr.sin_addr);
 	addClient(clientFd, clientIP);
 
-	std::stringstream ss;
-	ss << clientIP;
-	printLog(BLUE, "INFO", "New Client IP " + ss.str() + " connected");
+	std::stringstream msg;
+	msg << "New Client #" << clientFd << " IP " << clientIP << " connected";
+	printLog(BLUE, "INFO", msg.str());		
 	return (0);
 }
 
-// int Webserv::readDataFromSocket(std::vector<struct pollfd>::iterator & it)
-// {
-// 	char	buffer[BUFSIZ];
-// 	int 	senderFd;
-// 	int		bytesRead;
+void Webserv::handleReadEvent(struct pollfd &pfd) {
+	int status;
 
-// 	senderFd = it->fd;
-// 	bytesRead = recv(senderFd, buffer, BUFSIZ, 0);
-// 	if (bytesRead <= 0)
-// 	{
+	std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), pfd.fd);
+	if (find != _serverFds.end()) {
+		status = acceptNewConnection(*find);
+		return;
+	}
+
+	Client *client = _clients[pfd.fd];
+	int ret = client->readAndParseRequest(); // Reads and parses the request;
 	
-// 		std::stringstream senderSs;
-// 		senderSs << senderFd;
-// 		if (bytesRead == 0)
-// 		{
-// 			printLog(BLUE, "INFO", "Client #" + senderSs.str() + " Closed Connection");
-// 			deleteClient(senderFd, it);
-// 		}
-// 		else
-// 			deleteClient(senderFd, it);
+	if (ret == READ_COMPLETE) {
+		client->httpReq->requestHandler(); //validate request;
+
+		if (client->isCGI())
+			handleCGIEvent(pfd, client); // Handle CGI Write event;
+		else { 
+			client->httpRes->parseResponse(); // prepare the response
+			pfd.events = POLLOUT; // ready to send response
+		}
+	} else if (ret == READ_ERROR)
+		disconnectClient(pfd.fd);
+}
+
+void Webserv::handleCGIEvent(struct pollfd &pfd, Client *client) {
+	CgiState *cgi = client->httpReq->getCGIState();
+	if (cgi->state == CgiState::PENDING_POLL) {
+		addCGIToPoll(pfd.fd, cgi);
+		return ;
+	}
+	// handleCGIWrite(clientFd, cgiState);
+}
+
+void Webserv::handleWriteEvent(struct pollfd &pfd) {
+	Client *client = _clients[pfd.fd];
+
+	int ret = client->writeResponse(); // Sends the response to the client
+
+	if (ret == WRITE_COMPLETE) {
+		if (client->connectionShouldClose()) // Checks if the connection should close
+			disconnectClient(pfd.fd);
+		else {
+			client->resetClient(); // Resets the client if connection remains open;
+			pfd.events = POLLIN;
+		}
+	} else if (ret == WRITE_ERROR)
+		disconnectClient(pfd.fd);
+}
+
+
+//---------------------
+
+
+// int	Webserv::handleCGIEvents(std::vector<struct pollfd>::iterator &it, short events)
+// {
+// 	int clientFd = _cgiToClient[it->fd];
+// 	CgiState *cgiState = _clients[clientFd]->httpReq->getCGIState();
+
+// 	if (events & POLLHUP) {
+// 		handleCGICompletion(clientFd, cgiState);
+// 		it = _pollFds.begin();
+// 	}
+// 	else if (it->fd == cgiState->stdin_fd && (events & POLLOUT)) {
+// 		handleCGIWrite(clientFd, cgiState);
+// 		it = _pollFds.begin();
+// 	}
+// 	else if (it->fd == cgiState->stdout_fd && (events & POLLIN)) {
+// 		handleCGIRead(clientFd, cgiState);
+// 		it = _pollFds.begin();
 // 	}
 // 	else
-// 	{
-// 		_clients[it->fd]->appendBuffer(buffer, bytesRead);
-// 		if (!_clients[senderFd]->httpReq->getHeadersParsed()) {
-// 			_clients[senderFd]->httpReq->requestHeaderParser(_clients[senderFd]->getRes());
-// 		}
+// 		++it;
 
-// 		int	httpStatus = _clients[senderFd]->httpReq->getStatus();
-// 		if (httpStatus == CGI_PENDING) {
-// 			it = _pollFds.begin();
-// 		} else if (httpStatus != 0) {
-// 			processAndSendResponse(it->fd);
-// 			deleteClient(senderFd, it);
-// 			return 1;
-// 		} else if (_clients[senderFd]->isReqComplete()) {
-// 			_clients[senderFd]->httpReq->requestBodyParser(_clients[senderFd]->getRes());
-// 			_clients[senderFd]->httpReq->requestHandler();
-// 			int newStatus = _clients[senderFd]->httpReq->getStatus();
-// 			if (newStatus == CGI_PENDING) {
-// 				addCGIToPoll(senderFd);
-// 				it = _pollFds.begin();
-// 			} else if (newStatus) {
-// 				return processAndSendResponse(it->fd);
-// 			}
-// 		}
-// 	}
 // 	return (1);
 // }
-
-int Webserv::processAndSendResponse(int clientFd) {
-	if (_clients.find(clientFd) == _clients.end())
-		return -1;
-
-	_clients[clientFd]->httpRes->parseResponse();
-	int status = sendResponse(clientFd);
-
-	if (status == -1) {
-		// Client likely disconnected, clean up gracefully
-		std::vector<struct pollfd>::iterator it = _pollFds.begin();
-		for (; it != _pollFds.end(); ++it) {
-			if (it->fd == clientFd) {
-				deleteClient(clientFd, it);
-				break;
-			}
-		}
-		return 1;
-	}
-
-	_clients[clientFd]->clearBuffer();
-	return 1;
-}
-
-int Webserv::sendResponse(int clientFd) {
-	std::string completeResponse;
-
-	if (_clients.find(clientFd) == _clients.end())
-		return -1;
-
-	completeResponse += _clients[clientFd]->httpRes->getResHeaders();
-	if (_clients[clientFd]->httpRes->getIsTextContent()) {
-		completeResponse += _clients[clientFd]->httpRes->getRes();
-	} else {
-		std::vector<char> binaryContent = _clients[clientFd]->httpRes->getBinRes();
-		completeResponse.append(binaryContent.begin(), binaryContent.end());
-	}
-
-	ssize_t status = send(clientFd, completeResponse.c_str(), completeResponse.length(), MSG_NOSIGNAL);
-	if (status == -1 || status < (ssize_t)completeResponse.length() || status == 0)
-		return -1;
-	return 0;
-}

@@ -1,9 +1,7 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-void Webserv::addCGIToPoll(int clientFd) {
-    CgiState* cgiState = _clients[clientFd]->httpReq->getCGIState();
-
+void Webserv::addCGIToPoll(int clientFd, CgiState *cgiState) {
     struct pollfd stdout_pollfd = {cgiState->stdout_fd, POLLIN, 0};
     _pollFds.push_back(stdout_pollfd);
     _cgiToClient[cgiState->stdout_fd] = clientFd;

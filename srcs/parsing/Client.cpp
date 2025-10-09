@@ -5,8 +5,8 @@
 /******************************************************************************/
 
 Client::Client(int fd, const Config &config, const std::string &clientIP) :
-	 _fd(fd), _recvSize(0), _clientIP(clientIP), httpReq(new HttpRequest(config, fd, _clientIP)),
-	httpRes(new HttpResponse(httpReq)), _state(READING_HEADERS) {}
+	 _fd(fd), _recvSize(0), _clientIP(clientIP),_state(READING_HEADERS), 
+	 httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq)) {}
 
 Client::~Client() {
 	delete httpReq;
@@ -19,7 +19,40 @@ Client::~Client() {
 
 const std::string &Client::getRes() const { return _reqBuffer;}
 
-int		Client::readRequest() {
+int	Client::writeResponse() {
+	if (_state == REQUEST_READY) {  // Get the response header + body and clean the response buffer
+		_resBuffer.clear();
+		_resBuffer += httpRes->getResHeaders();
+
+		if (httpRes->getIsTextContent()) {
+			_resBuffer += httpRes->getRes();
+		} else {
+			std::vector<char> binaryContent = httpRes->getBinRes();
+			_resBuffer.append(binaryContent.begin(), binaryContent.end());
+		}
+		_bytesSent = 0;
+		_state = SENDING_RESPONSE;
+	}
+
+	ssize_t sent = send(_fd, _resBuffer.c_str() + _bytesSent, 
+						_resBuffer.length() - _bytesSent, MSG_NOSIGNAL);
+	if (sent <= 0) {
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
+			return WRITE_INCOMPLETE;
+		return WRITE_ERROR;
+	}
+
+	_bytesSent += sent;
+
+	if (_bytesSent >= _resBuffer.length()) {
+		_state = DONE;
+		return WRITE_COMPLETE;
+	}
+
+	return WRITE_INCOMPLETE;
+}
+
+int	Client::readAndParseRequest() {
 	char	buffer[BUFSIZ];
 	ssize_t	bytesRead;
 
@@ -54,49 +87,4 @@ int		Client::readRequest() {
 		return READ_INCOMPLETE;
 	}
 	return READ_INCOMPLETE;
-}
-
-void	Client::clearBuffer() {
-	_reqBuffer = "";
-	_recvSize = 0;
-	_clientIP = "";
-	httpReq->setHeadersParsed();
-	httpReq->cleanReqInfo();
-}
-
-bool	Client::appendBuffer(const char *data, size_t size) {
-	_reqBuffer.insert(_reqBuffer.end(), data, data + size);
-	_recvSize += size;
-	return true;
-}
-
-bool Client::isReqComplete() const {
-	std::map<std::string, std::string> headers = httpReq->getHeaders();
-
-	size_t headerEnd = _reqBuffer.find("\r\n\r\n");
-	if (headerEnd == std::string::npos)
-		return false;
-
-	std::map<std::string, std::string>::const_iterator it = headers.find("transfer-encoding");
-	if (it != headers.end() && it->second.find("chunked") != std::string::npos) {
-		size_t zeroChunkPos = _reqBuffer.find("0\r\n");
-		if (zeroChunkPos != std::string::npos) {
-			size_t finalEnd = _reqBuffer.find("\r\n\r\n", zeroChunkPos);
-			return finalEnd != std::string::npos;
-		}
-		return false;
-	}
-
-	size_t maxBodySize = httpReq->getMaxBody();
-	it = headers.find("content-length");
-	if (it != headers.end()) {
-		std::istringstream iss(it->second);
-		size_t contentLength = 0;
-		iss >> contentLength;
-		size_t bodyReceived = _reqBuffer.length() - (headerEnd + 4);
-		if (contentLength > maxBodySize)
-			httpReq->setStatus(413);
-		return bodyReceived >= contentLength;
-	}
-	return true;
 }

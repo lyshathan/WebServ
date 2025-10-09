@@ -11,6 +11,12 @@ enum ReadState {
     READ_ERROR = -1
 };
 
+enum WriteState {
+    WRITE_INCOMPLETE = 0,
+    WRITE_COMPLETE = 1,
+    WRITE_ERROR = -1
+};
+
 enum ClientState {
 	READING_HEADERS,
 	READING_BODY,
@@ -23,7 +29,9 @@ class Client {
 	private:
 		int					_fd;
 		std::string			_reqBuffer;
+		std::string			_resBuffer;
 		size_t				_recvSize;
+		size_t				_bytesSent;
 		std::string			_clientIP;
 		ClientState 		_state;
 
@@ -32,10 +40,13 @@ class Client {
 		Client(int, const Config &, const std::string &clientIP);
 		~Client();
 
-		int					readRequest();
+		bool				isCGI();
+		int					readAndParseRequest();
+		int					writeResponse();
 		bool				appendBuffer(const char *, size_t);
 		bool				isReqComplete() const;
-		void				clearBuffer();
+		bool				connectionShouldClose() const;
+		void				resetClient();
 		const std::string	&getRes()const;
 
 		HttpRequest		*httpReq;

@@ -4,6 +4,7 @@
 #include "Includes.hpp"
 #include "../config/Config.hpp"
 #include "../config/server/ServerConfig.hpp"
+#include "../ProjectTools.hpp"
 #include <signal.h>
 #include <sys/wait.h>
 
@@ -37,9 +38,9 @@ class Webserv {
 		int			readDataFromSocket(std::vector<struct pollfd>::iterator & it);
 		int			sendResponse(int clientFd);
 		void		addClient(int newClientFd, const std::string &clientIP);
-		void		deleteClient(int &clientFd, std::vector<struct pollfd>::iterator & it);
+		
 		int			processAndSendResponse(int clientFd);
-		void		addCGIToPoll(int clientFd);
+		void		addCGIToPoll(int clientFd, CgiState*);
 		void		handleCGIWrite(int, CgiState*);
 		void		handleCGIRead(int, CgiState*);
 		void		handleCGICompletion(int, CgiState*);
@@ -52,7 +53,9 @@ class Webserv {
 
 		void		handleReadEvent(struct pollfd &);
 		void		handleWriteEvent(struct pollfd &);
-		void		disconnectClient();
+		void		handleCGIEvent(struct pollfd &);
+		void		disconnectClient(int &);
+
 
 		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
 
