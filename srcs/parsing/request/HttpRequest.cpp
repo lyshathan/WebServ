@@ -15,30 +15,31 @@ HttpRequest::~HttpRequest() {};
 /*							PARSE FUNCTIONS									  */
 /******************************************************************************/
 
-void HttpRequest::requestHeaderParser(std::string data) {
+int HttpRequest::requestHeaderParser(std::string data) {
 	// std::cout << "[Data..]\n\n" << data << "\n";
 	std::string	firstLine;
 	std::string	headers;
 
 	size_t headerEnd = data.find("\r\n\r\n");
 	if (headerEnd == std::string::npos)
-		return ;
+		return 1;
 
 	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine)) {
 		_status = BAD_REQUEST;
-		return ;
+		return -1;
 	}
 	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers)) {
 		_status = BAD_REQUEST;
-		return;
+		return -1;
 	}
 	if (!validateUri()) {
 		_status = BAD_REQUEST;
-		return;
+		return -1;
 	}
 	pickServerConfig();
 	pickLocationConfig();
 	_areHeadersParsed = true;
+	return 0;
 }
 
 void HttpRequest::requestBodyParser(std::string data) {

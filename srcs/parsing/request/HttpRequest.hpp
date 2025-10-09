@@ -131,7 +131,7 @@ class HttpRequest {
 		HttpRequest(const Config& config, int &, const std::string& clientIP);
 		~HttpRequest();
 
-		void								requestHeaderParser(std::string);
+		int									requestHeaderParser(std::string);
 		void								requestBodyParser(std::string);
 		void								requestHandler();
 

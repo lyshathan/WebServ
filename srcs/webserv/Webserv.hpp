@@ -50,6 +50,10 @@ class Webserv {
 		void		parseSimpleCGIHeaders(CgiState *cgiState, size_t headerEnd);
 		void		tryParseCGIHeaders(CgiState *cgiState);
 
+		void		handleReadEvent(struct pollfd &);
+		void		handleWriteEvent(struct pollfd &);
+		void		disconnectClient();
+
 		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
 
 	public :

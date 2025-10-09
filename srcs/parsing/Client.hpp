@@ -5,18 +5,34 @@
 #include "request/HttpRequest.hpp"
 #include "response/HttpResponse.hpp"
 
+enum ReadState {
+    READ_INCOMPLETE = 0,
+    READ_COMPLETE = 1,
+    READ_ERROR = -1
+};
+
+enum ClientState {
+	READING_HEADERS,
+	READING_BODY,
+	REQUEST_READY,
+	SENDING_RESPONSE,
+	DONE
+};
+
 class Client {
 	private:
 		int					_fd;
 		std::string			_reqBuffer;
 		size_t				_recvSize;
 		std::string			_clientIP;
+		ClientState 		_state;
 
 		Client();
 	public:
 		Client(int, const Config &, const std::string &clientIP);
 		~Client();
 
+		int					readRequest();
 		bool				appendBuffer(const char *, size_t);
 		bool				isReqComplete() const;
 		void				clearBuffer();
