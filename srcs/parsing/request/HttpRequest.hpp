@@ -16,8 +16,8 @@
 #include <ctime>
 #include <fstream>
 
-#include "../../webserv/Webserv.hpp"
 #include "../../config/server/ServerConfig.hpp"
+#include "../../config/Config.hpp"
 
 #define DEFAULT 0
 #define BAD_REQUEST 400
@@ -52,7 +52,7 @@ struct CgiState {
 	std::map<std::string, std::string> _headers;
 	bool				headers_parsed;
 	size_t				headerPos;
-	enum { PENDING_POLL, WRITING, READING, COMPLETED } state;
+	enum { WRITING, READING, COMPLETED } state;
 };
 
 class ServerConfig;

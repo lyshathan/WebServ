@@ -2,8 +2,10 @@
 # define WEBSERV_HPP
 
 #include "Includes.hpp"
+#include "../parsing/request/HttpRequest.hpp"
 #include "../config/Config.hpp"
 #include "../config/server/ServerConfig.hpp"
+#include "../parsing/request/HttpRequest.hpp"
 #include "../ProjectTools.hpp"
 #include <signal.h>
 #include <sys/wait.h>
@@ -12,52 +14,43 @@ extern volatile sig_atomic_t g_running;
 
 class Client;
 class ServerConfig;
-struct CgiState;
 
 class Webserv {
 	private :
 		const Config						&_config;
 		const std::vector<ServerConfig>		&_serverConfigs;
 
-		std::vector<int>			_serverFds;
-		std::map<int, Client*>		_clients;
-		std::vector<struct pollfd>	_pollFds;
+		std::vector<int>									_serverFds;
+		std::map<int, Client*>								_clients;
+		std::vector<struct pollfd>							_pollFds;
 		std::map< int, std::pair< uint16_t, std::string> >	_serverInfos;
-		int							_listenBackLog;
-		std::map<int, int>			_cgiToClient;
+		int													_listenBackLog;
+		std::map<int, int>									_cgiToClient;
 
 		int			handleFunctionError(std::string errFunction);
+		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
 		void		cleanServer();
 		int			createServerSocket();
 		int			setupListen();
 		void		setupPollServer();
 		int			runningServ();
 		int			connectAndRead();
-		int			handleCGIEvents(std::vector<struct pollfd>::iterator &it, short events);
-		int			acceptNewConnection(int &serverFd);
-		int			readDataFromSocket(std::vector<struct pollfd>::iterator & it);
-		int			sendResponse(int clientFd);
-		void		addClient(int newClientFd, const std::string &clientIP);
-		
-		int			processAndSendResponse(int clientFd);
-		void		addCGIToPoll(int clientFd, CgiState*);
-		void		handleCGIWrite(int, CgiState*);
-		void		handleCGIRead(int, CgiState*);
-		void		handleCGICompletion(int, CgiState*);
-		void		cleanupCGI(int, CgiState*);
-		void		removeFdFromPoll(int fd);
-		void		closeCGIStdin(CgiState *cgiState);
-		void		parseCGIHeaders(CgiState *, size_t);
-		void		parseSimpleCGIHeaders(CgiState *cgiState, size_t headerEnd);
-		void		tryParseCGIHeaders(CgiState *cgiState);
 
-		void		handleReadEvent(struct pollfd &);
-		void		handleWriteEvent(struct pollfd &);
-		void		handleCGIEvent(struct pollfd &);
+		int			acceptNewConnection(int &serverFd);
+		void		addClient(int newClientFd, const std::string &clientIP);
+		Client		*pickClient(struct pollfd &);
+		void		handleClientRead(Client *client, struct pollfd &);
+		void		handleClientWrite(Client *client, struct pollfd &);
 		void		disconnectClient(int &);
 
+		void		handleCGIReadEvent(Client *, CgiState *);
+		void		handleCGIWriteEvent(Client *, CgiState *);
+		void 		cleanupCGI(Client *, CgiState *);
+		void 		closeCGIStdin(CgiState *cgiState);
 
-		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
+		void		addCGIToPoll(Client *, struct pollfd &);
+		void		handleCGIEvents(int clientFd, struct pollfd &);
+		void		removeFdFromPoll(int fd);
 
 	public :
 		Webserv(Config const &config);

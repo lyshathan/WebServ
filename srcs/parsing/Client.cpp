@@ -4,8 +4,8 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-Client::Client(int fd, const Config &config, const std::string &clientIP) :
-	 _fd(fd), _recvSize(0), _clientIP(clientIP),_state(READING_HEADERS), 
+Client::Client(int fd, const Config &config, const std::string &clientIP, size_t pollIndex) :
+	 _pollIndex(pollIndex), _fd(fd), _recvSize(0), _clientIP(clientIP),_state(READING_HEADERS),
 	 httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq)) {}
 
 Client::~Client() {
@@ -19,72 +19,8 @@ Client::~Client() {
 
 const std::string &Client::getRes() const { return _reqBuffer;}
 
-int	Client::writeResponse() {
-	if (_state == REQUEST_READY) {  // Get the response header + body and clean the response buffer
-		_resBuffer.clear();
-		_resBuffer += httpRes->getResHeaders();
+int	Client::getFd() const { return _fd; }
 
-		if (httpRes->getIsTextContent()) {
-			_resBuffer += httpRes->getRes();
-		} else {
-			std::vector<char> binaryContent = httpRes->getBinRes();
-			_resBuffer.append(binaryContent.begin(), binaryContent.end());
-		}
-		_bytesSent = 0;
-		_state = SENDING_RESPONSE;
-	}
+size_t Client::getPollIndex() { return _pollIndex; }
 
-	ssize_t sent = send(_fd, _resBuffer.c_str() + _bytesSent, 
-						_resBuffer.length() - _bytesSent, MSG_NOSIGNAL);
-	if (sent <= 0) {
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return WRITE_INCOMPLETE;
-		return WRITE_ERROR;
-	}
-
-	_bytesSent += sent;
-
-	if (_bytesSent >= _resBuffer.length()) {
-		_state = DONE;
-		return WRITE_COMPLETE;
-	}
-
-	return WRITE_INCOMPLETE;
-}
-
-int	Client::readAndParseRequest() {
-	char	buffer[BUFSIZ];
-	ssize_t	bytesRead;
-
-	bytesRead = recv(_fd, buffer, BUFSIZ, 0);
-	if (bytesRead <= 0)
-	{
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return READ_INCOMPLETE; // No data yet, try again later
-		return READ_ERROR;
-	}
-
-	appendBuffer(buffer, bytesRead); // keeps appending the buffer
-
-	if (_state == READING_HEADERS) {
-		if (!httpReq->getHeadersParsed()) {
-			int status = httpReq->requestHeaderParser(_reqBuffer);
-			if (status == 1)
-				return READ_INCOMPLETE; // there's still some headers to be parsed
-			else if (status == -1)
-				return READ_COMPLETE; // there was an error so we need to stop parsing and send response back to client
-			else {
-				// check if request has body [TO DO]
-				_state = READING_BODY; // headers parse finished
-			}
-		}
-	} if (_state == READING_BODY) {
-		if (isReqComplete()) {
-			httpReq->requestBodyParser(_reqBuffer); // when body is fully received it should be parsed
-			_state = REQUEST_READY;
-			return READ_COMPLETE;
-		}
-		return READ_INCOMPLETE;
-	}
-	return READ_INCOMPLETE;
-}
+void Client::setState(ClientState state) { _state = state; }

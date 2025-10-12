@@ -8,7 +8,7 @@ RM = rm -rf
 
 SRCS_DIR = srcs
 MAIN = main ProjectTools
-WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservCGI WebservHelpers
+WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservHelpers
 
 CONFIG = Config
 CONFIG_GLOBAL = GlobalConfig GlobalConfigGetter GlobalConfigSetter
@@ -17,7 +17,7 @@ CONFIG_SERVER = ServerConfig ServerConfigGetter ServerConfigParsing
 CONFIG_UTILS = Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 
-PARSING = Client ClientHelpers
+PARSING = Client ClientHelpers ClientCGI ClientReadWrite
 
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
 				HttpServerConfig HttpRequestError HttpRequestGetters \

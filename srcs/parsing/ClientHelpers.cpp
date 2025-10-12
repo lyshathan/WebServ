@@ -13,17 +13,18 @@ void Client::resetClient() {
 
 bool Client::isCGI() {
 	int	status = httpReq->getStatus();
-	if (status == CGI_PENDING)
+	if (status == CGI_PENDING) {
+		_state = CGI_PROCESSING;
 		return true;
+	}
 	return false;
 }
 
 bool Client::connectionShouldClose() const {
 	size_t pos = httpRes->getResHeaders().find("Connection: keep-alive");
-	if (pos != std::string::npos) {
-        return false;
-    }
-    return true;
+	if (pos != std::string::npos)
+		return false;
+	return true;
 }
 
 bool Client::appendBuffer(const char *data, size_t size) {

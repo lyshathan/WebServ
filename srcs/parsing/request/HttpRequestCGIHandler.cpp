@@ -33,7 +33,6 @@ void HttpRequest::parentHandler(int stdin_fd[2], int stdout_fd[2], pid_t pid) {
 	_cgiState->stdout_fd = stdout_fd[0];
 	_cgiState->headerPos = 0;
 	_cgiState->headers_parsed = false;
-	_cgiState->state = CgiState::PENDING_POLL;
 
 	close(stdin_fd[0]);
 	close(stdout_fd[1]);

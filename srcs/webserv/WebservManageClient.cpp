@@ -4,13 +4,34 @@
 
 void Webserv::addClient(int newClientFd, const std::string &clientIP)
 {
-	_clients[newClientFd] = new Client(newClientFd, _config, clientIP);
 	// Add to pollFds
 	struct pollfd newClientPollFd;
 	newClientPollFd.fd = newClientFd;
 	newClientPollFd.events = POLLIN;
 	newClientPollFd.revents = 0;
 	_pollFds.push_back(newClientPollFd);
+	size_t index = _pollFds.size() - 1;
+	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, index);
+}
+
+int Webserv::acceptNewConnection(int &serverFd)
+{
+	int					clientFd;
+	struct sockaddr_in	clientAddr;
+
+	socklen_t clientAddrLen = sizeof(clientAddr);
+	clientFd = accept(serverFd, (struct sockaddr*)&clientAddr, &clientAddrLen);
+	if (clientFd == -1)
+		return (handleFunctionError("Accept"));
+
+	// Add new client to pollFds and to _client map
+	std::string clientIP = inet_ntoa(clientAddr.sin_addr);
+	addClient(clientFd, clientIP);
+
+	std::stringstream msg;
+	msg << "New Client #" << clientFd << " IP " << clientIP << " connected";
+	printLog(BLUE, "INFO", msg.str());
+	return (0);
 }
 
 void Webserv::disconnectClient(int &fd)
@@ -27,7 +48,7 @@ void Webserv::disconnectClient(int &fd)
 	close (fd);
 	delete _clients[fd];
 	_clients.erase(fd);
-	
+
 	for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
 		it != _pollFds.end(); ++it) {
 			if (it->fd == fd) {
