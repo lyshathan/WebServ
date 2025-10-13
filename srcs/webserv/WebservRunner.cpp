@@ -52,6 +52,7 @@ int	Webserv::connectAndRead(void)
 			Client *client = clientIt->second;
 			if (!client) continue;
 			handleEvents(client, pfd, newPollFds, removeFds);
+			handleEvents(client, pfd, newPollFds, removeFds);
 			continue;
 		}
 		// --- CGI FDs ---

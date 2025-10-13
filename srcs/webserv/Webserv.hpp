@@ -38,6 +38,7 @@ class Webserv {
 
 		int			acceptNewConnection(int &, std::vector<struct pollfd> &);
 		void		addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &);
+
 		void		disconnectClient(int &);
 
 		void		handleEvents(Client *, struct pollfd &pfd, std::vector<struct pollfd> &,
