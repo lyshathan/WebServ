@@ -22,19 +22,15 @@ int Client::handleCGIWrite(CgiState *cgiState) {
 }
 
 int Client::handleCGIRead(CgiState *cgiState) {
-	std::cout << "Read started\n";
 	char buffer[4096];
 	ssize_t bytesRead = read(cgiState->stdout_fd, buffer, sizeof(buffer));
 
-	std::cout << "Size t value " << bytesRead << "\n";
 	if (bytesRead == 0) {
-		std::cout << "Read completed\n";
 		close(cgiState->stdout_fd);
 		cgiState->stdout_fd = -1;
 		return READ_COMPLETE;
 	} else if (bytesRead < 0) {
 		httpReq->setStatus(INTERNAL_ERROR);
-		std::cout << "Read error\n";
 		return READ_ERROR;
 	}
 
@@ -53,7 +49,6 @@ int Client::handleCGIRead(CgiState *cgiState) {
 			}
 		}
 	}
-	std::cout << "Read incomplete\n";
 	return READ_INCOMPLETE;
 }
 

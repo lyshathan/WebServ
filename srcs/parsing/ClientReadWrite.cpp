@@ -42,6 +42,8 @@ int	Client::readAndParseRequest() {
 	{
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
 			return READ_INCOMPLETE; // No data yet, try again later
+		else if (bytesRead == 0)
+			return READ_COMPLETE;
 		return READ_ERROR;
 	}
 

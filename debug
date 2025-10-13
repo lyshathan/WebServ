@@ -1,13 +1,168 @@
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] Reading Config File: simple.conf[0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] Initializing Servers...[0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] Server Created: Host [127.0.0.1] Port [8080][0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] [127.0.0.1:8080] already existing, skipping config.[0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] Server Created: Host [127.0.0.1] Port [4242][0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] [127.0.0.1:4242] already existing, skipping config.[0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] [127.0.0.1:4242] already existing, skipping config.[0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] Listening on: 127.0.0.1:8080[0m
-[38;2;0;0;255m[2025-10-12 18:59:52] [INFO] Listening on: 127.0.0.1:4242[0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] Reading Config File: simple.conf[0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] Initializing Servers...[0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] Server Created: Host [127.0.0.1] Port [8080][0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] [127.0.0.1:8080] already existing, skipping config.[0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] Server Created: Host [127.0.0.1] Port [4242][0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] [127.0.0.1:4242] already existing, skipping config.[0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] [127.0.0.1:4242] already existing, skipping config.[0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] Listening on: 127.0.0.1:8080[0m
+[38;2;0;0;255m[2025-10-13 09:28:15] [INFO] Listening on: 127.0.0.1:4242[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #5 IP 127.0.0.1 connected[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #6 IP 127.0.0.1 connected[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #7 IP 127.0.0.1 connected[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #8 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #9 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #10 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #12 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #13 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #15 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #19 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] Client #5 disconnected[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] Client #6 disconnected[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #5 IP 127.0.0.1 connected[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #6 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] Client #9 disconnected[0m
+[38;2;0;0;255m[2025-10-13 09:28:20] [INFO] New Client #9 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:20] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #11 IP 127.0.0.1 connected[0m
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #14 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #16 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #17 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #20 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #21 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #23 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #25 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #27 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #29 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] Client #11 disconnected[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] Client #16 disconnected[0m
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] Client #23 disconnected[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Response Sent Status Code: 200[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Response Sent Status Code: 200[0m
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #11 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #16 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
+[38;2;0;0;255m[2025-10-13 09:28:46] [INFO] New Client #18 IP 127.0.0.1 connected[0m
+Handle Client Read called
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Request received: GET /cgi/index.py HTTP/1.1[0m
+[38;2;128;0;128m[2025-10-13 09:28:46] [INFO] Chosen server configuration : 1[0m
+Handle Client Read handler
 
-[38;2;0;0;255m[2025-10-12 18:59:53] [INFO] Shutting down gracefully...[0m
-[38;2;0;0;255m[2025-10-12 18:59:53] [INFO] Cleaning up server resources...[0m
-[38;2;0;0;255m[2025-10-12 18:59:53] [INFO] Server cleanup completed.[0m
+[38;2;0;0;255m[2025-10-13 09:46:59] [INFO] Shutting down gracefully...[0m
+[38;2;0;0;255m[2025-10-13 09:46:59] [INFO] Cleaning up server resources...[0m
+[38;2;0;0;255m[2025-10-13 09:46:59] [INFO] Server cleanup completed.[0m

@@ -16,6 +16,7 @@ void Webserv::addCGIToPoll(Client *client, struct pollfd &pfd) {
 	struct pollfd stdout_pollfd = {cgi->stdout_fd, POLLIN, 0};
 	_pollFds.push_back(stdout_pollfd);
 	_cgiToClient[cgi->stdout_fd] = pfd.fd;
+	
 	if (cgi->state == CgiState::WRITING && cgi->stdin_fd != -1) {
 		struct pollfd stdin_pollfd = {cgi->stdin_fd, POLLOUT, 0};
 		_pollFds.push_back(stdin_pollfd);
@@ -58,7 +59,7 @@ void Webserv::cleanupCGI(Client *client, CgiState *cgiState) {
 
 	// Find a better way to handle this
 	size_t index = client->getPollIndex();
-	_pollFds[index].events = POLLOUT;
+	_pollFds[index].events |= POLLOUT;
 
 	delete cgiState;
 	client->httpReq->setCGIState(NULL);
