@@ -7,7 +7,7 @@
 
 HttpRequest::HttpRequest(const Config& config, int &fd, const std::string& clientIP) :
 _config(config), _location(NULL), _status(0), _clientfd(fd), _areHeadersParsed(false),
-_isProccessingError(false), _isCGI(false), _clientIP(clientIP), _cgiState(NULL) {};
+_isProccessingError(false), _isCGI(false), _clientIP(clientIP) {};
 
 HttpRequest::~HttpRequest() {};
 

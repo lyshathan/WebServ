@@ -44,12 +44,9 @@ class Webserv {
 		void		handleEvents(Client *, struct pollfd &pfd, std::vector<struct pollfd> &,
                                std::vector<int> &);
 
-		void 		cleanupCGI(Client *, CgiState *, std::vector<int> &);
 		void		removePollFd(int fd);
 
 		void		signalClientReady(Client *);
-		void		addCGIToPoll(Client *, struct pollfd &, std::vector<struct pollfd> &);
-		void		handleCGIEvents(Client *, struct pollfd &pfd, std::vector<int> &);
 		void		removeFdFromPoll(int fd);
 
 	public :

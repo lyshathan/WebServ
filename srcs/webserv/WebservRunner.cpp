@@ -61,8 +61,7 @@ int	Webserv::connectAndRead(void)
 			std::cerr << "\033[35m[DEBUG] Handling CGI events for fd " << pfd.fd << "\033[0m" << std::endl;
 			std::map<int, Client*>::iterator cgiClientIt = _clients.find(cgiIt->second);
 			if (cgiClientIt == _clients.end() || !cgiClientIt->second) continue;
-			Client *client = cgiClientIt->second;
-			handleCGIEvents(client, pfd, removeFds);
+			// Client *client = cgiClientIt->second;
 		}
 	}
 	for (size_t i = 0; i < removeFds.size(); ++i) {
@@ -77,6 +76,7 @@ int	Webserv::connectAndRead(void)
 
 void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struct pollfd> &newPollFds,
                                std::vector<int> &removeFds) {
+	(void)newPollFds;
 	std::cerr << "\033[36m[DEBUG] Entering handleEvents for fd " << pfd.fd << "\033[0m" << std::endl;
 	if (pfd.revents & POLLHUP) {
 		std::cerr << "\033[31m[DEBUG] POLLHUP on fd " << pfd.fd << "\033[0m" << std::endl;
@@ -92,12 +92,11 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 
 				if (client->isCGI()) {
 					std::cerr << "\033[35m[DEBUG] Client is CGI, adding CGI to poll for fd " << pfd.fd << "\033[0m" << std::endl;
-					addCGIToPoll(client, pfd, newPollFds);
 					pfd.events &= ~POLLIN;
 				}
 				else {
 					std::cerr << "\033[33m[DEBUG] Not CGI, parsing response for fd " << pfd.fd << "\033[0m" << std::endl;
-					client->httpRes->parseResponse(); 
+					client->httpRes->parseResponse();
 					pfd.events |= POLLOUT;
 				}
 			} else if (ret == READ_ERROR) {
@@ -118,47 +117,4 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 		}
 	}
 	std::cerr << "\033[36m[DEBUG] Exiting handleEvents for fd " << pfd.fd << "\033[0m" << std::endl;
-}
-
-void Webserv::handleCGIEvents(Client *client, struct pollfd &pfd, std::vector<int> &removeFds) {
-	std::cerr << "\033[36m[DEBUG] Entering handleCGIEvents for fd " << pfd.fd << "\033[0m" << std::endl;
-	CgiState *cgi = client->httpReq->getCGIState();
-	if (!cgi) {
-		std::cerr << "\033[31m[DEBUG] No CGI state for client on fd " << pfd.fd << "\033[0m" << std::endl;
-		return;
-	}
-
-	if (pfd.revents & POLLHUP) {
-		std::cerr << "\033[35m[DEBUG] POLLHUP on CGI fd " << pfd.fd << "\033[0m" << std::endl;
-		client->handleCGICompletion(cgi);
-		cleanupCGI(client, cgi, removeFds);
-		signalClientReady(client);
-	}
-	else {
-		if ((pfd.revents & POLLIN) && pfd.fd == cgi->stdout_fd) {
-			std::cerr << "\033[35m[DEBUG] POLLIN on CGI stdout fd " << pfd.fd << "\033[0m" << std::endl;
-			int ret = client->handleCGIRead(cgi);
-			std::cerr << "[DEBUG] handleCGIRead returned " << ret << std::endl;
-			if (ret == READ_COMPLETE) {
-				std::cerr << "\033[32m[DEBUG] CGI READ_COMPLETE on fd " << pfd.fd << "\033[0m" << std::endl;
-				client->handleCGICompletion(cgi);
-				cleanupCGI(client, cgi, removeFds);
-				signalClientReady(client);
-			}
-		}
-		if ((pfd.revents & POLLOUT) && pfd.fd == cgi->stdin_fd) {
-			std::cerr << "\033[35m[DEBUG] POLLOUT on CGI stdin fd " << pfd.fd << "\033[0m" << std::endl;
-			int ret = client->handleCGIWrite(cgi);
-			std::cerr << "[DEBUG] handleCGIWrite returned " << ret << std::endl;
-			if (ret == WRITE_COMPLETE) {
-				std::cerr << "\033[32m[DEBUG] CGI WRITE_COMPLETE on fd " << pfd.fd << "\033[0m" << std::endl;
-				removeFds.push_back(cgi->stdin_fd);
-				cgi->state = CgiState::READING;
-			} else if (ret == WRITE_ERROR) {
-				std::cerr << "\033[31m[DEBUG] CGI WRITE_ERROR on fd " << pfd.fd << "\033[0m" << std::endl;
-				cleanupCGI(client, cgi, removeFds);
-			}
-		}
-	}
-	std::cerr << "\033[36m[DEBUG] Exiting handleCGIEvents for fd " << pfd.fd << "\033[0m" << std::endl;
 }

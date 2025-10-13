@@ -16,7 +16,8 @@ void HttpRequest::requestHandler() {
 		return;
 	}
 	if (isCGIPath()) {
-		cgiHandler();
+		_status = CGI_PENDING;
+		return;
 	}
 	else if (_method == "POST") {
 		postHandler();

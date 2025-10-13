@@ -4,6 +4,7 @@
 #include "../webserv/Webserv.hpp"
 #include "request/HttpRequest.hpp"
 #include "response/HttpResponse.hpp"
+#include "../cgi/CgiHandler.hpp"
 
 enum ReadState {
     READ_INCOMPLETE = 0,
@@ -26,6 +27,8 @@ enum ClientState {
 	DONE
 };
 
+class CgiHandler;
+
 class Client {
 	private:
 		size_t				_pollIndex;
@@ -36,6 +39,7 @@ class Client {
 		size_t				_bytesSent;
 		std::string			_clientIP;
 		ClientState 		_state;
+		CgiHandler			*_cgi;
 
 		Client();
 	public:
@@ -50,16 +54,12 @@ class Client {
 		bool				connectionShouldClose() const;
 		void				resetClient();
 
-		int					handleCGIWrite(CgiState*);
-		int					handleCGIRead(CgiState*);
-		void				handleCGICompletion(CgiState*);
-		void				parseCGIHeaders(CgiState *, size_t);
-		void				parseSimpleCGIHeaders(CgiState *cgiState, size_t headerEnd);
-		void				tryParseCGIHeaders(CgiState *cgiState);
+		void				launchCGI();
 
 		const				std::string	&getRes()const;
 		int					getFd() const;
 		size_t				getPollIndex();
+		std::string			getClientIp() const;
 		void				setState(ClientState);
 
 		HttpRequest		*httpReq;

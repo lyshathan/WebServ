@@ -42,19 +42,6 @@ typedef enum	e_servState {
 	EXACT_MATCH,
 }				t_servState;
 
-struct CgiState {
-	pid_t				pid;
-	int					stdin_fd;
-	int					stdout_fd;
-	std::string			request_body;
-	size_t				bytes_written;
-	std::string			response_buffer;
-	std::map<std::string, std::string> _headers;
-	bool				headers_parsed;
-	size_t				headerPos;
-	enum { WRITING, READING, COMPLETED } state;
-};
-
 class ServerConfig;
 
 class HttpRequest {
@@ -79,7 +66,6 @@ class HttpRequest {
 		bool								_isProccessingError;
 		bool								_isCGI;
 		std::string							_clientIP;
-		CgiState							*_cgiState;
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
@@ -95,13 +81,7 @@ class HttpRequest {
 		bool		createFile();
 		bool		deleteFile();
 
-		void		cgiHandler();
 		bool		isCGIPath();
-		void		initEnv();
-		void		childHandler(int fd[2], int fd2[2]);
-		void		parentHandler(int fd[2], int fd2[2], pid_t);
-		char**		getArgvArray();
-		char**		getEnvArray();
 
 		bool		validateUri();
 		bool		validateVersion(std::string);
@@ -147,15 +127,13 @@ class HttpRequest {
 		bool								getAutoIndex() const;
 		bool								isCGIActive() const;
 		size_t								getMaxBody() const;
-		CgiState							*getCGIState() const;
+		std::vector<std::string>			getArgv() const;
 
 		bool								checkCGI();
-		void								executeBin();
 
 		void 								setHeadersParsed();
 		void								setStatus(int);
 		void								setCGIResult(const std::string &result);
-		void								setCGIState(CgiState*);
 
 		void								cleanReqInfo();
 };

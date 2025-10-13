@@ -24,3 +24,10 @@ int	Client::getFd() const { return _fd; }
 size_t Client::getPollIndex() { return _pollIndex; }
 
 void Client::setState(ClientState state) { _state = state; }
+
+std::string	Client::getClientIp() const { return _clientIP; }
+
+void	Client::launchCGI() {
+	_cgi = new CgiHandler(this);
+	_cgi->cgiStart();
+}
