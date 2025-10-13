@@ -43,13 +43,15 @@ class Webserv {
 		void		handleClientWrite(Client *client, struct pollfd &);
 		void		disconnectClient(int &);
 
+		void		handleEvents(Client *, struct pollfd &pfd);
+
 		void		handleCGIReadEvent(Client *, CgiState *);
 		void		handleCGIWriteEvent(Client *, CgiState *);
 		void 		cleanupCGI(Client *, CgiState *);
 		void 		closeCGIStdin(CgiState *cgiState);
 
 		void		addCGIToPoll(Client *, struct pollfd &);
-		void		handleCGIEvents(int clientFd, struct pollfd &);
+		void		handleCGIEvents(Client *, struct pollfd &);
 		void		removeFdFromPoll(int fd);
 
 	public :

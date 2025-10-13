@@ -30,104 +30,83 @@ int	Webserv::connectAndRead(void)
 
 		if (pfd.revents == 0)
 			continue;
-
 		// --- Server sockets ---
 		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), pfd.fd);
 		if (find != _serverFds.end()) {
 			acceptNewConnection(*find);  // Do we need to treat this return value?
 			continue;
 		}
-
 		// --- Client sockets ---
 		std::map<int, Client*>::iterator clientIt = _clients.find(pfd.fd);
 		if (clientIt != _clients.end()) {
 			Client *client = clientIt->second;
 			if (!client) continue;
-			if (pfd.revents & POLLHUP) {
-				disconnectClient(pfd.fd);
-			} else {
-				if (pfd.revents & POLLIN)
-					handleClientRead(client, pfd);
-				if (pfd.revents & POLLOUT)
-					handleClientWrite(client, pfd);
-			}
+			handleEvents(client, pfd);
 			continue;
 		}
-
 		// --- CGI FDs ---
 		std::map<int, int>::iterator cgiIt = _cgiToClient.find(pfd.fd);
 		if (cgiIt != _cgiToClient.end()) {
 			std::map<int, Client*>::iterator cgiClientIt = _clients.find(cgiIt->second);
 			if (cgiClientIt == _clients.end() || !cgiClientIt->second) continue;
 			Client *client = cgiClientIt->second;
-			CgiState *cgi = client->httpReq->getCGIState();
-
-			if (!cgi) continue;
-			if (pfd.revents & POLLHUP) {
-				client->handleCGICompletion(cgi);
-				cleanupCGI(client, cgi);
-			}
-			else {
-				if ((pfd.revents & POLLIN) && pfd.fd == cgi->stdout_fd)
-					handleCGIReadEvent(client, cgi);
-				if ((pfd.revents & POLLOUT) && pfd.fd == cgi->stdin_fd)
-					handleCGIWriteEvent(client, cgi);
-			}
+			handleCGIEvents(client, pfd);
 		}
 	}
 	return (1);
 }
 
-void Webserv::handleClientRead(Client *client, struct pollfd &pfd) {
-	int ret = client->readAndParseRequest(); // Reads and parses the request;
-
-	if (ret == READ_COMPLETE) {
-		client->httpReq->requestHandler(); //validate request;
-
-		if (client->isCGI()) {
-			addCGIToPoll(client, pfd); // Include CGI fds in the poll
-			pfd.events &= ~POLLIN;
-		}
-		else {
-			client->httpRes->parseResponse(); // prepare the response
-			pfd.events |= POLLOUT;
-		}
-	} else if (ret == READ_ERROR)
+void Webserv::handleEvents(Client *client, struct pollfd &pfd) {
+	if (pfd.revents & POLLHUP) {
 		disconnectClient(pfd.fd);
-}
+	} else {
+		if (pfd.revents & POLLIN) {
+			int ret = client->readAndParseRequest();
+			if (ret == READ_COMPLETE) {
+				client->httpReq->requestHandler();
 
-void Webserv::handleClientWrite(Client *client, struct pollfd &pfd) {
-	int ret = client->writeResponse(); // Sends the response to the client
-
-	if (ret == WRITE_COMPLETE) {
-		std::cout << "Write complete\n";
-		if (client->connectionShouldClose())// Checks if the connection should close
+				if (client->isCGI()) {
+					addCGIToPoll(client, pfd);
+					pfd.events &= ~POLLIN;
+				}
+				else {
+					client->httpRes->parseResponse(); 
+					pfd.events |= POLLOUT;
+				}
+			} else if (ret == READ_ERROR)
+				disconnectClient(pfd.fd);
+		}
+		if (pfd.revents & POLLOUT) {
+			client->writeResponse();
 			disconnectClient(pfd.fd);
-		else {
-			client->resetClient(); // Resets the client if connection remains open;
-			pfd.events = POLLIN;
 		}
-	} else if (ret == WRITE_ERROR) {
-		std::cout << "Write error\n";
-		disconnectClient(pfd.fd);
 	}
 }
 
-void Webserv::handleCGIReadEvent(Client *client, CgiState *cgi) {
-	int ret = client->handleCGIRead(cgi);
+void Webserv::handleCGIEvents(Client *client, struct pollfd &pfd) {
+		CgiState *cgi = client->httpReq->getCGIState();
+			if (!cgi) return;
 
-	if (ret == READ_COMPLETE) {
-		client->handleCGICompletion(cgi);
-		cleanupCGI(client, cgi);
-	} else if (ret == READ_ERROR)
-		cleanupCGI(client, cgi);
+		if (pfd.revents & POLLHUP) {
+			client->handleCGICompletion(cgi);
+			cleanupCGI(client, cgi);
+		}
+		else {
+			if ((pfd.revents & POLLIN) && pfd.fd == cgi->stdout_fd) {
+				int ret = client->handleCGIRead(cgi);
+				if (ret == READ_COMPLETE) {
+					client->handleCGICompletion(cgi);
+					cleanupCGI(client, cgi);
+				} else if (ret == READ_ERROR)
+					cleanupCGI(client, cgi);
+			}
+			if ((pfd.revents & POLLOUT) && pfd.fd == cgi->stdin_fd) {
+				int ret = client->handleCGIWrite(cgi);
+				if (ret == WRITE_COMPLETE) {
+					closeCGIStdin(cgi);
+				} else if (ret == WRITE_ERROR)
+					cleanupCGI(client, cgi);
+			}
+		}
 }
-
-void Webserv::handleCGIWriteEvent(Client *client, CgiState *cgi) {
-	int ret = client->handleCGIWrite(cgi);
-
-	if (ret == WRITE_COMPLETE) {
-		closeCGIStdin(cgi);
-	} else if (ret == WRITE_ERROR)
-		cleanupCGI(client, cgi);
-}
+// If to disconnect client, disconnect from _pollFd, _clients and _cgiToClient
