@@ -24,6 +24,9 @@ int	Webserv::runningServ(void)
 
 int	Webserv::connectAndRead(void)
 {
+	std::vector<struct pollfd> newPollFds;
+    std::vector<int> removeFds;
+
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
@@ -33,7 +36,7 @@ int	Webserv::connectAndRead(void)
 		// --- Server sockets ---
 		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), pfd.fd);
 		if (find != _serverFds.end()) {
-			acceptNewConnection(*find);  // Do we need to treat this return value?
+			acceptNewConnection(pfd.fd, newPollFds);  // Do we need to treat this return value?
 			continue;
 		}
 		// --- Client sockets ---
@@ -41,7 +44,7 @@ int	Webserv::connectAndRead(void)
 		if (clientIt != _clients.end()) {
 			Client *client = clientIt->second;
 			if (!client) continue;
-			handleEvents(client, pfd);
+			handleEvents(client, pfd, newPollFds, removeFds);
 			continue;
 		}
 		// --- CGI FDs ---
@@ -53,12 +56,18 @@ int	Webserv::connectAndRead(void)
 			handleCGIEvents(client, pfd);
 		}
 	}
+	for (size_t i = 0; i < removeFds.size(); ++i)
+        removePollFd(removeFds[i]);
+
+    _pollFds.insert(_pollFds.end(), newPollFds.begin(), newPollFds.end());
 	return (1);
 }
 
-void Webserv::handleEvents(Client *client, struct pollfd &pfd) {
+void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struct pollfd> &newPollFds,
+                               std::vector<int> &removeFds) {
+	(void)newPollFds;
 	if (pfd.revents & POLLHUP) {
-		disconnectClient(pfd.fd);
+		removeFds.push_back(pfd.fd);
 	} else {
 		if (pfd.revents & POLLIN) {
 			int ret = client->readAndParseRequest();
@@ -74,11 +83,13 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd) {
 					pfd.events |= POLLOUT;
 				}
 			} else if (ret == READ_ERROR)
-				disconnectClient(pfd.fd);
+				removeFds.push_back(pfd.fd);
 		}
 		if (pfd.revents & POLLOUT) {
-			client->writeResponse();
-			disconnectClient(pfd.fd);
+			int ret = client->writeResponse();
+			if (ret == WRITE_INCOMPLETE)
+				return ;
+			removeFds.push_back(pfd.fd);
 		}
 	}
 }
@@ -109,4 +120,3 @@ void Webserv::handleCGIEvents(Client *client, struct pollfd &pfd) {
 			}
 		}
 }
-// If to disconnect client, disconnect from _pollFd, _clients and _cgiToClient

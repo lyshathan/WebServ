@@ -18,8 +18,6 @@ int	Client::writeResponse() {
 	ssize_t sent = send(_fd, _resBuffer.c_str() + _bytesSent,
 						_resBuffer.length() - _bytesSent, MSG_NOSIGNAL);
 	if (sent <= 0) {
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return WRITE_INCOMPLETE;
 		return WRITE_ERROR;
 	}
 

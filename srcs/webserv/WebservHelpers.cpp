@@ -1,15 +1,6 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-Client *Webserv::pickClient(struct pollfd &pfd) {
-	Client *client = NULL;
-
-	std::map<int, Client*>::iterator it = _clients.find(pfd.fd);
-	if (it != _clients.end())
-		client = it->second;
-	return client;
-}
-
 void Webserv::addCGIToPoll(Client *client, struct pollfd &pfd) {
 	CgiState *cgi = client->httpReq->getCGIState();
 
@@ -72,4 +63,28 @@ void Webserv::closeCGIStdin(CgiState *cgiState) {
 		cgiState->stdin_fd = -1;
 	}
 	cgiState->state = CgiState::READING;
+}
+
+void Webserv::removePollFd(int fd)
+{
+    for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
+         it != _pollFds.end(); ++it)
+    {
+        if (it->fd == fd) {
+            _pollFds.erase(it);
+            break;
+        }
+    }
+
+    std::map<int, int>::iterator cgiIt = _cgiToClient.find(fd);
+    if (cgiIt != _cgiToClient.end())
+        _cgiToClient.erase(cgiIt);
+
+    std::map<int, Client*>::iterator clientIt = _clients.find(fd);
+    if (clientIt != _clients.end()) {
+        delete clientIt->second;
+        _clients.erase(clientIt);
+    }
+
+    close(fd);
 }
