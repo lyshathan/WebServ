@@ -36,22 +36,19 @@ class Webserv {
 		int			runningServ();
 		int			connectAndRead();
 
-		int			acceptNewConnection(int &serverFd);
-		void		addClient(int newClientFd, const std::string &clientIP);
-		Client		*pickClient(struct pollfd &);
-		void		handleClientRead(Client *client, struct pollfd &);
-		void		handleClientWrite(Client *client, struct pollfd &);
+		int			acceptNewConnection(int &, std::vector<struct pollfd> &);
+		void		addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &);
 		void		disconnectClient(int &);
 
-		void		handleEvents(Client *, struct pollfd &pfd);
+		void		handleEvents(Client *, struct pollfd &pfd, std::vector<struct pollfd> &,
+                               std::vector<int> &);
 
-		void		handleCGIReadEvent(Client *, CgiState *);
-		void		handleCGIWriteEvent(Client *, CgiState *);
-		void 		cleanupCGI(Client *, CgiState *);
-		void 		closeCGIStdin(CgiState *cgiState);
+		void 		cleanupCGI(Client *, CgiState *, std::vector<int> &);
+		void		removePollFd(int fd);
 
-		void		addCGIToPoll(Client *, struct pollfd &);
-		void		handleCGIEvents(Client *, struct pollfd &);
+		void		signalClientReady(Client *);
+		void		addCGIToPoll(Client *, struct pollfd &, std::vector<struct pollfd> &);
+		void		handleCGIEvents(Client *, struct pollfd &pfd, std::vector<int> &);
 		void		removeFdFromPoll(int fd);
 
 	public :

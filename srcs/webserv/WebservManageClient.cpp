@@ -2,19 +2,21 @@
 #include "../parsing/Client.hpp"
 
 
-void Webserv::addClient(int newClientFd, const std::string &clientIP)
+void Webserv::addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &newPollFds)
 {
 	// Add to pollFds
 	struct pollfd newClientPollFd;
 	newClientPollFd.fd = newClientFd;
 	newClientPollFd.events = POLLIN;
 	newClientPollFd.revents = 0;
-	_pollFds.push_back(newClientPollFd);
-	size_t index = _pollFds.size() - 1;
-	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, index);
+
+	newPollFds.push_back(newClientPollFd);
+
+	// size_t index = _pollFds.size() - 1; CHECK_HERE
+	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, 0);
 }
 
-int Webserv::acceptNewConnection(int &serverFd)
+int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newPollFds)
 {
 	int					clientFd;
 	struct sockaddr_in	clientAddr;
@@ -26,7 +28,8 @@ int Webserv::acceptNewConnection(int &serverFd)
 
 	// Add new client to pollFds and to _client map
 	std::string clientIP = inet_ntoa(clientAddr.sin_addr);
-	addClient(clientFd, clientIP);
+	addClient(clientFd, clientIP, newPollFds);
+	fcntl(clientFd, F_SETFL, O_NONBLOCK); // CHECK_HERE
 
 	std::stringstream msg;
 	msg << "New Client #" << clientFd << " IP " << clientIP << " connected";
