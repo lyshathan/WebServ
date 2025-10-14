@@ -27,6 +27,8 @@ void Client::setState(ClientState state) { _state = state; }
 
 std::string	Client::getClientIp() const { return _clientIP; }
 
+CgiHandler	*Client::getCgi() const { return _cgi; }
+
 void	Client::launchCGI() {
 	_cgi = new CgiHandler(this);
 	_cgi->cgiStart();

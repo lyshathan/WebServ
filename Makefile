@@ -42,7 +42,7 @@ SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/request/, $(HTTPREQUEST))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(HTTPRESPONSE))) \
-		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/cgi/, $(CGI)))
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/cgi/, $(CGI))) \
 
 H_WEBSERV = Includes Webserv
 H_CONFIG = Config
@@ -67,7 +67,7 @@ HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/webserv/, $(H_WEBSERV))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/request/, $(H_REQUEST))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(H_RESPONSE))) \
-		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/cgi/, $(H_CGI))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/cgi/, $(H_CGI))) \
 		$(SRCS_DIR)/ProjectTools.hpp
 
 #====== OBJECTS & DEPENDENCIES ======#
@@ -84,7 +84,8 @@ OBJ_SUBDIRS = \
 	$(OBJDIR)/config/utils \
 	$(OBJDIR)/parsing \
 	$(OBJDIR)/parsing/request \
-	$(OBJDIR)/parsing/response
+	$(OBJDIR)/parsing/response \
+	$(OBJDIR)/cgi
 
 DEPS = $(OBJS:.o=.d)
 

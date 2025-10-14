@@ -63,10 +63,10 @@ void		CgiHandler::handleParent(int stdinFd[2], int stdoutFd[2]) {
 		for (std::map<std::string, std::string>::const_iterator it = body.begin(); it != body.end(); ++it)
 			_inputBuffer += it->second;
 		_bytesWritten = 0;
-		_cgiStage = CgiState::CGI_WRITING;
+		_cgiStage = CGI_WRITING;
 	} else {
 		close(_stdinFd);
 		_stdinFd = -1;
-		_cgiStage = CgiState::CGI_READING;
+		_cgiStage = CGI_READING;
 	}
 }

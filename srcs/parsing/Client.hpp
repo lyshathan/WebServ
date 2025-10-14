@@ -31,15 +31,15 @@ class CgiHandler;
 
 class Client {
 	private:
-		size_t				_pollIndex;
-		int					_fd;
-		std::string			_reqBuffer;
-		std::string			_resBuffer;
-		size_t				_recvSize;
-		size_t				_bytesSent;
-		std::string			_clientIP;
-		ClientState 		_state;
-		CgiHandler			*_cgi;
+		size_t						_pollIndex;
+		int							_fd;
+		std::string					_reqBuffer;
+		std::string					_resBuffer;
+		size_t						_recvSize;
+		size_t						_bytesSent;
+		std::string					_clientIP;
+		ClientState 				_state;
+		CgiHandler					*_cgi;
 
 		Client();
 	public:
@@ -61,6 +61,7 @@ class Client {
 		size_t				getPollIndex();
 		std::string			getClientIp() const;
 		void				setState(ClientState);
+		CgiHandler			*getCgi() const;
 
 		HttpRequest		*httpReq;
 		HttpResponse	*httpRes;

@@ -1,22 +1,23 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-void Webserv::removeFdFromPoll(int fd) {
-	std::cerr << "\033[36m[DEBUG] Entering removeFdFromPoll for fd " << fd << "\033[0m" << std::endl;
-	for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end(); ++it) {
-		if (it->fd == fd) {
-			_pollFds.erase(it);
-			std::cerr << "\033[31m[DEBUG] Removed fd " << fd << " from _pollFds\033[0m" << std::endl;
-			break;
-		}
-	}
 
-	std::map<int, int>::iterator mapIt = _cgiToClient.find(fd);
-	if (mapIt != _cgiToClient.end()) {
-		_cgiToClient.erase(mapIt);
-		std::cerr << "\033[31m[DEBUG] Removed fd " << fd << " from _cgiToClient\033[0m" << std::endl;
+void Webserv::addCGIToPoll(Client *client, CgiHandler *cgi, std::vector<struct pollfd> &newPollFds) {
+
+	int stdinFd = cgi->getStdinFd();
+	int stdoutFd = cgi->getStdoutFd();
+
+	struct pollfd stdout_pollfd = {stdoutFd, POLLIN, 0};
+	newPollFds.push_back(stdout_pollfd);
+	_cgiToClient[stdinFd] = client;
+	std::cerr << "\033[35m[DEBUG] Added CGI stdout_fd " << stdoutFd << " to poll (POLLIN)\033[0m" << std::endl;
+	if (cgi->getCgiStage() == CGI_WRITING && stdinFd != -1) {
+		struct pollfd stdin_pollfd = {stdinFd, POLLOUT, 0};
+		newPollFds.push_back(stdin_pollfd);
+		_cgiToClient[stdoutFd] = client;
+		std::cerr << "\033[35m[DEBUG] Added CGI stdin_fd " << stdinFd << " to poll (POLLOUT)\033[0m" << std::endl;
 	}
-	std::cerr << "\033[36m[DEBUG] Exiting removeFdFromPoll\033[0m" << std::endl;
+	std::cerr << "\033[36m[DEBUG] Exiting addCGIToPoll\033[0m" << std::endl;
 }
 
 void Webserv::signalClientReady(Client *client) {
@@ -42,12 +43,6 @@ void Webserv::removePollFd(int fd)
             std::cerr << "\033[31m[DEBUG] Removed fd " << fd << " from _pollFds\033[0m" << std::endl;
             break;
         }
-    }
-
-    std::map<int, int>::iterator cgiIt = _cgiToClient.find(fd);
-    if (cgiIt != _cgiToClient.end()) {
-        _cgiToClient.erase(cgiIt);
-        std::cerr << "\033[31m[DEBUG] Removed fd " << fd << " from _cgiToClient\033[0m" << std::endl;
     }
 
     std::map<int, Client*>::iterator clientIt = _clients.find(fd);

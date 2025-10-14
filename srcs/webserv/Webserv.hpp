@@ -14,6 +14,7 @@ extern volatile sig_atomic_t g_running;
 
 class Client;
 class ServerConfig;
+class CgiHandler;
 
 class Webserv {
 	private :
@@ -25,7 +26,7 @@ class Webserv {
 		std::vector<struct pollfd>							_pollFds;
 		std::map< int, std::pair< uint16_t, std::string> >	_serverInfos;
 		int													_listenBackLog;
-		std::map<int, int>									_cgiToClient;
+		std::map<int, Client*>								_cgiToClient;
 
 		int			handleFunctionError(std::string errFunction);
 		bool		socketAlreadyExists(const uint16_t &port, const std::string &IP) const;
@@ -44,10 +45,13 @@ class Webserv {
 		void		handleEvents(Client *, struct pollfd &pfd, std::vector<struct pollfd> &,
                                std::vector<int> &);
 
+		void		addCGIToPoll(Client *, CgiHandler *, std::vector<struct pollfd> &);
 		void		removePollFd(int fd);
 
 		void		signalClientReady(Client *);
 		void		removeFdFromPoll(int fd);
+
+		void		loopPool();
 
 	public :
 		Webserv(Config const &config);

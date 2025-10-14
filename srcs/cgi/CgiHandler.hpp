@@ -48,11 +48,12 @@ class CgiHandler {
 		void								markError(const std::string &);
 		char 								**getEnvArray();
 		char 								**getArgvArray();
+
 	public:
 		CgiHandler(Client *);
 		~CgiHandler();
 
-		void								handleEvent(int, short, std::vector<int> &);
+		void								handleEvent(struct pollfd &, std::vector<int> &);
 		void								cgiInitEnv();
 		void								cgiStart();
 
@@ -61,6 +62,9 @@ class CgiHandler {
 		void								cleanUp(std::vector<int>&);
 
 		const std::string					&getResponse() const;
+		int									getStdinFd() const;
+		int									getStdoutFd() const;
+		CgiState							getCgiStage() const;
 };
 
 #endif

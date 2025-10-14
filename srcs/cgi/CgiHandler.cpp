@@ -12,14 +12,20 @@ CgiHandler::~CgiHandler() {}
 /*						CGI I/O HANDLER										  */
 /******************************************************************************/
 
-void		CgiHandler::handleEvent(int fd, short revents, std::vector<int> &removeFds) {
-	if (revents & (POLLERR | POLLNVAL)) {
+int	CgiHandler::getStdinFd () const { return _stdinFd; }
+
+int	CgiHandler::getStdoutFd () const { return _stdoutFd; }
+
+CgiState CgiHandler::getCgiStage () const { return _cgiStage; }
+
+void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
+	if (pfd.revents & (POLLERR | POLLNVAL)) {
 		markError("Poll error");
 		cleanUp(removeFds);
 		return;
 	}
 
-	if ((revents & POLLOUT) && fd == _stdinFd && _cgiStage == CGI_WRITING) {
+	if ((pfd.revents & POLLOUT) && pfd.fd == _stdinFd && _cgiStage == CGI_WRITING) {
 		IOStatus res = handleWrite();
 		if (res == IO_COMPLETE) {
 			removeFds.push_back(_stdinFd);
@@ -30,7 +36,7 @@ void		CgiHandler::handleEvent(int fd, short revents, std::vector<int> &removeFds
 		}
 	}
 
-	if ((revents & POLLIN) && fd == _stdoutFd && _cgiStage == CGI_READING) {
+	if ((pfd.revents & POLLIN) && pfd.fd == _stdoutFd && _cgiStage == CGI_READING) {
 		IOStatus res = handleRead();
 		if (res == IO_COMPLETE) {
 			handleCompletion();
@@ -42,7 +48,7 @@ void		CgiHandler::handleEvent(int fd, short revents, std::vector<int> &removeFds
 		}
 	}
 
-	if ((revents & POLLHUP) && fd == _stdoutFd) {
+	if ((pfd.revents & POLLHUP) && pfd.fd == _stdoutFd) {
 		handleRead();
 		handleCompletion();
 		cleanUp(removeFds);
@@ -102,13 +108,13 @@ void		CgiHandler::handleCompletion() {
 
 	if (result == _pid) {
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-			std::string bodyContent;
+
 			if (_headersParsed && _headerPos != std::string::npos)
 				_finalResponse = _outputBuffer.substr(_headerPos);
 			else
 				_finalResponse = _outputBuffer;
 
-			_client->httpReq->setCGIResult(bodyContent);
+			_client->httpReq->setCGIResult(_finalResponse);
 			_client->httpReq->setStatus(OK);
 			_client->httpRes->parseResponse();
 			markDone();

@@ -12,8 +12,8 @@ void Webserv::addClient(int newClientFd, const std::string &clientIP, std::vecto
 
 	newPollFds.push_back(newClientPollFd);
 
-	// size_t index = _pollFds.size() - 1; CHECK_HERE
-	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, 0);
+	size_t index = _pollFds.size() - 1;
+	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, index);
 }
 
 int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newPollFds)
