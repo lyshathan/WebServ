@@ -72,7 +72,7 @@ int	Webserv::connectAndRead(void)
 		// --- Client sockets ---
 		std::map<int, Client*>::iterator clientIt = _clients.find(pfd.fd);
 		if (clientIt != _clients.end()) {
-			std::cout << "Event is for client " << pfd.fd << "\n";
+			// std::cout << "Event is for client " << pfd.fd << "\n";
 			Client *client = clientIt->second;
 			if (!client) continue;
 			handleEvents(client, pfd, newPollFds, removeFds);
@@ -91,10 +91,11 @@ int	Webserv::connectAndRead(void)
 				for (; clientIt != _pollFds.end(); ++clientIt)
 					if (clientIt->fd == client->getFd())
 						break;
-				
+
 				if (clientIt != _pollFds.end())
 					clientIt->events |= POLLOUT;
 				delete (client->getCgi());
+				client->setCgi();
 				client->setState(REQUEST_READY);
 			}
 		}
@@ -123,7 +124,6 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 		removeFds.push_back(pfd.fd);
 	} else {
 		if (pfd.revents & POLLIN) {
-			std::cout << "Pollin event\n";
 			int ret = client->readAndParseRequest();
 			if (ret == READ_COMPLETE) {
 				client->httpReq->requestHandler();
@@ -148,7 +148,6 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 			}
 		}
 		if (pfd.revents & POLLOUT) {
-			std::cout << "Write response called \n";
 			int ret = client->writeResponse();
 			if (ret == WRITE_INCOMPLETE) {
 				return ;

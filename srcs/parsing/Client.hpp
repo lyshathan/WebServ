@@ -68,6 +68,8 @@ class Client {
 		void				updateActivity();
 		bool 				hasTimedOut(time_t);
 
+		void				setCgi();
+		std::string getStateString() const;
 
 		HttpRequest		*httpReq;
 		HttpResponse	*httpRes;

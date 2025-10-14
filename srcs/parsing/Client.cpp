@@ -39,3 +39,7 @@ bool	Client::hasTimedOut(time_t now) {
         return (now - _lastActivity > CGI_TIMEOUT);
     return false;
 }
+
+void	Client::setCgi() {
+	_cgi = NULL;
+}

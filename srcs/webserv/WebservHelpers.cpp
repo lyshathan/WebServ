@@ -10,7 +10,7 @@ void Webserv::addCGIToPoll(Client *client, CgiHandler *cgi, std::vector<struct p
 	struct pollfd stdout_pollfd = {stdoutFd, POLLIN, 0};
 	newPollFds.push_back(stdout_pollfd);
 	_cgiToClient[stdinFd] = client;
-	
+
 	if (cgi->getCgiStage() == CGI_WRITING && stdinFd != -1) {
 		struct pollfd stdin_pollfd = {stdinFd, POLLOUT, 0};
 		newPollFds.push_back(stdin_pollfd);
@@ -42,12 +42,21 @@ void Webserv::removePollFd(int fd)
         }
     }
 
-    std::map<int, Client*>::iterator clientIt = _clients.find(fd);
-    if (clientIt != _clients.end()) {
-        delete clientIt->second;
-        _clients.erase(clientIt);
-        std::cerr << "\033[31m[DEBUG] Deleted client for fd " << fd << "\033[0m" << std::endl;
-    }
+	std::map<int, Client*>::iterator clientIt = _clients.find(fd);
+	if (clientIt != _clients.end()) {
+		// Remove all CGI FDs that point to this client
+		for (std::map<int, Client*>::iterator it = _cgiToClient.begin(); it != _cgiToClient.end(); ) {
+			if (it->second == clientIt->second) {
+				std::map<int, Client*>::iterator toErase = it++;
+				_cgiToClient.erase(toErase);
+			} else {
+				++it;
+			}
+		}
+		delete clientIt->second;
+		_clients.erase(clientIt);
+		std::cerr << "\033[31m[DEBUG] Deleted client for fd " << fd << "\033[0m" << std::endl;
+	}
 
     close(fd);
     std::cerr << "\033[31m[DEBUG] Closed fd " << fd << "\033[0m" << std::endl;

@@ -81,7 +81,7 @@ IOStatus	CgiHandler::handleWrite() {
 
 IOStatus	CgiHandler::handleRead() {
 	char buffer[4096];
-	
+
 	_client->updateActivity();
 	ssize_t bytesRead = read(_stdoutFd, buffer, sizeof(buffer));
 

@@ -1,6 +1,7 @@
 NAME = Webserv
 CC = c++
-FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP
+#FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP
+FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP -fsanitize=address -g
 TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP
 RM = rm -rf
 
