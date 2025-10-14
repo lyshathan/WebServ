@@ -63,3 +63,5 @@ bool Client::isReqComplete() const {
 	}
 	return true;
 }
+
+void Client::updateActivity() { _lastActivity = time(NULL); }

@@ -15,7 +15,7 @@ void	CgiHandler::markError(const std::string &err) {
 }
 
 bool	CgiHandler::isFinished() const {
-	return (_cgiStage == CGI_DONE);
+	return (_cgiStage == CGI_DONE || _cgiStage == CGI_ERROR);
 }
 
 bool	CgiHandler::hasError() const {

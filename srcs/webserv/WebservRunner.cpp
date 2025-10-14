@@ -2,14 +2,28 @@
 #include "../parsing/Client.hpp"
 
 void Webserv::loopPool() {
-	for (size_t i = 0; i < _pollFds.size() ; ++i )
-	{
+	for (size_t i = 0; i < _pollFds.size(); ++i) {
 		struct pollfd &pfd = _pollFds[i];
-		std::cout << "[POLL ELEMENT] " << pfd.fd << " present with "
-          << ((pfd.events & POLLIN) ? "POLLIN " : "")
-          << ((pfd.events & POLLOUT) ? "POLLOUT " : "")
-          << ((pfd.events & POLLERR) ? "POLLERR " : "")
-          << "\n";
+
+		std::cout << "[POLL ELEMENT] FD: " << pfd.fd << "\n";
+
+		// Events we are polling for
+		std::cout << "  Events: "
+				<< ((pfd.events & POLLIN) ? "POLLIN " : "")
+				<< ((pfd.events & POLLOUT) ? "POLLOUT " : "")
+				<< ((pfd.events & POLLERR) ? "POLLERR " : "")
+				<< ((pfd.events & POLLHUP) ? "POLLHUP " : "")
+				<< ((pfd.events & POLLNVAL) ? "POLLNVAL " : "")
+				<< "\n";
+
+		// Events that actually occurred
+		std::cout << "  Returned: "
+				<< ((pfd.revents & POLLIN) ? "POLLIN " : "")
+				<< ((pfd.revents & POLLOUT) ? "POLLOUT " : "")
+				<< ((pfd.revents & POLLERR) ? "POLLERR " : "")
+				<< ((pfd.revents & POLLHUP) ? "POLLHUP " : "")
+				<< ((pfd.revents & POLLNVAL) ? "POLLNVAL " : "")
+				<< "\n";
 	}
 }
 
@@ -20,7 +34,7 @@ int	Webserv::runningServ(void)
 	while (g_running)
 	{
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
-		loopPool();
+		// loopPool();
 		if (status == -1)
 		{
 			if (!g_running) // Check if shutdown was requested
@@ -38,13 +52,13 @@ int	Webserv::runningServ(void)
 
 int	Webserv::connectAndRead(void)
 {
+	std::vector<int> clientsNeedingOutput;
 	std::vector<struct pollfd> newPollFds;
     std::vector<int> removeFds;
 
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
-		std::cout << "New event for " << pfd.fd << "\n";
 
 		if (pfd.revents == 0)
 			continue;
@@ -72,11 +86,29 @@ int	Webserv::connectAndRead(void)
 			CgiHandler *cgi = client->getCgi();
 			if (!cgi) continue;
 			cgi->handleEvent(pfd, removeFds);
-			if (cgi->isFinished())
-
-			// set client FD to POLLOUT
+			if (cgi->isFinished()) {
+				std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();
+				for (; clientIt != _pollFds.end(); ++clientIt)
+					if (clientIt->fd == client->getFd())
+						break;
+				
+				if (clientIt != _pollFds.end())
+					clientIt->events |= POLLOUT;
+				delete (client->getCgi());
+				client->setState(REQUEST_READY);
+			}
 		}
 	}
+
+	for (size_t i = 0; i < clientsNeedingOutput.size(); ++i) {
+		for (size_t j = 0; j < _pollFds.size(); ++j) {
+			if (_pollFds[j].fd == clientsNeedingOutput[i]) {
+				_pollFds[j].events |= POLLOUT;
+				break;
+        	}
+    	}
+	}
+
 	for (size_t i = 0; i < removeFds.size(); ++i)
         removePollFd(removeFds[i]);
 
@@ -91,6 +123,7 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 		removeFds.push_back(pfd.fd);
 	} else {
 		if (pfd.revents & POLLIN) {
+			std::cout << "Pollin event\n";
 			int ret = client->readAndParseRequest();
 			if (ret == READ_COMPLETE) {
 				client->httpReq->requestHandler();
@@ -102,6 +135,7 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 						addCGIToPoll(client, cgi, newPollFds);
 						pfd.events &= ~POLLIN;
 						client->setState(CGI_PROCESSING);
+						return ;
 					}
 				} else {
 					client->httpRes->parseResponse();

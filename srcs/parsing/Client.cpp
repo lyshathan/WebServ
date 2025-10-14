@@ -33,3 +33,9 @@ void	Client::launchCGI() {
 	_cgi = new CgiHandler(this);
 	_cgi->cgiStart();
 }
+
+bool	Client::hasTimedOut(time_t now) {
+	if (_state == CGI_PROCESSING)
+        return (now - _lastActivity > CGI_TIMEOUT);
+    return false;
+}

@@ -53,7 +53,6 @@ void HttpResponse::successParseResponse(int status) {
 void HttpResponse::cgiParseResponse(int status) {
 	_isTextContent = true;
 	_res = _request->getCGIRes();
-
 	// CgiState* cgiState = _request->getCGIState();
 	// if (cgiState && cgiState->headers_parsed) {
 	// 	std::map<std::string, std::string>::iterator it;

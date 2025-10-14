@@ -50,10 +50,7 @@ int	Client::readAndParseRequest() {
 	std::cerr << "\033[33m[DEBUG] recv() returned " << bytesRead << " bytes for fd " << _fd << "\033[0m" << std::endl;
 	if (bytesRead <= 0)
 	{
-		if (errno == EAGAIN || errno == EWOULDBLOCK) {
-			std::cerr << "\033[33m[DEBUG] READ_INCOMPLETE (EAGAIN/EWOULDBLOCK) for fd " << _fd << "\033[0m" << std::endl;
-			return READ_INCOMPLETE; // No data yet, try again later
-		} else if (bytesRead == 0) {
+		if (bytesRead == 0) {
 			std::cerr << "\033[32m[DEBUG] READ_COMPLETE (peer closed) for fd " << _fd << "\033[0m" << std::endl;
 			return READ_COMPLETE;
 		}

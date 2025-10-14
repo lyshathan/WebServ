@@ -39,6 +39,7 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 	if ((pfd.revents & POLLIN) && pfd.fd == _stdoutFd && _cgiStage == CGI_READING) {
 		IOStatus res = handleRead();
 		if (res == IO_COMPLETE) {
+			std::cout << "Calling handle competition 1\n";
 			handleCompletion();
 			cleanUp(removeFds);
 			markDone();
@@ -49,6 +50,7 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 	}
 
 	if ((pfd.revents & POLLHUP) && pfd.fd == _stdoutFd) {
+		std::cout << "Calling handle competition\n";
 		handleRead();
 		handleCompletion();
 		cleanUp(removeFds);
@@ -62,6 +64,7 @@ IOStatus	CgiHandler::handleWrite() {
 	if (remaining == 0)
 		return IO_COMPLETE;
 
+	_client->updateActivity();
 	ssize_t written = write(_stdinFd, _inputBuffer.c_str() + _bytesWritten, remaining);
 
 	if (written <= 0) {
@@ -78,6 +81,8 @@ IOStatus	CgiHandler::handleWrite() {
 
 IOStatus	CgiHandler::handleRead() {
 	char buffer[4096];
+	
+	_client->updateActivity();
 	ssize_t bytesRead = read(_stdoutFd, buffer, sizeof(buffer));
 
 	if (bytesRead == 0)
@@ -103,6 +108,11 @@ IOStatus	CgiHandler::handleRead() {
 }
 
 void		CgiHandler::handleCompletion() {
+
+	if (!_client || !_client->httpReq || !_client->httpRes) {
+    	std::cerr << "Null pointer detected!" << std::endl;
+    	return;
+	}
 	int status;
 	pid_t result = waitpid(_pid, &status, WNOHANG);
 
