@@ -28,4 +28,4 @@ bool HttpRequest::getAutoIndex() const { return _location->getAutoIndex(); }
 
 size_t	HttpRequest::getMaxBody() const { return _location->getClientMaxBodySize(); }
 
-CgiState *HttpRequest::getCGIState() const { return _cgiState; }
+std::vector<std::string> HttpRequest::getArgv() const { return _argv; }

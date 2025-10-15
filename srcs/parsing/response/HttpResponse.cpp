@@ -53,24 +53,24 @@ void HttpResponse::successParseResponse(int status) {
 void HttpResponse::cgiParseResponse(int status) {
 	_isTextContent = true;
 	_res = _request->getCGIRes();
+	// CgiState* cgiState = _request->getCGIState();
+	// if (cgiState && cgiState->headers_parsed) {
+	// 	std::map<std::string, std::string>::iterator it;
 
-	CgiState* cgiState = _request->getCGIState();
-	if (cgiState && cgiState->headers_parsed) {
-		std::map<std::string, std::string>::iterator it;
+	// 	it = cgiState->_headers.find("content-type");
+	// 	if (it != cgiState->_headers.end())
+	// 		_mimeType = it->second;
+	// 	else
+	// 		_mimeType = "text/html";
 
-		it = cgiState->_headers.find("content-type");
-		if (it != cgiState->_headers.end())
-			_mimeType = it->second;
-		else
-			_mimeType = "text/html";
-
-		for (it = cgiState->_headers.begin(); it != cgiState->_headers.end(); ++it) {
-			if (it->first != "content-type" && it->first != "content-length") {
-				addHeader(it->first + ": ", it->second);
-			}
-		}
-	} else
-		_mimeType = "text/html";
+	// 	for (it = cgiState->_headers.begin(); it != cgiState->_headers.end(); ++it) {
+	// 		if (it->first != "content-type" && it->first != "content-length") {
+	// 			addHeader(it->first + ": ", it->second);
+	// 		}
+	// 	}
+	// } else
+	// 	
+	_mimeType = "text/html";
 	setContentHeaders();
 	setConnectionHeader(status);
 }

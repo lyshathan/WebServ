@@ -4,13 +4,18 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-Client::Client(int fd, const Config &config, const std::string &clientIP) :
-	 _fd(fd), _recvSize(0), _clientIP(clientIP), httpReq(new HttpRequest(config, fd, _clientIP)),
-	httpRes(new HttpResponse(httpReq)) {}
+Client::Client(int fd, const Config &config, const std::string &clientIP, size_t pollIndex) :
+	_pollIndex(pollIndex), _fd(fd), _reqBuffer(), _resBuffer(), _recvSize(0), _bytesSent(0),
+	_clientIP(clientIP), _state(READING_HEADERS), _cgi(NULL), _lastActivity(0),
+	httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq)) {}
 
 Client::~Client() {
-	delete httpReq;
-	delete httpRes;
+	if (httpReq)
+		delete httpReq;
+	if (httpRes)
+		delete httpRes;
+	if (_cgi)
+		delete _cgi;
 }
 
 /******************************************************************************/
@@ -19,47 +24,27 @@ Client::~Client() {
 
 const std::string &Client::getRes() const { return _reqBuffer;}
 
-void	Client::clearBuffer() {
-	_reqBuffer = "";
-	_recvSize = 0;
-	_clientIP = "";
-	httpReq->setHeadersParsed();
-	httpReq->cleanReqInfo();
+int	Client::getFd() const { return _fd; }
+
+size_t Client::getPollIndex() { return _pollIndex; }
+
+void Client::setState(ClientState state) { _state = state; }
+
+std::string	Client::getClientIp() const { return _clientIP; }
+
+CgiHandler	*Client::getCgi() const { return _cgi; }
+
+void	Client::launchCGI() {
+	_cgi = new CgiHandler(this);
+	_cgi->cgiStart();
 }
 
-bool	Client::appendBuffer(const char *data, size_t size) {
-	_reqBuffer.insert(_reqBuffer.end(), data, data + size);
-	_recvSize += size;
-	return true;
+bool	Client::hasTimedOut(time_t now) {
+	if (_state == CGI_PROCESSING)
+        return (now - _lastActivity > CGI_TIMEOUT);
+    return false;
 }
 
-bool Client::isReqComplete() const {
-	std::map<std::string, std::string> headers = httpReq->getHeaders();
-
-	size_t headerEnd = _reqBuffer.find("\r\n\r\n");
-	if (headerEnd == std::string::npos)
-		return false;
-
-	std::map<std::string, std::string>::const_iterator it = headers.find("transfer-encoding");
-	if (it != headers.end() && it->second.find("chunked") != std::string::npos) {
-		size_t zeroChunkPos = _reqBuffer.find("0\r\n");
-		if (zeroChunkPos != std::string::npos) {
-			size_t finalEnd = _reqBuffer.find("\r\n\r\n", zeroChunkPos);
-			return finalEnd != std::string::npos;
-		}
-		return false;
-	}
-
-	size_t maxBodySize = httpReq->getMaxBody();
-	it = headers.find("content-length");
-	if (it != headers.end()) {
-		std::istringstream iss(it->second);
-		size_t contentLength = 0;
-		iss >> contentLength;
-		size_t bodyReceived = _reqBuffer.length() - (headerEnd + 4);
-		if (contentLength > maxBodySize)
-			httpReq->setStatus(413);
-		return bodyReceived >= contentLength;
-	}
-	return true;
+void	Client::setCgi() {
+	_cgi = NULL;
 }

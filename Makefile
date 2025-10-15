@@ -8,7 +8,7 @@ RM = rm -rf
 
 SRCS_DIR = srcs
 MAIN = main ProjectTools
-WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservCGI WebservHelpers
+WEBSERV = Webserv WebservRunner WebservManageClient WebservCleaning WebservHelpers
 
 CONFIG = Config
 CONFIG_GLOBAL = GlobalConfig GlobalConfigGetter GlobalConfigSetter
@@ -17,17 +17,19 @@ CONFIG_SERVER = ServerConfig ServerConfigGetter ServerConfigParsing
 CONFIG_UTILS = Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 
-PARSING = Client
+PARSING = Client ClientHelpers ClientReadWrite
 
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
 				HttpServerConfig HttpRequestError HttpRequestGetters \
 				HttpRequestHandler HttpRequestHandlerHelpers \
 				HttpRequestPostHandler HttpRequestDeleteHandler \
-				HttpRequestSetters HttpRequestCGIHandler \
-				HttpRequestCGIHelpers HttpRequestBodyParser
+				HttpRequestSetters HttpRequestCGIHelpers \
+				HttpRequestBodyParser
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
 				HttpResponseSetters HttpResponseCookie
+
+CGI = CgiForkHelpers CgiHandler CgiHandlerFork CgiHandlerHelpers
 
 SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/webserv/, $(WEBSERV))) \
@@ -39,7 +41,8 @@ SRCS = $(addsuffix .cpp, $(addprefix $(SRCS_DIR)/, $(MAIN))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/config/tokenizer/, $(CONFIG_TOKENIZER))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/, $(PARSING))) \
 		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/request/, $(HTTPREQUEST))) \
-		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(HTTPRESPONSE)))
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(HTTPRESPONSE))) \
+		$(addsuffix .cpp, $(addprefix $(SRCS_DIR)/cgi/, $(CGI))) \
 
 H_WEBSERV = Includes Webserv
 H_CONFIG = Config
@@ -51,6 +54,7 @@ H_CONFIG_TOKENIZER = Token
 H_PARSING = Client
 H_REQUEST = HttpRequest
 H_RESPONSE = HttpResponse
+H_CGI = CgiHandler
 
 HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/webserv/, $(H_WEBSERV))) \
 		$(SRCS_DIR)/config/Config.hpp \
@@ -63,6 +67,7 @@ HEADERS = $(addsuffix .hpp, $(addprefix $(SRCS_DIR)/webserv/, $(H_WEBSERV))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/, $(H_PARSING))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/request/, $(H_REQUEST))) \
 		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/parsing/response/, $(H_RESPONSE))) \
+		$(addsuffix .hpp, $(addprefix $(SRCS_DIR)/cgi/, $(H_CGI))) \
 		$(SRCS_DIR)/ProjectTools.hpp
 
 #====== OBJECTS & DEPENDENCIES ======#
@@ -79,7 +84,8 @@ OBJ_SUBDIRS = \
 	$(OBJDIR)/config/utils \
 	$(OBJDIR)/parsing \
 	$(OBJDIR)/parsing/request \
-	$(OBJDIR)/parsing/response
+	$(OBJDIR)/parsing/response \
+	$(OBJDIR)/cgi
 
 DEPS = $(OBJS:.o=.d)
 

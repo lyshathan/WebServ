@@ -20,5 +20,3 @@ void HttpRequest::setStatus(int status) { _status = status;}
 void HttpRequest::setCGIResult(const std::string &result) {
 	_cgiRes = result;
 }
-
-void HttpRequest::setCGIState(CgiState *cgiState) { _cgiState = cgiState; }

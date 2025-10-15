@@ -1,58 +1,66 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-void Webserv::addCGIToPoll(int clientFd) {
-    CgiState* cgiState = _clients[clientFd]->httpReq->getCGIState();
+void Webserv::addCGIToPoll(Client *client, CgiHandler *cgi, std::vector<struct pollfd> &newPollFds) {
 
-    struct pollfd stdout_pollfd = {cgiState->stdout_fd, POLLIN, 0};
-    _pollFds.push_back(stdout_pollfd);
-    _cgiToClient[cgiState->stdout_fd] = clientFd;
+	int stdinFd = cgi->getStdinFd();   // server writes to this
+	int stdoutFd = cgi->getStdoutFd(); // server reads from this
 
-    if (cgiState->state == CgiState::WRITING && cgiState->stdin_fd != -1) {
-        struct pollfd stdin_pollfd = {cgiState->stdin_fd, POLLOUT, 0};
-        _pollFds.push_back(stdin_pollfd);
-        _cgiToClient[cgiState->stdin_fd] = clientFd;
-    }
+	// --- CGI -> Server (output) ---
+	if (stdoutFd != -1) {
+		struct pollfd pfd_out = {stdoutFd, POLLIN, 0};
+		newPollFds.push_back(pfd_out);
+		_cgiToClient[stdoutFd] = client;
+	}
+
+	// --- Server -> CGI (input) ---
+	if (cgi->getCgiStage() == CGI_WRITING && stdinFd != -1) {
+		struct pollfd pfd_in = {stdinFd, POLLOUT, 0};
+		newPollFds.push_back(pfd_in);
+		_cgiToClient[stdinFd] = client;
+	}
 }
 
-void Webserv::cleanupCGI(int clientFd, CgiState *cgiState) {
-    if (cgiState->stdin_fd != -1) {
-        close(cgiState->stdin_fd);
-        removeFdFromPoll(cgiState->stdin_fd);
-    }
-    if (cgiState->stdout_fd != -1) {
-        close(cgiState->stdout_fd);
-        removeFdFromPoll(cgiState->stdout_fd);
-    }
-
-    if (cgiState->pid > 0) {
-        kill(cgiState->pid, SIGTERM);
-        waitpid(cgiState->pid, NULL, 0);
-    }
-
-    delete cgiState;
-    _clients[clientFd]->httpReq->setCGIState(NULL);
+void Webserv::signalClientReady(std::vector<int> &clientsNeedingOutput) {
+	for (size_t i = 0; i < clientsNeedingOutput.size(); ++i) {
+		for (size_t j = 0; j < _pollFds.size(); ++j) {
+			if (_pollFds[j].fd == clientsNeedingOutput[i]) {
+				_pollFds[j].events |= POLLOUT;
+				break;
+        	}
+    	}
+	}
+	std::cerr << "\033[36m[DEBUG] Exiting signalClientReady\033[0m" << std::endl;
 }
 
-void Webserv::closeCGIStdin(CgiState *cgiState) {
-    if (cgiState->stdin_fd != -1) {
-        close(cgiState->stdin_fd);
-        removeFdFromPoll(cgiState->stdin_fd);
-        cgiState->stdin_fd = -1;
-    }
-    cgiState->state = CgiState::READING;
-}
-
-void Webserv::removeFdFromPoll(int fd) {
-    for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end(); ++it) {
+void Webserv::removePollFd(int fd)
+{
+    std::cerr << "\033[36m[DEBUG] Entering removePollFd for fd " << fd << "\033[0m" << std::endl;
+    for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
+         it != _pollFds.end(); ++it) {
         if (it->fd == fd) {
             _pollFds.erase(it);
+            std::cerr << "\033[31m[DEBUG] Removed fd " << fd << " from _pollFds\033[0m" << std::endl;
             break;
         }
     }
-    
-    std::map<int, int>::iterator mapIt = _cgiToClient.find(fd);
-    if (mapIt != _cgiToClient.end()) {
-        _cgiToClient.erase(mapIt);
-    }
+
+	std::map<int, Client*>::iterator clientIt = _clients.find(fd);
+	if (clientIt != _clients.end()) {
+		for (std::map<int, Client*>::iterator it = _cgiToClient.begin(); it != _cgiToClient.end(); ) {
+			if (it->second == clientIt->second) {
+				std::map<int, Client*>::iterator toErase = it++;
+				_cgiToClient.erase(toErase);
+			} else {
+				++it;
+			}
+		}
+		delete clientIt->second;
+		_clients.erase(clientIt);
+		std::cerr << "\033[31m[DEBUG] Deleted client for fd " << fd << "\033[0m" << std::endl;
+	}
+
+    close(fd);
+    std::cerr << "\033[31m[DEBUG] Closed fd " << fd << "\033[0m" << std::endl;
+    std::cerr << "\033[36m[DEBUG] Exiting removePollFd\033[0m" << std::endl;
 }

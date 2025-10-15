@@ -20,15 +20,15 @@ class HttpResponse {
 		HttpRequest *_request;
 		HttpResponse();
 
-		bool								_isTextContent;
-		std::map<int, std::string>			_statusPhrases;
-		std::map<int, std::string>			_htmlResponses;
-		std::map<std::string, std::string>	_headers;
-		std::string							_resHeaders;
-		std::string							_responseStatus;
-		std::string							_res;
-		std::vector<char>					_binRes;
-		std::string							_mimeType;
+		bool									_isTextContent;
+		std::map<int, std::string>				_statusPhrases;
+		std::map<int, std::string>				_htmlResponses;
+		std::map<std::string, std::string>		_headers;
+		std::string								_resHeaders;
+		std::string								_responseStatus;
+		std::string								_res;
+		std::vector<char>						_binRes;
+		std::string								_mimeType;
 		static std::map<std::string, UserData>	_sessions;
 
 	public:
