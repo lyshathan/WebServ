@@ -20,9 +20,23 @@ CgiState CgiHandler::getCgiStage () const { return _cgiStage; }
 
 void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 	if (pfd.revents & (POLLERR | POLLNVAL)) {
-		markError("Poll error");
-		cleanUp(removeFds);
-		return;
+        std::cerr << "[CGI] POLLERR/POLLNVAL on fd " << pfd.fd << ", attempting to drain\n";
+        if (pfd.fd == _stdoutFd) {
+            IOStatus r = handleRead();
+            if (r == IO_INCOMPLETE) {
+                return;
+            }
+        }
+        markError("Poll error");
+        cleanUp(removeFds);
+        return;
+    }
+
+	if ((pfd.revents & POLLHUP) && pfd.fd == _stdoutFd) {
+		std::cout << "Calling handle competition\n";
+		handleRead();
+		handleCompletion();
+		markDone();
 	}
 
 	if ((pfd.revents & POLLOUT) && pfd.fd == _stdinFd && _cgiStage == CGI_WRITING) {
@@ -41,20 +55,12 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 		if (res == IO_COMPLETE) {
 			std::cout << "Calling handle competition 1\n";
 			handleCompletion();
-			cleanUp(removeFds);
-			markDone();
+			return;
 		} else if (res == IO_ERROR) {
 			markError("Read error");
 			cleanUp(removeFds);
+			return;
 		}
-	}
-
-	if ((pfd.revents & POLLHUP) && pfd.fd == _stdoutFd) {
-		std::cout << "Calling handle competition\n";
-		handleRead();
-		handleCompletion();
-		cleanUp(removeFds);
-		markDone();
 	}
 }
 

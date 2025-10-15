@@ -34,6 +34,7 @@ class CgiHandler {
 		std::string							_outputBuffer;
 		std::string							_inputBuffer;
 		bool								_headersParsed;
+		bool								_stdoutEOF;
 		CgiState							_cgiStage;
 		size_t								_headerPos;
 

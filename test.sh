@@ -2,7 +2,7 @@
 
 # Configurable parameters
 URL="http://127.0.0.1:8080/cgi/index.sh"
-CONCURRENCY=10
+CONCURRENCY=5
 REPS=100
 
 echo "Checking for siege..."

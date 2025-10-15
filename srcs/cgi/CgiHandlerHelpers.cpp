@@ -37,6 +37,7 @@ void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 
 	if (_pid > 0) {
 		int status;
+		// Reap if possible, don't block
 		waitpid(_pid, &status, WNOHANG);
 		_pid = -1;
 	}
@@ -44,6 +45,6 @@ void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 	if (_cgiStage != CGI_ERROR)
 		_cgiStage = CGI_DONE;
 
-	std::cerr << "[CGI CLEANUP] Completed cleanup for PID " << _pid << std::endl;
+	std::cerr << "[CGI CLEANUP] Completed cleanup" << std::endl;
 }
 

@@ -1,20 +1,23 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
 
-
 void Webserv::addCGIToPoll(Client *client, CgiHandler *cgi, std::vector<struct pollfd> &newPollFds) {
 
-	int stdinFd = cgi->getStdinFd();
-	int stdoutFd = cgi->getStdoutFd();
+	int stdinFd = cgi->getStdinFd();   // server writes to this
+	int stdoutFd = cgi->getStdoutFd(); // server reads from this
 
-	struct pollfd stdout_pollfd = {stdoutFd, POLLIN, 0};
-	newPollFds.push_back(stdout_pollfd);
-	_cgiToClient[stdinFd] = client;
-
-	if (cgi->getCgiStage() == CGI_WRITING && stdinFd != -1) {
-		struct pollfd stdin_pollfd = {stdinFd, POLLOUT, 0};
-		newPollFds.push_back(stdin_pollfd);
+	// --- CGI -> Server (output) ---
+	if (stdoutFd != -1) {
+		struct pollfd pfd_out = {stdoutFd, POLLIN, 0};
+		newPollFds.push_back(pfd_out);
 		_cgiToClient[stdoutFd] = client;
+	}
+
+	// --- Server -> CGI (input) ---
+	if (cgi->getCgiStage() == CGI_WRITING && stdinFd != -1) {
+		struct pollfd pfd_in = {stdinFd, POLLOUT, 0};
+		newPollFds.push_back(pfd_in);
+		_cgiToClient[stdinFd] = client;
 	}
 }
 
@@ -44,7 +47,6 @@ void Webserv::removePollFd(int fd)
 
 	std::map<int, Client*>::iterator clientIt = _clients.find(fd);
 	if (clientIt != _clients.end()) {
-		// Remove all CGI FDs that point to this client
 		for (std::map<int, Client*>::iterator it = _cgiToClient.begin(); it != _cgiToClient.end(); ) {
 			if (it->second == clientIt->second) {
 				std::map<int, Client*>::iterator toErase = it++;
