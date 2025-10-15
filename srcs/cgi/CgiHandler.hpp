@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "../parsing/Client.hpp"
 
 class Client;

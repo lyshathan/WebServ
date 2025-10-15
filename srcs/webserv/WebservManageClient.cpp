@@ -39,19 +39,46 @@ int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newP
 
 void Webserv::disconnectClient(int &fd)
 {
-	// // Check if client has active CGI and clean it up
-	// if (_clients.find(clientFd) != _clients.end() &&
-	// 	_clients[clientFd]->httpReq->getCGIState() != NULL) {
-	// 	cleanupCGI(clientFd, _clients[clientFd]->httpReq->getCGIState());
-	// }
-
 	std::stringstream msg;
 	msg << "Client #" << fd << " disconnected";
 	printLog(BLUE, "INFO", msg.str());
-	close (fd);
-	delete _clients[fd];
-	_clients.erase(fd);
+	
+	// Clean up CGI FDs before deleting client
+	if (_clients.find(fd) != _clients.end()) {
+		Client *client = _clients[fd];
+		
+		// If client has active CGI, remove CGI FDs from poll and map
+		if (client->getCgi()) {
+			CgiHandler *cgi = client->getCgi();
+			int stdinFd = cgi->getStdinFd();
+			int stdoutFd = cgi->getStdoutFd();
 
+			printLog(RED, "INFO", "Client has active CGI, cleaning up CGI FDs");
+			
+			// Remove CGI FDs from _cgiToClient map
+			if (stdinFd > 0) _cgiToClient.erase(stdinFd);
+			if (stdoutFd > 0) _cgiToClient.erase(stdoutFd);
+			
+			// Remove CGI FDs from _pollFds
+			for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end(); ) {
+				if ((stdinFd > 0 && it->fd == stdinFd) || (stdoutFd > 0 && it->fd == stdoutFd)) {
+					msg.clear();
+					msg << "Removing CGI fd " << it->fd << " from _pollFds";
+					printLog(RED, "INFO", msg.str());
+					it = _pollFds.erase(it);
+				} else {
+					++it;
+				}
+			}
+		}
+		
+		delete client;
+		_clients.erase(fd);
+	}
+	
+	close(fd);
+	
+	// Remove client FD from _pollFds
 	for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
 		it != _pollFds.end(); ++it) {
 			if (it->fd == fd) {

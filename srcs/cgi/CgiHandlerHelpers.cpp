@@ -23,15 +23,15 @@ bool	CgiHandler::hasError() const {
 }
 
 void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
+	// Don't close here - just mark for removal
+	// The FDs will be closed by removePollFd in main loop
 	if (_stdinFd > 0) {
 		removeFd.push_back(_stdinFd);
-		close(_stdinFd);
 		_stdinFd = -1;
 	}
 
 	if (_stdoutFd > 0) {
 		removeFd.push_back(_stdoutFd);
-		close(_stdoutFd);
 		_stdoutFd = -1;
 	}
 

@@ -1,6 +1,7 @@
 #include "Client.hpp"
 
 int	Client::writeResponse() {
+	updateActivity();
 	std::cerr << "\033[36m[DEBUG] Entering writeResponse for fd " << _fd << "\033[0m" << std::endl;
 	if (_state == REQUEST_READY) {  // Get the response header + body and clean the response buffer
 		std::cerr << "\033[32m[DEBUG] State is REQUEST_READY, preparing response buffer\033[0m" << std::endl;
@@ -42,6 +43,7 @@ int	Client::writeResponse() {
 }
 
 int	Client::readAndParseRequest() {
+	updateActivity();
 	std::cerr << "\033[36m[DEBUG] Entering readAndParseRequest for fd " << _fd << "\033[0m" << std::endl;
 	char	buffer[BUFSIZ];
 	ssize_t	bytesRead;

@@ -6,7 +6,28 @@
 
 CgiHandler::CgiHandler(Client *client) : _client(client) {}
 
-CgiHandler::~CgiHandler() {}
+CgiHandler::~CgiHandler() {
+	// Kill the CGI process if it's still running
+	if (_pid > 0) {
+		kill(_pid, SIGTERM);
+		usleep(100000);
+		
+		int status;
+		pid_t result = waitpid(_pid, &status, WNOHANG);
+		if (result == 0) {
+			kill(_pid, SIGKILL);
+			waitpid(_pid, &status, 0);
+		}
+	}
+	
+	// Close FDs if still open
+	if (_stdinFd > 0) {
+		close(_stdinFd);
+	}
+	if (_stdoutFd > 0) {
+		close(_stdoutFd);
+	}
+}
 
 /******************************************************************************/
 /*						CGI I/O HANDLER										  */

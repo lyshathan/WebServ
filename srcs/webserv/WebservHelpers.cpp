@@ -36,6 +36,8 @@ void Webserv::signalClientReady(std::vector<int> &clientsNeedingOutput) {
 void Webserv::removePollFd(int fd)
 {
     std::cerr << "\033[36m[DEBUG] Entering removePollFd for fd " << fd << "\033[0m" << std::endl;
+    
+    // Remove from _pollFds
     for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
          it != _pollFds.end(); ++it) {
         if (it->fd == fd) {
@@ -45,8 +47,21 @@ void Webserv::removePollFd(int fd)
         }
     }
 
+	// Check if it's a CGI FD
+	std::map<int, Client*>::iterator cgiIt = _cgiToClient.find(fd);
+	if (cgiIt != _cgiToClient.end()) {
+		_cgiToClient.erase(fd);
+		std::cerr << "\033[33m[DEBUG] Removed CGI fd " << fd << " from _cgiToClient\033[0m" << std::endl;
+		close(fd);  // Close CGI FD
+		std::cerr << "\033[31m[DEBUG] Closed CGI fd " << fd << "\033[0m" << std::endl;
+		std::cerr << "\033[36m[DEBUG] Exiting removePollFd\033[0m" << std::endl;
+		return;
+	}
+
+	// Otherwise it's a client FD
 	std::map<int, Client*>::iterator clientIt = _clients.find(fd);
 	if (clientIt != _clients.end()) {
+		// Remove all CGI FDs that point to this client from map
 		for (std::map<int, Client*>::iterator it = _cgiToClient.begin(); it != _cgiToClient.end(); ) {
 			if (it->second == clientIt->second) {
 				std::map<int, Client*>::iterator toErase = it++;

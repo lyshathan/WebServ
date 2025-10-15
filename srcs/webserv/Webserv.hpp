@@ -36,6 +36,7 @@ class Webserv {
 		void		setupPollServer();
 		int			runningServ();
 		int			connectAndRead();
+		void		checkClientTimeouts();
 
 		int			acceptNewConnection(int &, std::vector<struct pollfd> &);
 		void		addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &);

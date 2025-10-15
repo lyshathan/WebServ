@@ -41,6 +41,7 @@ int	Webserv::runningServ(void)
 			return (handleFunctionError("poll"));
 		}
 		else if (status == 0) {
+			checkClientTimeouts();
 			continue;
 		}
 		if (connectAndRead() < 0) // Loop check for each socket
@@ -49,11 +50,33 @@ int	Webserv::runningServ(void)
 	return (0);
 }
 
+void Webserv::checkClientTimeouts() {
+    time_t now = time(NULL);
+    std::vector<int> timeoutFds;
+    
+	// std::cerr << "Check for timeouts" << std::endl;
+
+    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+        if (it->second->hasTimedOut(now))
+		{
+            timeoutFds.push_back(it->first);
+			/// ----- CHECK HERE : need to send a time-out response
+		}
+    }
+    
+    for (size_t i = 0; i < timeoutFds.size(); ++i) {
+        std::cerr << "Client " << timeoutFds[i] << " timed out" << std::endl;
+        disconnectClient(timeoutFds[i]);
+    }
+}
+
 int	Webserv::connectAndRead(void)
 {
 	std::vector<int> clientsNeedingOutput;
 	std::vector<struct pollfd> newPollFds;
     std::vector<int> removeFds;
+
+	checkClientTimeouts();
 
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
@@ -68,6 +91,7 @@ int	Webserv::connectAndRead(void)
 			acceptNewConnection(pfd.fd, newPollFds);  // Do we need to treat this return value?
 			continue;
 		}
+
 		// --- Client sockets ---
 		std::map<int, Client*>::iterator clientIt = _clients.find(pfd.fd);
 		if (clientIt != _clients.end()) {
