@@ -5,9 +5,11 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-CgiHandler::CgiHandler(Client *client) : _client(client) {}
+CgiHandler::CgiHandler(Client *client) : _client(client) {
+}
 
-CgiHandler::~CgiHandler() {}
+CgiHandler::~CgiHandler() {
+}
 
 /******************************************************************************/
 /*						CGI I/O HANDLER										  */
@@ -39,7 +41,6 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 	if ((pfd.revents & POLLHUP) && pfd.fd == _stdoutFd) {
 		handleRead();
 		handleCompletion();
-		markDone();
 	}
 
 	if ((pfd.revents & POLLOUT) && pfd.fd == _stdinFd && _cgiStage == CGI_WRITING) {
@@ -67,7 +68,6 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 }
 
 void CgiHandler::handleCompletion() {
-
 	if (!_client || !_client->httpReq || !_client->httpRes)
     	return;
 
@@ -76,24 +76,26 @@ void CgiHandler::handleCompletion() {
 
 	if (result == _pid) {
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-
-			if (_headersParsed && _headerPos != std::string::npos)
-				_finalResponse = _outputBuffer.substr(_headerPos);
-			else
-				_finalResponse = _outputBuffer;
-
-			_client->httpReq->setCGIResult(_finalResponse);
-			_client->httpReq->setStatus(OK);
-			_client->httpRes->parseResponse();
+			parseBodySendResponse(OK);
 			markDone();
 		} else {
-			_client->httpReq->setStatus(INTERNAL_ERROR);
+			parseBodySendResponse(INTERNAL_ERROR);
 			markError("CGI exited abnormally");
 		}
 	} else if (result == -1) {
-		_client->httpReq->setStatus(INTERNAL_ERROR);
+		parseBodySendResponse(INTERNAL_ERROR);
 		markError("waitpid() failed");
 	}
+}
+
+void	CgiHandler::parseBodySendResponse(int result) {
+	_client->httpReq->setStatus(result);
+	if (_headersParsed && _headerPos != std::string::npos)
+		_finalResponse = _outputBuffer.substr(_headerPos);
+	else
+		_finalResponse = _outputBuffer;
+	_client->httpReq->setCGIResult(_finalResponse);
+	_client->httpRes->parseResponse();
 }
 
 IOStatus	CgiHandler::handleWrite() {
@@ -102,7 +104,6 @@ IOStatus	CgiHandler::handleWrite() {
 	if (remaining == 0)
 		return IO_COMPLETE;
 
-	_client->updateActivity();
 	ssize_t written = write(_stdinFd, _inputBuffer.c_str() + _bytesWritten, remaining);
 
 	if (written <= 0) {
@@ -120,7 +121,6 @@ IOStatus	CgiHandler::handleWrite() {
 IOStatus	CgiHandler::handleRead() {
 	char buffer[4096];
 
-	_client->updateActivity();
 	ssize_t bytesRead = read(_stdoutFd, buffer, sizeof(buffer));
 
 	if (bytesRead == 0)
@@ -136,8 +136,11 @@ IOStatus	CgiHandler::handleRead() {
 	if (_headersParsed) {
 		std::map<std::string, std::string>::iterator it = _cgiHeaders.find("content-length");
 		if (it != _cgiHeaders.end()) {
-			size_t expected = atoi(it->second.c_str());
-			if (_outputBuffer.size() >= expected) {
+			size_t expected = static_cast<size_t>(atoi(it->second.c_str()));
+			size_t bodySize = 0;
+			if (_headerPos != std::string::npos && _outputBuffer.size() > _headerPos)
+				bodySize = _outputBuffer.size() - _headerPos;
+			if (bodySize >= expected) {
 				return IO_COMPLETE;
 			}
 		}

@@ -17,14 +17,14 @@ CONFIG_SERVER = ServerConfig ServerConfigGetter ServerConfigParsing
 CONFIG_UTILS = Utils
 CONFIG_TOKENIZER = AnalyzeToken Tokenizer TokenizerUtils
 
-PARSING = Client ClientHelpers ClientReadWrite
+PARSING = Client ClientHelpers ClientReadWrite ClientGetSet
 
 HTTPREQUEST = HttpRequest HttpRequestHelper HttpLocationConfig \
-				HttpServerConfig HttpRequestError HttpRequestGetters \
+				HttpRequestError HttpRequestGetters \
 				HttpRequestHandler HttpRequestHandlerHelpers \
 				HttpRequestPostHandler HttpRequestDeleteHandler \
 				HttpRequestSetters HttpRequestCGIHelpers \
-				HttpRequestBodyParser
+				HttpRequestBodyParser HttpServerConfig
 
 HTTPRESPONSE = HttpResponse HttpResponseHelper HttpResponseGetters \
 				HttpResponseSetters HttpResponseCookie

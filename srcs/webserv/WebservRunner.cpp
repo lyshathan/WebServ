@@ -120,7 +120,6 @@ int	Webserv::connectAndRead(void)
 void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struct pollfd> &newPollFds,
                                std::vector<int> &removeFds) {
 	if (pfd.revents & POLLHUP) {
-		std::cout << "Removed client " << pfd.fd << "\n";
 		removeFds.push_back(pfd.fd);
 	} else {
 		if (pfd.revents & POLLIN) {
@@ -143,7 +142,6 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 					return ;
 				}
 			} else if (ret == READ_ERROR) {
-				std::cout << "Removed client " << pfd.fd << "\n";
 				removeFds.push_back(pfd.fd);
 			}
 		}

@@ -58,7 +58,6 @@ class HttpRequest {
 		std::string							_queries;
 		std::string							_rawBody;
 		std::map<std::string, std::string>	_extensions;
-		std::vector<std::string>			_env;
 		std::vector<std::string>			_argv;
 		int									_status;
 		int									_clientfd;
@@ -116,6 +115,9 @@ class HttpRequest {
 		void								requestHandler();
 
 		const std::string&					getMethod() const;
+		const std::vector<std::string>		getServerName() const;
+		const std::string&					getQueries() const;
+		const std::vector<int>				getListenPort() const;
 		const std::string&					getUri() const;
 		const std::string&					getVersion() const;
 		const std::string					getRoot() const;

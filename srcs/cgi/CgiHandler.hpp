@@ -27,7 +27,6 @@ class CgiHandler {
 		pid_t								_pid;
 		int									_stdinFd;
 		int									_stdoutFd;
-		std::map<std::string, std::string>	_env;
 		size_t								_bytesWritten;
 		std::map<std::string, std::string>	_cgiHeaders;
 		std::string							_finalResponse;
@@ -51,13 +50,13 @@ class CgiHandler {
 
 		void								tryParseCGIHeaders();
 		void								parseCGIHeaders();
+		void								parseBodySendResponse(int);
 
 	public:
 		CgiHandler(Client *);
 		~CgiHandler();
 
 		void								handleEvent(struct pollfd &, std::vector<int> &);
-		void								cgiInitEnv();
 		void								cgiStart();
 
 		bool								isFinished() const;

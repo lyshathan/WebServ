@@ -41,7 +41,7 @@ class Client {
 		std::string					_clientIP;
 		ClientState 				_state;
 		CgiHandler					*_cgi;
-		time_t 						 _lastActivity;
+		std::map<std::string, std::string> _env;
 
 		static const int CGI_TIMEOUT = 5000;
 
@@ -66,11 +66,10 @@ class Client {
 		std::string			getClientIp() const;
 		void				setState(ClientState);
 		CgiHandler			*getCgi() const;
-		void				updateActivity();
-		bool 				hasTimedOut(time_t);
+		void				cgiInitEnv(); 
+		std::map<std::string, std::string> getCgiEnv() const;
 
 		void				setCgi();
-		std::string getStateString() const;
 
 		HttpRequest		*httpReq;
 		HttpResponse	*httpRes;

@@ -5,7 +5,6 @@
 /******************************************************************************/
 
 void		CgiHandler::cgiStart() {
-	_headersParsed = false;
 	int		stdinFd[2];
 	int		stdoutFd[2];
 
