@@ -34,7 +34,6 @@ int	Webserv::runningServ(void)
 	while (g_running)
 	{
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
-		// loopPool();
 		if (status == -1)
 		{
 			if (!g_running) // Check if shutdown was requested
