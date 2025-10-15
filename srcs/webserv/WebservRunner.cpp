@@ -110,8 +110,10 @@ int	Webserv::connectAndRead(void)
     	}
 	}
 
-	for (size_t i = 0; i < removeFds.size(); ++i)
-        removePollFd(removeFds[i]);
+	// Remove duplicates from removeFds to prevent double-close
+	std::set<int> uniqueRemoveFds(removeFds.begin(), removeFds.end());
+	for (std::set<int>::iterator it = uniqueRemoveFds.begin(); it != uniqueRemoveFds.end(); ++it)
+        removePollFd(*it);
 
     _pollFds.insert(_pollFds.end(), newPollFds.begin(), newPollFds.end());
 	return (1);

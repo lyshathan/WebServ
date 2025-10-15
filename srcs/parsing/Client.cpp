@@ -5,10 +5,14 @@
 /******************************************************************************/
 
 Client::Client(int fd, const Config &config, const std::string &clientIP, size_t pollIndex) :
-	 _pollIndex(pollIndex), _fd(fd), _recvSize(0), _clientIP(clientIP),_state(READING_HEADERS),
+	 _pollIndex(pollIndex), _fd(fd), _recvSize(0), _clientIP(clientIP),_state(READING_HEADERS), _cgi(NULL),
 	 httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq)) {}
 
 Client::~Client() {
+	if (_cgi) {
+		delete _cgi;
+		_cgi = NULL;
+	}
 	delete httpReq;
 	delete httpRes;
 }
