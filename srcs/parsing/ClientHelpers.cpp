@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include "response/HttpResponse.hpp"
 
 void Client::resetClient() {
 	_reqBuffer = "";

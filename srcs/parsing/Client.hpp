@@ -3,7 +3,7 @@
 
 #include "../webserv/Webserv.hpp"
 #include "request/HttpRequest.hpp"
-#include "response/HttpResponse.hpp"
+class HttpResponse;
 #include "../cgi/CgiHandler.hpp"
 
 enum ReadState {
@@ -28,6 +28,7 @@ enum ClientState {
 };
 
 class CgiHandler;
+class HttpResponse;
 
 class Client {
 	private:

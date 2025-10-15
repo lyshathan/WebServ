@@ -15,11 +15,15 @@ struct UserData {
 	std::string city;
 };
 
+class Client;
+class CgiHandler;
+
 class HttpResponse {
 	private:
-		HttpRequest *_request;
 		HttpResponse();
 
+		HttpRequest 							*_request;
+		Client									*_client;
 		bool									_isTextContent;
 		std::map<int, std::string>				_statusPhrases;
 		std::map<int, std::string>				_htmlResponses;
@@ -32,7 +36,7 @@ class HttpResponse {
 		static std::map<std::string, UserData>	_sessions;
 
 	public:
-		HttpResponse(HttpRequest *);
+		HttpResponse(HttpRequest *, Client *);
 		~HttpResponse();
 
 		void	parseResponse();

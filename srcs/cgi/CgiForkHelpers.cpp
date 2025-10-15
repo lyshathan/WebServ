@@ -74,3 +74,60 @@ char **CgiHandler::getEnvArray() {
 	envp[i] = NULL;
 	return envp;
 }
+
+void CgiHandler::tryParseCGIHeaders() {
+    if (_headersParsed)
+        return;
+
+    size_t headerEnd = _outputBuffer.find("\r\n\r\n");
+    if (headerEnd == std::string::npos) {
+        headerEnd = _outputBuffer.find("\n\n");
+        if (headerEnd != std::string::npos)
+            headerEnd += 2;
+    } else
+        headerEnd += 4;
+
+    _headerPos = headerEnd;
+
+    if (headerEnd != std::string::npos) {
+        parseCGIHeaders();
+        _headersParsed = true;
+    }
+}
+
+void CgiHandler::parseCGIHeaders() {
+    std::string headers = _outputBuffer.substr(0, _headerPos);
+    size_t start = 0;
+
+    while (start < headers.length()) {
+        size_t lineEnd = headers.find('\n', start);
+        if (lineEnd == std::string::npos)
+            break;
+
+        std::string line = headers.substr(start, lineEnd - start);
+        if (!line.empty() && line[line.length() - 1] == '\r')
+            line.erase(line.length() - 1);
+
+        size_t colonPos = line.find(':');
+        if (colonPos != std::string::npos) {
+            std::string key = line.substr(0, colonPos);
+            std::string value = line.substr(colonPos + 1);
+
+            while (!value.empty() && value[0] == ' ')
+                value.erase(0, 1);
+            while (!value.empty() && value[value.length() - 1] == ' ')
+                value.erase(value.length() - 1);
+
+            std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+
+            _cgiHeaders[key] = value;
+        }
+        start = lineEnd + 1;
+    }
+
+	std::map<std::string, std::string>::iterator it = _cgiHeaders.begin();
+
+	for (; it != _cgiHeaders.end(); ++it) {
+		std::cout << "[CGI HEADER] " << it->first << " : " << it->second << std::endl;
+	}
+}

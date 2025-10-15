@@ -1,5 +1,6 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
+#include "../parsing/response/HttpResponse.hpp"
 
 void Webserv::loopPool() {
 	for (size_t i = 0; i < _pollFds.size(); ++i) {

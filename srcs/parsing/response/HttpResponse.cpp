@@ -1,4 +1,5 @@
 #include "HttpResponse.hpp"
+#include "../Client.hpp"
 #include "../../ProjectTools.hpp"
 
 std::map<std::string, UserData> HttpResponse::_sessions;
@@ -9,7 +10,7 @@ std::map<std::string, UserData> HttpResponse::_sessions;
 
 HttpResponse::HttpResponse() {};
 
-HttpResponse::HttpResponse(HttpRequest *req) : _request(req),
+HttpResponse::HttpResponse(HttpRequest *req, Client *client) : _request(req), _client(client),
 	_isTextContent(false), _res(""), _mimeType("") {
 	initStatusPhrases();
 	initHtmlResponses();
@@ -53,24 +54,27 @@ void HttpResponse::successParseResponse(int status) {
 void HttpResponse::cgiParseResponse(int status) {
 	_isTextContent = true;
 	_res = _request->getCGIRes();
-	// CgiState* cgiState = _request->getCGIState();
-	// if (cgiState && cgiState->headers_parsed) {
-	// 	std::map<std::string, std::string>::iterator it;
 
-	// 	it = cgiState->_headers.find("content-type");
-	// 	if (it != cgiState->_headers.end())
-	// 		_mimeType = it->second;
-	// 	else
-	// 		_mimeType = "text/html";
-
-	// 	for (it = cgiState->_headers.begin(); it != cgiState->_headers.end(); ++it) {
-	// 		if (it->first != "content-type" && it->first != "content-length") {
-	// 			addHeader(it->first + ": ", it->second);
-	// 		}
-	// 	}
-	// } else
-	// 	
-	_mimeType = "text/html";
+	CgiHandler *cgi = _client->getCgi();
+	if (cgi) {
+		if (cgi->headersParsed()) {
+			std::map<std::string, std::string>::iterator it;
+			std::map<std::string, std::string> cgiHeaders = cgi->getCgiHeaders();
+			if (!cgiHeaders.empty()) {
+				it = cgiHeaders.find("content-type");
+				if (it != cgiHeaders.end())
+					_mimeType = it->second;
+				else
+					_mimeType = "text/html";
+				for (it = cgiHeaders.begin(); it != cgiHeaders.end(); ++it) {
+					if (it->first != "content-type" && it->first != "content-length") {
+					addHeader(it->first + ": ", it->second);
+					}
+				}
+			}
+		} 
+	} else
+		_mimeType = "text/html";
 	setContentHeaders();
 	setConnectionHeader(status);
 }

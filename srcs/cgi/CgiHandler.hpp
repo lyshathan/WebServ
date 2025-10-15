@@ -34,7 +34,6 @@ class CgiHandler {
 		std::string							_outputBuffer;
 		std::string							_inputBuffer;
 		bool								_headersParsed;
-		bool								_stdoutEOF;
 		CgiState							_cgiStage;
 		size_t								_headerPos;
 
@@ -49,6 +48,9 @@ class CgiHandler {
 		void								markError(const std::string &);
 		char 								**getEnvArray();
 		char 								**getArgvArray();
+
+		void								tryParseCGIHeaders();
+		void								parseCGIHeaders();
 
 	public:
 		CgiHandler(Client *);
@@ -65,6 +67,8 @@ class CgiHandler {
 		const std::string					&getResponse() const;
 		int									getStdinFd() const;
 		int									getStdoutFd() const;
+		bool								headersParsed() const;
+		std::map<std::string, std::string>	getCgiHeaders() const;
 		CgiState							getCgiStage() const;
 };
 

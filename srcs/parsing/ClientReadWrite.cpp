@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include "response/HttpResponse.hpp"
 
 int	Client::writeResponse() {
 	std::cerr << "\033[36m[DEBUG] Entering writeResponse for fd " << _fd << "\033[0m" << std::endl;
