@@ -23,7 +23,6 @@ HttpResponse::~HttpResponse() {};
 /******************************************************************************/
 
 void HttpResponse::parseResponse() {
-	std::cerr << "[RESPONSE] Parsing Response\n";
 	int	status = _request->getStatus();
 
 	setStatusLine(status);
@@ -35,10 +34,8 @@ void HttpResponse::parseResponse() {
 		deleteParseResponse();
 	else if (status == 400 || status == 500)
 		errorParseResponse(status);
-	else if (status == 200 && _request->isCGIActive()) {
-		std::cerr << "RESPONSE IS CGI\n";
+	else if (status == 200 && _request->isCGIActive())
 		cgiParseResponse(status);
-	}
 	else
 		successParseResponse(status);
 	std::stringstream ss;
@@ -75,7 +72,7 @@ void HttpResponse::cgiParseResponse(int status) {
 					}
 				}
 			}
-		} 
+		}
 	} else
 		_mimeType = "text/html";
 	setContentHeaders();

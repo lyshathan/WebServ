@@ -20,7 +20,7 @@ bool HttpRequest::isUploadPathValid() {
 	std::string	path = _location->getUploadPath() + _uri;
 	struct stat buf;
 
-	// clearstd::cout << "Upload Path " << path << "\n";
+	// clearstd::cerr << "Upload Path " << path << "\n";
 	if (!stat(path.c_str(),&buf)) {
 		if (S_ISDIR(buf.st_mode)) {
 			if (access(path.c_str(),  R_OK | X_OK) != 0) {

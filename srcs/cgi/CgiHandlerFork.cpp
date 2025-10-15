@@ -7,6 +7,7 @@
 void		CgiHandler::cgiStart() {
 	int		stdinFd[2];
 	int		stdoutFd[2];
+	_client->cgiInitEnv();
 
 	if (pipe(stdinFd) < 0 || pipe(stdoutFd) < 0) {
 		_client->httpReq->setStatus(INTERNAL_ERROR);

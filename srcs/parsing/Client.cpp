@@ -8,7 +8,9 @@
 Client::Client(int fd, const Config &config, const std::string &clientIP, size_t pollIndex) :
 	_pollIndex(pollIndex), _fd(fd), _reqBuffer(), _resBuffer(), _recvSize(0), _bytesSent(0),
 	_clientIP(clientIP), _state(READING_HEADERS), _cgi(NULL),
-	httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq, this)) {}
+	httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq, this)) {
+		
+	}
 
 Client::~Client() {
 	if (httpReq)
@@ -39,7 +41,7 @@ bool Client::isReqComplete() const {
 		}
 		return false;
 	}
-	
+
 	size_t maxBodySize = httpReq->getMaxBody();
 	it = headers.find("content-length");
 	if (it != headers.end()) {

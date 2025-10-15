@@ -151,7 +151,7 @@ void	Config::printTokens()
 
 	for (size_t i = 0 ; i < _tokens.size() ; i++)
 	{
-		std::cout << "#" << i
+		std::cerr << "#" << i
 			<< "	l:" << _tokens[i].line
 			<< PURPLE << "	lvl:" << _tokens[i].level << RESET
 			<< "	[" << _tokens[i].content << "]"

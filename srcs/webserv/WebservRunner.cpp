@@ -2,32 +2,6 @@
 #include "../parsing/Client.hpp"
 #include "../parsing/response/HttpResponse.hpp"
 
-void Webserv::loopPool() {
-	for (size_t i = 0; i < _pollFds.size(); ++i) {
-		struct pollfd &pfd = _pollFds[i];
-
-		std::cout << "[POLL ELEMENT] FD: " << pfd.fd << "\n";
-
-		// Events we are polling for
-		std::cout << "  Events: "
-				<< ((pfd.events & POLLIN) ? "POLLIN " : "")
-				<< ((pfd.events & POLLOUT) ? "POLLOUT " : "")
-				<< ((pfd.events & POLLERR) ? "POLLERR " : "")
-				<< ((pfd.events & POLLHUP) ? "POLLHUP " : "")
-				<< ((pfd.events & POLLNVAL) ? "POLLNVAL " : "")
-				<< "\n";
-
-		// Events that actually occurred
-		std::cout << "  Returned: "
-				<< ((pfd.revents & POLLIN) ? "POLLIN " : "")
-				<< ((pfd.revents & POLLOUT) ? "POLLOUT " : "")
-				<< ((pfd.revents & POLLERR) ? "POLLERR " : "")
-				<< ((pfd.revents & POLLHUP) ? "POLLHUP " : "")
-				<< ((pfd.revents & POLLNVAL) ? "POLLNVAL " : "")
-				<< "\n";
-	}
-}
-
 int	Webserv::runningServ(void)
 {
 	int	status;
@@ -52,9 +26,8 @@ int	Webserv::runningServ(void)
 
 int	Webserv::connectAndRead(void)
 {
-	std::vector<int> clientsNeedingOutput;
 	std::vector<struct pollfd> newPollFds;
-    std::vector<int> removeFds;
+	std::vector<int> removeFds;
 
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
@@ -72,7 +45,7 @@ int	Webserv::connectAndRead(void)
 		// --- Client sockets ---
 		std::map<int, Client*>::iterator clientIt = _clients.find(pfd.fd);
 		if (clientIt != _clients.end()) {
-			// std::cout << "Event is for client " << pfd.fd << "\n";
+			// std::cerr << "Event is for client " << pfd.fd << "\n";
 			Client *client = clientIt->second;
 			if (!client) continue;
 			handleEvents(client, pfd, newPollFds, removeFds);
@@ -95,30 +68,21 @@ int	Webserv::connectAndRead(void)
 				if (clientIt != _pollFds.end())
 					clientIt->events |= POLLOUT;
 				delete (client->getCgi());
-				client->setCgi();
+				client->setCgiNull();
 				client->setState(REQUEST_READY);
 			}
 		}
 	}
 
-	for (size_t i = 0; i < clientsNeedingOutput.size(); ++i) {
-		for (size_t j = 0; j < _pollFds.size(); ++j) {
-			if (_pollFds[j].fd == clientsNeedingOutput[i]) {
-				_pollFds[j].events |= POLLOUT;
-				break;
-        	}
-    	}
-	}
-
 	for (size_t i = 0; i < removeFds.size(); ++i)
-        removePollFd(removeFds[i]);
+		removePollFd(removeFds[i]);
 
-    _pollFds.insert(_pollFds.end(), newPollFds.begin(), newPollFds.end());
+	_pollFds.insert(_pollFds.end(), newPollFds.begin(), newPollFds.end());
 	return (1);
 }
 
 void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struct pollfd> &newPollFds,
-                               std::vector<int> &removeFds) {
+							std::vector<int> &removeFds) {
 	if (pfd.revents & POLLHUP) {
 		removeFds.push_back(pfd.fd);
 	} else {

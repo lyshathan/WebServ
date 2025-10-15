@@ -5,42 +5,27 @@
 /*						CONSTRUCTORS & DESTRUCTORS							  */
 /******************************************************************************/
 
-CgiHandler::CgiHandler(Client *client) : _client(client) {
-}
+CgiHandler::CgiHandler(Client *client) : _client(client) {}
 
-CgiHandler::~CgiHandler() {
-}
+CgiHandler::~CgiHandler() {}
 
 /******************************************************************************/
 /*						CGI I/O HANDLER										  */
 /******************************************************************************/
 
-int	CgiHandler::getStdinFd () const { return _stdinFd; }
-
-int	CgiHandler::getStdoutFd () const { return _stdoutFd; }
-
-bool CgiHandler::headersParsed () const { return _headersParsed; }
-
-std::map<std::string, std::string> CgiHandler::getCgiHeaders() const { return _cgiHeaders; }
-
-CgiState CgiHandler::getCgiStage () const { return _cgiStage; }
 
 void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 	if (pfd.revents & (POLLERR | POLLNVAL)) {
-        if (pfd.fd == _stdoutFd) {
-            IOStatus r = handleRead();
-            if (r == IO_INCOMPLETE) {
-                return;
-            }
-        }
-        markError("Poll error");
-        cleanUp(removeFds);
-        return;
-    }
+		markError("Poll error");
+		cleanUp(removeFds);
+		return;
+	}
 
 	if ((pfd.revents & POLLHUP) && pfd.fd == _stdoutFd) {
-		handleRead();
+		if (_cgiStage == CGI_READING)
+			handleRead();
 		handleCompletion();
+		removeFds.push_back(_stdoutFd);
 	}
 
 	if ((pfd.revents & POLLOUT) && pfd.fd == _stdinFd && _cgiStage == CGI_WRITING) {
@@ -58,22 +43,24 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 		IOStatus res = handleRead();
 		if (res == IO_COMPLETE) {
 			handleCompletion();
-			return;
+			removeFds.push_back(_stdoutFd);
 		} else if (res == IO_ERROR) {
 			markError("Read error");
 			cleanUp(removeFds);
-			return;
 		}
 	}
 }
 
 void CgiHandler::handleCompletion() {
 	if (!_client || !_client->httpReq || !_client->httpRes)
-    	return;
+		return;
 
 	int status;
 	pid_t result = waitpid(_pid, &status, WNOHANG);
 
+	std::cerr << "Result " << result << "\n";
+	if (result == 0)
+		return;
 	if (result == _pid) {
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			parseBodySendResponse(OK);
@@ -82,7 +69,7 @@ void CgiHandler::handleCompletion() {
 			parseBodySendResponse(INTERNAL_ERROR);
 			markError("CGI exited abnormally");
 		}
-	} else if (result == -1) {
+	} else {
 		parseBodySendResponse(INTERNAL_ERROR);
 		markError("waitpid() failed");
 	}

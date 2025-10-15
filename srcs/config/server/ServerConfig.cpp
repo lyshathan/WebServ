@@ -83,7 +83,7 @@ void	ServerConfig::check(GlobalConfig &global)
 	}
 	else
 		setDefaultLocation();
-	
+
 
 }
 
@@ -136,31 +136,31 @@ void	ServerConfig::printServer(void) const
 	std::string indent = "|	|___ ";
 	std::string list = "|	|	- ";
 
-	std::cout << "|" << std::endl;
-	std::cout << "|" << PURPLE << "==== SERVER " << _ID << "========" << RESET << std::endl;
-	std::cout << indent << "Listen IP:port :" << std::endl;
+	std::cerr << "|" << std::endl;
+	std::cerr << "|" << PURPLE << "==== SERVER " << _ID << "========" << RESET << std::endl;
+	std::cerr << indent << "Listen IP:port :" << std::endl;
 
 
 	for (std::map<uint16_t, std::string>::const_iterator it = _portAndIP.begin() ; it != _portAndIP.end() ; it++)
 	{
-		std::cout << list << it->second << ":" << it->first << std::endl;
+		std::cerr << list << it->second << ":" << it->first << std::endl;
 	}
-	std::cout << indent << "Server Names :" << std::endl;
+	std::cerr << indent << "Server Names :" << std::endl;
 	for (std::vector<std::string>::const_iterator it = _serverNames.begin() ; it != _serverNames.end() ; it++)
 	{
-		std::cout << list << *it << std::endl;
+		std::cerr << list << *it << std::endl;
 	}
-	std::cout << indent << "Root : " << (_root == "" ? "UNDEFINED" : _root) << std::endl;
-	std::cout << indent << "Index files : " << std::endl;
+	std::cerr << indent << "Root : " << (_root == "" ? "UNDEFINED" : _root) << std::endl;
+	std::cerr << indent << "Index files : " << std::endl;
 	for (std::vector<std::string>::const_iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
 	{
-		std::cout << list << *it << std::endl;
+		std::cerr << list << *it << std::endl;
 	}
-	std::cout << indent << "Client max body size : " << _clientMaxBodySize << std::endl;
-	std::cout << indent << "Error pages : " << std::endl;
+	std::cerr << indent << "Client max body size : " << _clientMaxBodySize << std::endl;
+	std::cerr << indent << "Error pages : " << std::endl;
 	for (std::map< int , std::string >::const_iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
 	{
-		std::cout << list << it->first << " | " << it->second << std::endl;
+		std::cerr << list << it->first << " | " << it->second << std::endl;
 	}
 	for (std::vector< LocationConfig >::const_iterator it = _locations.begin() ; it != _locations.end() ; it++)
 	{

@@ -90,11 +90,11 @@ const std::vector< ServerConfig > & Config::getServerConfig() const
 
 void	Config::PrintConfig(void)
 {
-	std::cout << "================================================================" << std::endl;
+	std::cerr << "================================================================" << std::endl;
 	_globalConfig.printGlobal();
 	for (std::vector< ServerConfig >::iterator itServer = _serversConfig.begin() ; itServer != _serversConfig.end() ; itServer++)
 	{
 		itServer->printServer();
 	}
-	std::cout << "================================================================" << std::endl << std::endl;
+	std::cerr << "================================================================" << std::endl << std::endl;
 }

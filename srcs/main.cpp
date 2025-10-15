@@ -11,7 +11,7 @@ void sigint_handler(int sig)
 {
 	(void)sig;
 	g_running = 0;
-	std::cout << "\n";
+	std::cerr << "\n";
 	printLog(BLUE, "INFO", "Shutting down gracefully...");
 }
 
@@ -47,7 +47,7 @@ int main(int arc, char **arv)
 		return (1);
 	}
 
-	
+
 	Config config;
 	try {
 		config = Config(filename);

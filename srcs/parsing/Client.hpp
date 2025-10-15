@@ -7,15 +7,15 @@ class HttpResponse;
 #include "../cgi/CgiHandler.hpp"
 
 enum ReadState {
-    READ_INCOMPLETE = 0,
-    READ_COMPLETE = 1,
-    READ_ERROR = -1
+	READ_INCOMPLETE = 0,
+	READ_COMPLETE = 1,
+	READ_ERROR = -1
 };
 
 enum WriteState {
-    WRITE_INCOMPLETE = 0,
-    WRITE_COMPLETE = 1,
-    WRITE_ERROR = -1
+	WRITE_INCOMPLETE = 0,
+	WRITE_COMPLETE = 1,
+	WRITE_ERROR = -1
 };
 
 enum ClientState {
@@ -66,10 +66,10 @@ class Client {
 		std::string			getClientIp() const;
 		void				setState(ClientState);
 		CgiHandler			*getCgi() const;
-		void				cgiInitEnv(); 
+		void				cgiInitEnv();
 		std::map<std::string, std::string> getCgiEnv() const;
 
-		void				setCgi();
+		void				setCgiNull();
 
 		HttpRequest		*httpReq;
 		HttpResponse	*httpRes;

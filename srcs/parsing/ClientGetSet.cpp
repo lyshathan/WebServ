@@ -12,6 +12,6 @@ std::string	Client::getClientIp() const { return _clientIP; }
 
 CgiHandler	*Client::getCgi() const { return _cgi; }
 
-void	Client::setCgi() { _cgi = NULL; }
+void	Client::setCgiNull() { _cgi = NULL; }
 
 std::map<std::string, std::string> Client::getCgiEnv() const { return _env; }

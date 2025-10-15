@@ -42,16 +42,12 @@ class Webserv {
 
 		void		disconnectClient(int &);
 
-		void		handleEvents(Client *, struct pollfd &pfd, std::vector<struct pollfd> &,
-                               std::vector<int> &);
+		void		handleEvents(Client *, struct pollfd &pfd, std::vector<struct pollfd> &,std::vector<int> &);
 
 		void		addCGIToPoll(Client *, CgiHandler *, std::vector<struct pollfd> &);
 		void		removePollFd(int fd);
 
 		void		signalClientReady(std::vector<int> &);
-		void		removeFdFromPoll(int fd);
-
-		void		loopPool();
 
 	public :
 		Webserv(Config const &config);
