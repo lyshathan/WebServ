@@ -35,10 +35,11 @@ class Webserv {
 		int			setupListen();
 		void		setupPollServer();
 		int			runningServ();
-		int			connectAndRead();
+		int			connectAndRead(std::vector<struct pollfd> &, std::vector<int> &);
 
 		int			acceptNewConnection(int &, std::vector<struct pollfd> &);
 		void		addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &);
+		void		handleClientCGI(Client *, std::vector<struct pollfd> &, struct pollfd &pfd);
 
 		void		disconnectClient(int &);
 
@@ -48,6 +49,7 @@ class Webserv {
 		void		removePollFd(int fd);
 
 		void		signalClientReady(Client *);
+		void		checkClientTimeouts(std::vector<int> &);
 
 	public :
 		Webserv(Config const &config);

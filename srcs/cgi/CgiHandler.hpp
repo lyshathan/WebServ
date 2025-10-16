@@ -43,7 +43,6 @@ class CgiHandler {
 		void								handleChild(int stdin_fd[2], int stdout_fd[2]);
 		void								handleParent(int stdin_fd[2], int stdout_fd[2]);
 
-		void								markDone();
 		void								markError(const std::string &);
 		char 								**getEnvArray();
 		char 								**getArgvArray();
@@ -62,6 +61,7 @@ class CgiHandler {
 		bool								isFinished() const;
 		bool								hasError() const;
 		void								cleanUp(std::vector<int>&);
+		void								markDone();
 
 		const std::string					&getResponse() const;
 		int									getStdinFd() const;
@@ -69,6 +69,7 @@ class CgiHandler {
 		bool								headersParsed() const;
 		std::map<std::string, std::string>	getCgiHeaders() const;
 		CgiState							getCgiStage() const;
+		pid_t								getPid() const;
 };
 
 #endif

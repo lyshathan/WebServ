@@ -15,3 +15,5 @@ CgiHandler	*Client::getCgi() const { return _cgi; }
 void	Client::setCgiNull() { _cgi = NULL; }
 
 std::map<std::string, std::string> Client::getCgiEnv() const { return _env; }
+
+ClientState Client::getClientState() const {return _state; } 

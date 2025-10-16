@@ -35,10 +35,13 @@ void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 		_stdoutFd = -1;
 	}
 
-	if (_pid > 0) {
+	if (_pid > 0) {		
 		int status;
-		// Reap if possible, don't block
-		waitpid(_pid, &status, WNOHANG);
+		pid_t result = waitpid(_pid, &status, WNOHANG);
+		if (result == 0) {
+			kill(_pid, SIGKILL);
+			waitpid(_pid, &status, 0);
+		}
 		_pid = -1;
 	}
 

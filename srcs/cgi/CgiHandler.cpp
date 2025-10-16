@@ -82,6 +82,7 @@ void	CgiHandler::parseBodySendResponse(int result) {
 }
 
 IOStatus	CgiHandler::handleWrite() {
+	_client->updateActivity();
 	size_t remaining = _inputBuffer.size() - _bytesWritten;
 
 	if (remaining == 0)
@@ -102,6 +103,7 @@ IOStatus	CgiHandler::handleWrite() {
 }
 
 IOStatus	CgiHandler::handleRead() {
+	_client->updateActivity();
 	char buffer[4096];
 
 	ssize_t bytesRead = read(_stdoutFd, buffer, sizeof(buffer));

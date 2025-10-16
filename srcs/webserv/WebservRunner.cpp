@@ -6,6 +6,9 @@ int	Webserv::runningServ(void)
 {
 	int	status;
 	int	timeout = 1000;
+	std::vector<struct pollfd> newPollFds;
+	std::vector<int> removeFds;
+
 	while (g_running)
 	{
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
@@ -16,19 +19,19 @@ int	Webserv::runningServ(void)
 			return (handleFunctionError("poll"));
 		}
 		else if (status == 0) {
+			checkClientTimeouts(removeFds);
 			continue;
 		}
-		if (connectAndRead() < 0)
+		if (connectAndRead(newPollFds, removeFds) < 0)
 			return(1);
 	}
 	return (0);
 }
 
-int	Webserv::connectAndRead(void)
+int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<int> &removeFds)
 {
-	std::vector<struct pollfd> newPollFds;
-	std::vector<int> removeFds;
-
+	newPollFds.clear();
+    removeFds.clear();
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
@@ -47,8 +50,8 @@ int	Webserv::connectAndRead(void)
 		if (clientIt != _clients.end()) {
 			// std::cerr << "Event is for client " << pfd.fd << "\n";
 			Client *client = clientIt->second;
-			if (!client) continue;
-			handleEvents(client, pfd, newPollFds, removeFds);
+			if (client)
+				handleEvents(client, pfd, newPollFds, removeFds);
 			continue;
 		}
 
@@ -56,12 +59,13 @@ int	Webserv::connectAndRead(void)
 		std::map<int, Client *>::iterator cgiIt = _cgiToClient.find(pfd.fd);
 		if (cgiIt != _cgiToClient.end()) {
 			Client *client = cgiIt->second;
-			if (!client) continue;
-			CgiHandler *cgi = client->getCgi();
-			if (!cgi) continue;
-			cgi->handleEvent(pfd, removeFds);
-			if (cgi->isFinished())
-				signalClientReady(client);
+			if (client) {
+				CgiHandler *cgi = client->getCgi();
+				if (!cgi) continue;
+				cgi->handleEvent(pfd, removeFds);
+				if (cgi->isFinished())
+					signalClientReady(client);
+			}
 		}
 	}
 
@@ -74,38 +78,31 @@ int	Webserv::connectAndRead(void)
 
 void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struct pollfd> &newPollFds,
 							std::vector<int> &removeFds) {
-	if (pfd.revents & POLLHUP) {
+	if (pfd.revents & POLLHUP)
 		removeFds.push_back(pfd.fd);
-	} else {
-		if (pfd.revents & POLLIN) {
-			int ret = client->readAndParseRequest();
-			if (ret == READ_COMPLETE) {
-				client->httpReq->requestHandler();
 
-				if (client->isCGI()) {
-					client->launchCGI();
-					CgiHandler *cgi = client->getCgi();
-					if (cgi) {
-						addCGIToPoll(client, cgi, newPollFds);
-						pfd.events &= ~POLLIN;
-						client->setState(CGI_PROCESSING);
-						return ;
-					}
-				} else {
-					client->httpRes->parseResponse();
-					pfd.events |= POLLOUT;
-					return ;
-				}
-			} else if (ret == READ_ERROR) {
-				removeFds.push_back(pfd.fd);
+	if (pfd.revents & POLLIN) {
+		int ret = client->readAndParseRequest();
+
+		if (ret == READ_COMPLETE) {
+			client->httpReq->requestHandler();
+
+			if (client->isCGI()) {
+				handleClientCGI(client, newPollFds, pfd);
 			}
-		}
-		if (pfd.revents & POLLOUT) {
-			int ret = client->writeResponse();
-			if (ret == WRITE_INCOMPLETE) {
+			else {
+				client->httpRes->parseResponse();
+				pfd.events |= POLLOUT;
 				return ;
 			}
+		} else if (ret == READ_ERROR)
 			removeFds.push_back(pfd.fd);
-		}
+	}
+
+	if (pfd.revents & POLLOUT) {
+		int ret = client->writeResponse();
+		if (ret == WRITE_INCOMPLETE)
+			return ;
+		removeFds.push_back(pfd.fd);
 	}
 }

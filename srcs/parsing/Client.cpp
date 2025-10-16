@@ -7,7 +7,7 @@
 
 Client::Client(int fd, const Config &config, const std::string &clientIP, size_t pollIndex) :
 	_pollIndex(pollIndex), _fd(fd), _reqBuffer(), _resBuffer(), _recvSize(0), _bytesSent(0),
-	_clientIP(clientIP), _state(READING_HEADERS), _cgi(NULL),
+	_clientIP(clientIP), _state(READING_HEADERS), _cgi(NULL), _lastActivity(time(NULL)),
 	httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq, this)) {
 		
 	}
@@ -24,6 +24,18 @@ Client::~Client() {
 /******************************************************************************/
 /*						PARSE  HELPER FUNCTIONS								  */
 /******************************************************************************/
+
+bool	Client::hasTimedOut(time_t now) {
+	time_t elapse = now - _lastActivity;
+
+	switch (_state) {
+		case(READING_HEADERS): return (elapse > HEADER_TIMEOUT);
+		case(READING_BODY): return (elapse > BODY_TIMEOUT);
+		case(CGI_PROCESSING): return (elapse > CGI_TIMEOUT);
+		case(SENDING_RESPONSE): return (elapse > WRITE_TIMEOUT);
+		default : return (false);
+	}
+}
 
 bool Client::isReqComplete() const {
 	std::map<std::string, std::string> headers = httpReq->getHeaders();

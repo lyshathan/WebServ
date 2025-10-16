@@ -31,6 +31,7 @@
 #define INTERNAL_ERROR 500
 #define NO_CONTENT 204
 #define PAYLOAD_TOO_LARGE 413
+#define REQUEST_TIMEOUT 408
 #define CGI_PENDING 1000
 
 typedef enum	e_servState {

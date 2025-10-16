@@ -32,7 +32,7 @@ void HttpResponse::parseResponse() {
 	}
 	else if (status == 204)
 		deleteParseResponse();
-	else if (status == 400 || status == 500)
+	else if (status == 400 || status == 500 || status == 408)
 		errorParseResponse(status);
 	else if (status == 200 && _request->isCGIActive())
 		cgiParseResponse(status);

@@ -14,6 +14,8 @@ std::map<std::string, std::string> CgiHandler::getCgiHeaders() const { return _c
 
 CgiState CgiHandler::getCgiStage () const { return _cgiStage; }
 
+pid_t	CgiHandler::getPid() const { return _pid; }
+
 /******************************************************************************/
 /*						CGI FORK HELPERS									  */
 /******************************************************************************/

@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
-
+#include "../parsing/response/HttpResponse.hpp"
 
 void Webserv::addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &newPollFds)
 {
@@ -14,6 +14,17 @@ void Webserv::addClient(int newClientFd, const std::string &clientIP, std::vecto
 
 	size_t index = _pollFds.size() - 1;
 	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, index);
+}
+
+void Webserv::handleClientCGI(Client *client, std::vector<struct pollfd> &newPollFds, struct pollfd &pfd) {
+	client->launchCGI();
+	CgiHandler *cgi = client->getCgi();
+	if (cgi) {
+		addCGIToPoll(client, cgi, newPollFds);
+		pfd.events &= ~POLLIN;
+		client->setState(CGI_PROCESSING);
+		return ;
+	}
 }
 
 int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newPollFds)
@@ -72,4 +83,22 @@ void Webserv::signalClientReady(Client *client) {
 	delete (client->getCgi());
 	client->setCgiNull();
 	client->setState(REQUEST_READY);
+}
+
+void Webserv::checkClientTimeouts(std::vector<int> &removeFds) {
+    time_t now = time(NULL);
+
+    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+		Client *client = it->second;
+        if (client->hasTimedOut(now))
+		{
+			client->httpReq->setStatus(REQUEST_TIMEOUT);
+			client->httpRes->parseResponse();
+     		std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
+			CgiHandler *cgi = client->getCgi();
+			if (cgi)
+				cgi->cleanUp(removeFds);
+			signalClientReady(client);
+    	}
+	}
 }
