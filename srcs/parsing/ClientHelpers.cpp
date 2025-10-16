@@ -65,3 +65,15 @@ bool Client::isReqComplete() const {
 }
 
 void Client::updateActivity() { _lastActivity = time(NULL); }
+
+std::string Client::getStateString() const
+{
+	switch(_state)
+	{
+		case(READING_HEADERS) : return ("[reading header]");
+		case(READING_BODY) : return ("[reading body]");
+		case(CGI_PROCESSING) : return ("[cgi processing]");
+		case(SENDING_RESPONSE) : return ("[writing]");
+		default : return ("undefined");
+	}
+}

@@ -67,14 +67,13 @@ class Client {
 		int					getFd() const;
 		size_t				getPollIndex();
 		std::string			getClientIp() const;
-		ClientState			getClientState() const;
 		void				setState(ClientState);
 		CgiHandler			*getCgi() const;
 		void				updateActivity();
 		bool 				hasTimedOut(time_t);
 
 		void				setCgi();
-		std::string getStateString() const;
+		std::string			getStateString() const;
 
 		HttpRequest		*httpReq;
 		HttpResponse	*httpRes;

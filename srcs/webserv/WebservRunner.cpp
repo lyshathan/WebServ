@@ -59,13 +59,13 @@ void Webserv::checkClientTimeouts() {
     for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
         if (it->second->hasTimedOut(now))
 		{
+     	   std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
             timeoutFds.push_back(it->first);
 			/// ----- CHECK HERE : need to send a time-out response
 		}
     }
     
     for (size_t i = 0; i < timeoutFds.size(); ++i) {
-        std::cerr << "Client " << timeoutFds[i] << " timed out" << std::endl;
         disconnectClient(timeoutFds[i]);
     }
 }
