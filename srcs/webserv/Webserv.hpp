@@ -47,7 +47,7 @@ class Webserv {
 		void		addCGIToPoll(Client *, CgiHandler *, std::vector<struct pollfd> &);
 		void		removePollFd(int fd);
 
-		void		signalClientReady(std::vector<int> &);
+		void		signalClientReady(Client *);
 
 	public :
 		Webserv(Config const &config);

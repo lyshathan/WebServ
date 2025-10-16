@@ -11,14 +11,14 @@ int	Webserv::runningServ(void)
 		status = poll(_pollFds.data(), _pollFds.size(), timeout);
 		if (status == -1)
 		{
-			if (!g_running) // Check if shutdown was requested
+			if (!g_running)
 				break;
 			return (handleFunctionError("poll"));
 		}
 		else if (status == 0) {
 			continue;
 		}
-		if (connectAndRead() < 0) // Loop check for each socket
+		if (connectAndRead() < 0)
 			return(1);
 	}
 	return (0);
@@ -33,8 +33,7 @@ int	Webserv::connectAndRead(void)
 	{
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
 
-		if (pfd.revents == 0)
-			continue;
+		if (pfd.revents == 0) continue;
 
 		// --- Server sockets ---
 		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), pfd.fd);
@@ -42,6 +41,7 @@ int	Webserv::connectAndRead(void)
 			acceptNewConnection(pfd.fd, newPollFds);  // Do we need to treat this return value?
 			continue;
 		}
+
 		// --- Client sockets ---
 		std::map<int, Client*>::iterator clientIt = _clients.find(pfd.fd);
 		if (clientIt != _clients.end()) {
@@ -51,6 +51,7 @@ int	Webserv::connectAndRead(void)
 			handleEvents(client, pfd, newPollFds, removeFds);
 			continue;
 		}
+
 		// --- CGI FDs ---
 		std::map<int, Client *>::iterator cgiIt = _cgiToClient.find(pfd.fd);
 		if (cgiIt != _cgiToClient.end()) {
@@ -59,18 +60,8 @@ int	Webserv::connectAndRead(void)
 			CgiHandler *cgi = client->getCgi();
 			if (!cgi) continue;
 			cgi->handleEvent(pfd, removeFds);
-			if (cgi->isFinished()) {
-				std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();
-				for (; clientIt != _pollFds.end(); ++clientIt)
-					if (clientIt->fd == client->getFd())
-						break;
-
-				if (clientIt != _pollFds.end())
-					clientIt->events |= POLLOUT;
-				delete (client->getCgi());
-				client->setCgiNull();
-				client->setState(REQUEST_READY);
-			}
+			if (cgi->isFinished())
+				signalClientReady(client);
 		}
 	}
 

@@ -15,6 +15,7 @@ CgiHandler::~CgiHandler() {}
 
 
 void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
+
 	if (pfd.revents & (POLLERR | POLLNVAL)) {
 		markError("Poll error");
 		cleanUp(removeFds);
@@ -25,7 +26,6 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 		if (_cgiStage == CGI_READING)
 			handleRead();
 		handleCompletion();
-		removeFds.push_back(_stdoutFd);
 	}
 
 	if ((pfd.revents & POLLOUT) && pfd.fd == _stdinFd && _cgiStage == CGI_WRITING) {
@@ -43,7 +43,6 @@ void CgiHandler::handleEvent(struct pollfd &pfd, std::vector<int> &removeFds) {
 		IOStatus res = handleRead();
 		if (res == IO_COMPLETE) {
 			handleCompletion();
-			removeFds.push_back(_stdoutFd);
 		} else if (res == IO_ERROR) {
 			markError("Read error");
 			cleanUp(removeFds);
@@ -57,10 +56,7 @@ void CgiHandler::handleCompletion() {
 
 	int status;
 	pid_t result = waitpid(_pid, &status, WNOHANG);
-
-	std::cerr << "Result " << result << "\n";
-	if (result == 0)
-		return;
+	
 	if (result == _pid) {
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			parseBodySendResponse(OK);
@@ -69,7 +65,7 @@ void CgiHandler::handleCompletion() {
 			parseBodySendResponse(INTERNAL_ERROR);
 			markError("CGI exited abnormally");
 		}
-	} else {
+	} else if (result == -1) {
 		parseBodySendResponse(INTERNAL_ERROR);
 		markError("waitpid() failed");
 	}

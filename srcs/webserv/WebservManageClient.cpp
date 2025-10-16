@@ -60,3 +60,16 @@ void Webserv::disconnectClient(int &fd)
 			}
 		}
 }
+
+void Webserv::signalClientReady(Client *client) {
+	std::cerr << "\033[36m[DEBUG] Client finished, ready to exit\033[0m" << std::endl;
+	std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();
+	for (; clientIt != _pollFds.end(); ++clientIt)
+		if (clientIt->fd == client->getFd())
+			break;
+	if (clientIt != _pollFds.end())
+		clientIt->events |= POLLOUT;
+	delete (client->getCgi());
+	client->setCgiNull();
+	client->setState(REQUEST_READY);
+}

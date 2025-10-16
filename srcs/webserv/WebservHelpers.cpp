@@ -18,18 +18,6 @@ void Webserv::addCGIToPoll(Client *client, CgiHandler *cgi, std::vector<struct p
 	}
 }
 
-void Webserv::signalClientReady(std::vector<int> &clientsNeedingOutput) {
-	for (size_t i = 0; i < clientsNeedingOutput.size(); ++i) {
-		for (size_t j = 0; j < _pollFds.size(); ++j) {
-			if (_pollFds[j].fd == clientsNeedingOutput[i]) {
-				_pollFds[j].events |= POLLOUT;
-				break;
-			}
-		}
-	}
-	std::cerr << "\033[36m[DEBUG] Exiting signalClientReady\033[0m" << std::endl;
-}
-
 void Webserv::removePollFd(int fd)
 {
 	std::cerr << "\033[36m[DEBUG] Entering removePollFd for fd " << fd << "\033[0m" << std::endl;
