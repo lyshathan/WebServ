@@ -49,30 +49,6 @@ int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newP
 	return (0);
 }
 
-void Webserv::disconnectClient(int &fd)
-{
-	// // Check if client has active CGI and clean it up
-	// if (_clients.find(clientFd) != _clients.end() &&
-	// 	_clients[clientFd]->httpReq->getCGIState() != NULL) {
-	// 	cleanupCGI(clientFd, _clients[clientFd]->httpReq->getCGIState());
-	// }
-
-	std::stringstream msg;
-	msg << "Client #" << fd << " disconnected";
-	printLog(BLUE, "INFO", msg.str());
-	close (fd);
-	delete _clients[fd];
-	_clients.erase(fd);
-
-	for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
-		it != _pollFds.end(); ++it) {
-			if (it->fd == fd) {
-				_pollFds.erase(it);
-				break;
-			}
-		}
-}
-
 void Webserv::signalClientReady(Client *client) {
 	std::cerr << "\033[36m[DEBUG] Client finished, ready to exit\033[0m" << std::endl;
 	std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();

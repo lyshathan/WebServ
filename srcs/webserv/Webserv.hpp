@@ -41,8 +41,6 @@ class Webserv {
 		void		addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &);
 		void		handleClientCGI(Client *, std::vector<struct pollfd> &, struct pollfd &pfd);
 
-		void		disconnectClient(int &);
-
 		void		handleEvents(Client *, struct pollfd &pfd, std::vector<struct pollfd> &,std::vector<int> &);
 
 		void		addCGIToPoll(Client *, CgiHandler *, std::vector<struct pollfd> &);

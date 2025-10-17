@@ -69,6 +69,8 @@ void HttpRequest::pickServerConfig() {
 	std::stringstream ss;
 	ss << _server->getID();
 	printLog(PURPLE, "INFO", "Chosen server configuration : " + ss.str());
+
+	// _server->printServer();
 }
 
 

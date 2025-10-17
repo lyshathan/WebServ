@@ -133,6 +133,15 @@ void	LocationConfig::check(ServerConfig &server)
 		_errorPages = server.getErrorPages();				// Set error pages inherited
 	if (std::find(_allowMethod.begin(), _allowMethod.end(), "POST") != _allowMethod.end() && _uploadPath.empty())
 		throwError(" Missing upload path for POST method");
+
+	const std::map<int, std::string>& serverErrPagesMap = server.getErrorPages();
+	std::map<int, std::string>::const_iterator serverErrPages = serverErrPagesMap.begin();
+	if (serverErrPages != serverErrPagesMap.end()) {
+		for (; serverErrPages != serverErrPagesMap.end(); ++serverErrPages) {
+			if (_errorPages.find(serverErrPages->first) == _errorPages.end())
+				_errorPages[serverErrPages->first] = serverErrPages->second;
+		}
+	}
 }
 
 
