@@ -5,10 +5,14 @@
 /******************************************************************************/
 
 bool HttpRequest::validateMethods() {
+	if (!_location) {
+		_status = NOT_ALLOWED;
+		return false;
+	}
 	std::vector<std::string> allowMethods = _location->getAllowMethods();
 	std::vector<std::string>::iterator it = allowMethods.begin();
 
-	if (!allowMethods.empty()) {
+	if (_location && !allowMethods.empty()) {
 		for (; it != allowMethods.end(); ++it) {
 			if ((*it).compare(_method) == 0)
 				return true;
@@ -20,6 +24,11 @@ bool HttpRequest::validateMethods() {
 
 bool HttpRequest::setUri(std::string &path) {
 	std::string filepath;
+	if (!_location) {
+		if (!_status)
+			_status = NOT_FOUND;
+		return false;
+	}
 	std::vector<std::string> index = _location->getIndex();
 
 	if (!index.empty()) {
@@ -36,7 +45,7 @@ bool HttpRequest::setUri(std::string &path) {
 			}
 		}
 	}
-	if (_location->getAutoIndex())
+	if (_location && _location->getAutoIndex())
 		return true;
 	if (!_status)
 		_status = NOT_FOUND;

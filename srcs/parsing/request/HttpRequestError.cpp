@@ -4,6 +4,8 @@ void HttpRequest::setErrorPage() {
 	if (_isProccessingError)
 		return ;
 	_isProccessingError = true;
+	if (!_location)
+		return ;
 	std::map<int, std::string> path = _location->getErrorPages();
 	std::string errorPath = _location->getRoot();
 

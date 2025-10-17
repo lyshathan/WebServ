@@ -38,6 +38,8 @@ void HttpRequest::getHandler() {
 }
 
 bool HttpRequest::checkReturn() {
+	if (!_location)
+		return false;
 	std::pair<int, std::string> returnCode = _location->getReturn();
 
 	if (returnCode.first) {
@@ -53,7 +55,7 @@ bool HttpRequest::isLocationPathValid() {
 	std::string	path = _location->getRoot() + _uri;
 
 	struct stat buf;
-	if (!stat(path.c_str(),&buf)) {
+	if (_location && !stat(path.c_str(),&buf)) {
 		if (S_ISREG(buf.st_mode)) {
 			if (access(path.c_str(),  R_OK) != 0) {
 				_status = FORBIDDEN;

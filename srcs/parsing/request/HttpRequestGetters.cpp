@@ -12,7 +12,7 @@ const std::string& HttpRequest::getVersion() const {return _version;}
 
 const std::string& HttpRequest::getQueries() const {return _queries;}
 
-const std::string HttpRequest::getRoot() const { return _location->getRoot(); }
+const std::string HttpRequest::getRoot() const { return (_location ? _location->getRoot() : std::string()); }
 
 const std::string& HttpRequest::getCGIRes() const { return _cgiRes; };
 
@@ -26,12 +26,14 @@ bool HttpRequest::getHeadersParsed() const {return _areHeadersParsed;}
 
 bool HttpRequest::isCGIActive() const { return _isCGI; }
 
-bool HttpRequest::getAutoIndex() const { return _location->getAutoIndex(); }
+bool HttpRequest::getAutoIndex() const { return (_location ? _location->getAutoIndex() : false); }
 
-size_t	HttpRequest::getMaxBody() const { return _location->getClientMaxBodySize(); }
+size_t	HttpRequest::getMaxBody() const { return (_location ? _location->getClientMaxBodySize() : 0); }
+
+// const std::string HttpRequest::safeStringFallback() const { return std::string(); }
 
 std::vector<std::string> HttpRequest::getArgv() const { return _argv; }
 
-const std::vector<std::string> HttpRequest::getServerName() const { return _server->getServerName(); }
+const std::vector<std::string> HttpRequest::getServerName() const { return (_server ? _server->getServerName() : std::vector<std::string>()); }
 
-const std::vector<int> HttpRequest::getListenPort() const {return _server->getListenPort();}
+const std::vector<int> HttpRequest::getListenPort() const {return (_server ? _server->getListenPort() : std::vector<int>());}

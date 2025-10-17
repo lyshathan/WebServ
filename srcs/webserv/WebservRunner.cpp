@@ -19,7 +19,7 @@ int	Webserv::runningServ(void)
 			return (handleFunctionError("poll"));
 		}
 		else if (status == 0) {
-			checkClientTimeouts(removeFds);
+			// checkClientTimeouts(removeFds);
 			continue;
 		}
 		if (connectAndRead(newPollFds, removeFds) < 0)
@@ -31,7 +31,7 @@ int	Webserv::runningServ(void)
 int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<int> &removeFds)
 {
 	newPollFds.clear();
-    removeFds.clear();
+	removeFds.clear();
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
@@ -103,6 +103,12 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 		int ret = client->writeResponse();
 		if (ret == WRITE_INCOMPLETE)
 			return ;
+		if (!client->connectionShouldClose()) {
+			client->resetClient();
+			pfd.events |= POLLIN;
+			return;
+		}
 		removeFds.push_back(pfd.fd);
+		return;
 	}
 }

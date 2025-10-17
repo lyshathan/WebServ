@@ -54,7 +54,12 @@ int	Client::readAndParseRequest() {
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0) {
-			std::cerr << "\033[32m[DEBUG] READ_COMPLETE (peer closed) for fd " << _fd << "\033[0m" << std::endl;
+			// if we have no data in buffer and peer closed, treat as error/disconnect
+			if (_reqBuffer.empty()) {
+				std::cerr << "\033[31m[DEBUG] READ_ERROR (peer closed without data) for fd " << _fd << "\033[0m" << std::endl;
+				return READ_ERROR;
+			}
+			std::cerr << "\033[32m[DEBUG] READ_COMPLETE (peer closed after sending) for fd " << _fd << "\033[0m" << std::endl;
 			return READ_COMPLETE;
 		}
 		std::cerr << "\033[31m[DEBUG] READ_ERROR for fd " << _fd << "\033[0m" << std::endl;
