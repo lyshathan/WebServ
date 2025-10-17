@@ -25,17 +25,16 @@ bool	CgiHandler::hasError() const {
 void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 	if (_stdinFd > 0) {
 		removeFd.push_back(_stdinFd);
-		close(_stdinFd);
 		_stdinFd = -1;
 	}
 
 	if (_stdoutFd > 0) {
 		removeFd.push_back(_stdoutFd);
-		close(_stdoutFd);
+		// should we keep the close here? CHECK_OUT
 		_stdoutFd = -1;
 	}
 
-	if (_pid > 0) {		
+	if (_pid > 0) {
 		int status;
 		pid_t result = waitpid(_pid, &status, WNOHANG);
 		if (result == 0) {

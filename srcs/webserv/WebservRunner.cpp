@@ -19,7 +19,7 @@ int	Webserv::runningServ(void)
 			return (handleFunctionError("poll"));
 		}
 		else if (status == 0) {
-			// checkClientTimeouts(removeFds);
+			checkClientTimeouts(removeFds);
 			continue;
 		}
 		if (connectAndRead(newPollFds, removeFds) < 0)
@@ -32,8 +32,10 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 {
 	newPollFds.clear();
 	removeFds.clear();
+
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
+		checkClientTimeouts(removeFds);
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
 
 		if (pfd.revents == 0) continue;
@@ -63,6 +65,7 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 				CgiHandler *cgi = client->getCgi();
 				if (!cgi) continue;
 				cgi->handleEvent(pfd, removeFds);
+				// checkClientTimeouts(removeFds);
 				if (cgi->isFinished())
 					signalClientReady(client);
 			}

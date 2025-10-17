@@ -14,6 +14,7 @@ void Webserv::addClient(int newClientFd, const std::string &clientIP, std::vecto
 
 	size_t index = _pollFds.size() - 1;
 	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, index);
+	_clients[newClientFd]->updateActivity();
 }
 
 void Webserv::handleClientCGI(Client *client, std::vector<struct pollfd> &newPollFds, struct pollfd &pfd) {
