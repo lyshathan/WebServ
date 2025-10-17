@@ -50,7 +50,7 @@ int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newP
 }
 
 void Webserv::signalClientReady(Client *client) {
-	std::cerr << "\033[36m[DEBUG] Client finished, ready to exit\033[0m" << std::endl;
+	// std::cerr << "\033[36m[DEBUG] Client finished, ready to exit\033[0m" << std::endl;
 	std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();
 	for (; clientIt != _pollFds.end(); ++clientIt)
 		if (clientIt->fd == client->getFd())
@@ -71,7 +71,7 @@ void Webserv::checkClientTimeouts(std::vector<int> &removeFds) {
 		{
 			client->httpReq->setStatus(REQUEST_TIMEOUT);
 			client->httpRes->parseResponse();
-     		std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
+     		// std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
 			CgiHandler *cgi = client->getCgi();
 			if (cgi)
 				cgi->cleanUp(removeFds);

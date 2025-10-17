@@ -32,8 +32,8 @@ void GlobalConfig::printGlobal(void)
 {
 	std::string indent = "|___ ";
 
-	std::cerr << BLUE << "GLOBAL" << RESET << std::endl;
-	std::cerr << indent << "Error log : " << _error_log << std::endl;
-	std::cerr << indent << "Client max Body Size : " << _clientMaxBodySize << std::endl;
-	std::cerr << RESET;
+	// std::cerr << BLUE << "GLOBAL" << RESET << std::endl;
+	// std::cerr << indent << "Error log : " << _error_log << std::endl;
+	// std::cerr << indent << "Client max Body Size : " << _clientMaxBodySize << std::endl;
+	// std::cerr << RESET;
 }

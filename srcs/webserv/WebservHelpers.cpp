@@ -20,12 +20,12 @@ void Webserv::addCGIToPoll(Client *client, CgiHandler *cgi, std::vector<struct p
 
 void Webserv::removePollFd(int fd)
 {
-	std::cerr << "\033[36m[DEBUG] Entering removePollFd for fd " << fd << "\033[0m" << std::endl;
+	// std::cerr << "\033[36m[DEBUG] Entering removePollFd for fd " << fd << "\033[0m" << std::endl;
 	for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
 			it != _pollFds.end(); ++it) {
 		if (it->fd == fd) {
 			_pollFds.erase(it);
-			std::cerr << "\033[31m[DEBUG] Removed fd " << fd << " from _pollFds\033[0m" << std::endl;
+			// std::cerr << "\033[31m[DEBUG] Removed fd " << fd << " from _pollFds\033[0m" << std::endl;
 			break;
 		}
 	}
@@ -42,10 +42,10 @@ void Webserv::removePollFd(int fd)
 		}
 		delete clientIt->second;
 		_clients.erase(clientIt);
-		std::cerr << "\033[31m[DEBUG] Deleted client for fd " << fd << "\033[0m" << std::endl;
+		// std::cerr << "\033[31m[DEBUG] Deleted client for fd " << fd << "\033[0m" << std::endl;
 	}
 
 	close(fd);
-	std::cerr << "\033[31m[DEBUG] Closed fd " << fd << "\033[0m" << std::endl;
-	std::cerr << "\033[36m[DEBUG] Exiting removePollFd\033[0m" << std::endl;
+	// std::cerr << "\033[31m[DEBUG] Closed fd " << fd << "\033[0m" << std::endl;
+	// std::cerr << "\033[36m[DEBUG] Exiting removePollFd\033[0m" << std::endl;
 }

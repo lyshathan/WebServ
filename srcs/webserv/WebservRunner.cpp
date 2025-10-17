@@ -50,7 +50,7 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 		// --- Client sockets ---
 		std::map<int, Client*>::iterator clientIt = _clients.find(pfd.fd);
 		if (clientIt != _clients.end()) {
-			// std::cerr << "Event is for client " << pfd.fd << "\n";
+			// // std::cerr << "Event is for client " << pfd.fd << "\n";
 			Client *client = clientIt->second;
 			if (client)
 				handleEvents(client, pfd, newPollFds, removeFds);

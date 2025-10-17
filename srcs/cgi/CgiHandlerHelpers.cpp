@@ -6,7 +6,7 @@
 
 void	CgiHandler::markDone() {
 	_cgiStage = CGI_DONE;
-	std::cerr << "[DEBUG] CGI " << _pid << " completed successfully.\n";
+	// std::cerr << "[DEBUG] CGI " << _pid << " completed successfully.\n";
 }
 
 void	CgiHandler::markError(const std::string &err) {
@@ -47,6 +47,6 @@ void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 	if (_cgiStage != CGI_ERROR)
 		_cgiStage = CGI_DONE;
 
-	std::cerr << "[CGI CLEANUP] Completed cleanup" << std::endl;
+	// std::cerr << "[CGI CLEANUP] Completed cleanup" << std::endl;
 }
 

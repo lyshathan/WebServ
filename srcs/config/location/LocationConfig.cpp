@@ -150,33 +150,33 @@ void	LocationConfig::printLocation(void) const
 	std::string indent = "|	|	|___ ";
 	std::string list = "|	|	|	- ";
 
-	std::cerr << "|	|" << std::endl;
-	std::cerr << "|	|" << YELLOW << "==== LOCATION ====" << RESET << std::endl;
-	std::cerr << indent << "Path : " << _path << std::endl;
-	std::cerr << indent << "Allowed method :" << std::endl;
+	// std::cerr << "|	|" << std::endl;
+	// std::cerr << "|	|" << YELLOW << "==== LOCATION ====" << RESET << std::endl;
+	// std::cerr << indent << "Path : " << _path << std::endl;
+	// std::cerr << indent << "Allowed method :" << std::endl;
 	for (std::vector<std::string>::const_iterator it = _allowMethod.begin() ; it != _allowMethod.end() ; it++)
 	{
-		std::cerr << list << *it << std::endl;
+		// std::cerr << list << *it << std::endl;
 	}
-	std::cerr << indent << "Index files : " << std::endl;
+	// std::cerr << indent << "Index files : " << std::endl;
 	for (std::vector<std::string>::const_iterator it = _indexFiles.begin() ; it != _indexFiles.end() ; it++)
 	{
-		std::cerr << list << *it << std::endl;
+		// std::cerr << list << *it << std::endl;
 	}
-	std::cerr << indent << "Auto Index : " << _autoIndex << std::endl;
-	std::cerr << indent << "Upload path : " << (_uploadPath == "" ? "UNDEFINED" : _uploadPath) << std::endl;
-	std::cerr << indent << "CGI: " << std::endl;
+	// std::cerr << indent << "Auto Index : " << _autoIndex << std::endl;
+	// std::cerr << indent << "Upload path : " << (_uploadPath == "" ? "UNDEFINED" : _uploadPath) << std::endl;
+	// std::cerr << indent << "CGI: " << std::endl;
 	std::map<std::string, std::string>::const_iterator it = _cgiData.begin();
 	for (; it != _cgiData.end(); ++it) {
-		std::cerr << list << it->first << " | " << it->second << std::endl;
+		// std::cerr << list << it->first << " | " << it->second << std::endl;
 	}
-	std::cerr << indent << "Root : "  << (_root == "" ? "UNDEFINED" : _root) << std::endl;
-	std::cerr << indent << "Client body size max : " << _clientMaxBodySize << std::endl;
-	std::cerr << indent << "Error pages : " << std::endl;
+	// std::cerr << indent << "Root : "  << (_root == "" ? "UNDEFINED" : _root) << std::endl;
+	// std::cerr << indent << "Client body size max : " << _clientMaxBodySize << std::endl;
+	// std::cerr << indent << "Error pages : " << std::endl;
 	for (std::map< int , std::string >::const_iterator it = _errorPages.begin() ; it != _errorPages.end() ; it++)
 	{
-		std::cerr << list << it->first << " | " << it->second << std::endl;
+		// std::cerr << list << it->first << " | " << it->second << std::endl;
 	}
-	std::cerr << indent << "Return : " << _return.first << " | " << (_return.second == "" ? "UNDEFINED" : _return.second) << std::endl;
+	// std::cerr << indent << "Return : " << _return.first << " | " << (_return.second == "" ? "UNDEFINED" : _return.second) << std::endl;
 }
 
