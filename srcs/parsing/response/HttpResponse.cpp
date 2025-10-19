@@ -38,9 +38,6 @@ void HttpResponse::parseResponse() {
 		cgiParseResponse(status);
 	else
 		successParseResponse(status);
-	std::stringstream ss;
-	ss << status;
-	printLog(PURPLE, "INFO", "Response Sent Status Code: " + ss.str());
 }
 
 void HttpResponse::successParseResponse(int status) {

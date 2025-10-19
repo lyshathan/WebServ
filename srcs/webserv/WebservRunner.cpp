@@ -37,7 +37,7 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 	{
 		checkClientTimeouts(removeFds);
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
-
+		
 		if (pfd.revents == 0) continue;
 
 		// --- Server sockets ---
@@ -50,7 +50,6 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 		// --- Client sockets ---
 		std::map<int, Client*>::iterator clientIt = _clients.find(pfd.fd);
 		if (clientIt != _clients.end()) {
-			// // std::cerr << "Event is for client " << pfd.fd << "\n";
 			Client *client = clientIt->second;
 			if (client)
 				handleEvents(client, pfd, newPollFds, removeFds);
@@ -65,7 +64,6 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 				CgiHandler *cgi = client->getCgi();
 				if (!cgi) continue;
 				cgi->handleEvent(pfd, removeFds);
-				// checkClientTimeouts(removeFds);
 				if (cgi->isFinished())
 					signalClientReady(client);
 			}
@@ -96,6 +94,7 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 			else {
 				client->httpRes->parseResponse();
 				pfd.events |= POLLOUT;
+				std::cout << "Response is pollout\n";
 				return ;
 			}
 		} else if (ret == READ_ERROR)
@@ -106,9 +105,14 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 		int ret = client->writeResponse();
 		if (ret == WRITE_INCOMPLETE)
 			return ;
+		if (ret == WRITE_COMPLETE) {
+			std::stringstream ss;
+			ss << client->httpReq->getStatus();
+			printLog(PURPLE, "INFO", "Response Sent Status Code: " + ss.str());
+		}
 		if (!client->connectionShouldClose()) {
 			client->resetClient();
-			pfd.events |= POLLIN;
+			pfd.events = POLLIN;
 			return;
 		}
 		removeFds.push_back(pfd.fd);

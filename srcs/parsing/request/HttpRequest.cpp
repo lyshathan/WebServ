@@ -16,7 +16,6 @@ HttpRequest::~HttpRequest() {};
 /******************************************************************************/
 
 int HttpRequest::requestHeaderParser(std::string data) {
-	// // std::cerr << "[Data..]\n\n" << data << "\n";
 	std::string	firstLine;
 	std::string	headers;
 
