@@ -106,6 +106,7 @@ bool HttpRequest::parseBody(std::string data) {
 		return false;
 	std::string body = data.substr(headerEnd + 4);
 
+
 	std::map<std::string, std::string>::const_iterator transferEncoding = _headers.find("transfer-encoding");
 	if (transferEncoding != _headers.end()) {
 		if (transferEncoding->second.find("chunked") != std::string::npos)

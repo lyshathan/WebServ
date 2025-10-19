@@ -44,11 +44,11 @@ class Client {
 		std::map<std::string, std::string> 	_env;
 		time_t 						 		_lastActivity;
 
-		static const time_t HEADER_TIMEOUT = 20;
-		static const time_t BODY_TIMEOUT = 120;
-		static const time_t CGI_TIMEOUT = 5;
-		static const time_t WRITE_TIMEOUT = 60;
-		static const time_t KEEPALIVE_TIMEOUT = 10;
+		static const time_t HEADER_TIMEOUT = 3;
+		static const time_t BODY_TIMEOUT = 3;
+		static const time_t CGI_TIMEOUT = 3;
+		static const time_t WRITE_TIMEOUT = 5;
+		static const time_t KEEPALIVE_TIMEOUT = 3;
 
 		Client();
 	public:
@@ -59,7 +59,7 @@ class Client {
 		int									readAndParseRequest();
 		int									writeResponse();
 		bool								appendBuffer(const char *, size_t);
-		bool								isReqComplete() const;
+		bool								isReqComplete();
 		bool								connectionShouldClose() const;
 		void								resetClient();
 		bool								hasTimedOut(time_t);

@@ -35,9 +35,8 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
-		checkClientTimeouts(removeFds);
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
-		
+
 		if (pfd.revents == 0) continue;
 
 		// --- Server sockets ---
@@ -93,8 +92,7 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 			}
 			else {
 				client->httpRes->parseResponse();
-				pfd.events |= POLLOUT;
-				std::cout << "Response is pollout\n";
+				pfd.events = POLLOUT;
 				return ;
 			}
 		} else if (ret == READ_ERROR)
