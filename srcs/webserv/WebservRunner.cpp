@@ -95,6 +95,10 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 				pfd.events = POLLOUT;
 				return ;
 			}
+		} else if (ret == READ_HEADER_ERROR) {
+			client->httpRes->parseResponse();
+			pfd.events = POLLOUT;
+			return ;
 		} else if (ret == READ_ERROR)
 			removeFds.push_back(pfd.fd);
 	}

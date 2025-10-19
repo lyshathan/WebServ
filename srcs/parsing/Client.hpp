@@ -9,7 +9,8 @@ class HttpResponse;
 enum ReadState {
 	READ_INCOMPLETE = 0,
 	READ_COMPLETE = 1,
-	READ_ERROR = -1
+	READ_ERROR = -1,
+	READ_HEADER_ERROR = -2
 };
 
 enum WriteState {

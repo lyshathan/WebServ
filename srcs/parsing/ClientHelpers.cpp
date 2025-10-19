@@ -14,14 +14,10 @@ void Client::resetClient() {
 
 bool Client::connectionShouldClose() const {
 	 std::string headers = httpRes->getResHeaders();
-	if (headers.find("Connection: close") != std::string::npos) {
-		std::cerr << "[DEBUG] Connection should close\n";
+	if (headers.find("Connection: close") != std::string::npos)
 		return true;
-	}
-	if (headers.find("Connection: keep-alive") != std::string::npos) {
-		std::cerr << "[DEBUG] Connection should not close\n";
+	if (headers.find("Connection: keep-alive") != std::string::npos)
 		return false;
-	}
 	return true;
 }
 

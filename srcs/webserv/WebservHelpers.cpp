@@ -42,7 +42,9 @@ void Webserv::removePollFd(int fd)
 		}
 		delete clientIt->second;
 		_clients.erase(clientIt);
-		// std::cerr << "\033[31m[DEBUG] Deleted client for fd " << fd << "\033[0m" << std::endl;
+		std::stringstream ss;
+		ss << "Client #" <<  fd << " disconnected";
+		printLog(BLUE, "INFO", ss.str());
 	}
 
 	close(fd);
