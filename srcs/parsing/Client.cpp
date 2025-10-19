@@ -9,7 +9,7 @@ Client::Client(int fd, const Config &config, const std::string &clientIP, size_t
 	_pollIndex(pollIndex), _fd(fd), _reqBuffer(), _resBuffer(), _recvSize(0), _bytesSent(0),
 	_clientIP(clientIP), _state(READING_HEADERS), _cgi(NULL), _lastActivity(time(NULL)),
 	httpReq(new HttpRequest(config, fd, _clientIP)), httpRes(new HttpResponse(httpReq, this)) {
-		
+
 	}
 
 Client::~Client() {
@@ -37,7 +37,7 @@ bool	Client::hasTimedOut(time_t now) {
 	}
 }
 
-bool Client::isReqComplete() const {
+bool Client::isReqComplete() {
 	std::map<std::string, std::string> headers = httpReq->getHeaders();
 
 	size_t headerEnd = _reqBuffer.find("\r\n\r\n");
@@ -63,6 +63,8 @@ bool Client::isReqComplete() const {
 		size_t bodyReceived = _reqBuffer.length() - (headerEnd + 4);
 		if (contentLength > maxBodySize)
 			httpReq->setStatus(413);
+		if (bodyReceived > contentLength)
+			_reqBuffer.resize(headerEnd + 4 + contentLength);
 		return bodyReceived >= contentLength;
 	}
 	return true;

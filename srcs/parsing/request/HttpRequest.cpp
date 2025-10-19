@@ -16,7 +16,7 @@ HttpRequest::~HttpRequest() {};
 /******************************************************************************/
 
 int HttpRequest::requestHeaderParser(std::string data) {
-	// // std::cerr << "[Data..]\n\n" << data << "\n";
+	// std::cerr << "[Data..]\n\n" << data << "\n";
 	std::string	firstLine;
 	std::string	headers;
 
@@ -106,6 +106,7 @@ bool HttpRequest::parseBody(std::string data) {
 	if (headerEnd == std::string::npos)
 		return false;
 	std::string body = data.substr(headerEnd + 4);
+
 
 	std::map<std::string, std::string>::const_iterator transferEncoding = _headers.find("transfer-encoding");
 	if (transferEncoding != _headers.end()) {

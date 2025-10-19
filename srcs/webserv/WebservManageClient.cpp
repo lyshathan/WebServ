@@ -56,26 +56,26 @@ void Webserv::signalClientReady(Client *client) {
 		if (clientIt->fd == client->getFd())
 			break;
 	if (clientIt != _pollFds.end())
-		clientIt->events |= POLLOUT;
+		clientIt->events = POLLOUT;
 	delete (client->getCgi());
 	client->setCgiNull();
 	client->setState(REQUEST_READY);
 }
 
 void Webserv::checkClientTimeouts(std::vector<int> &removeFds) {
-    time_t now = time(NULL);
+	time_t now = time(NULL);
 
-    for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		Client *client = it->second;
-        if (client->hasTimedOut(now))
+		if (client->hasTimedOut(now))
 		{
 			client->httpReq->setStatus(REQUEST_TIMEOUT);
 			client->httpRes->parseResponse();
-     		// std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
+			// std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
 			CgiHandler *cgi = client->getCgi();
 			if (cgi)
 				cgi->cleanUp(removeFds);
 			signalClientReady(client);
-    	}
+		}
 	}
 }

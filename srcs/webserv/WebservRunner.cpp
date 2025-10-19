@@ -35,9 +35,8 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 
 	for (size_t i = 0; i < _pollFds.size() ; ++i )
 	{
-		checkClientTimeouts(removeFds);
 		struct pollfd &pfd = _pollFds[i]; // Reference to the current FD
-
+		checkClientTimeouts(removeFds);
 		if (pfd.revents == 0) continue;
 
 		// --- Server sockets ---
@@ -65,7 +64,6 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 				CgiHandler *cgi = client->getCgi();
 				if (!cgi) continue;
 				cgi->handleEvent(pfd, removeFds);
-				// checkClientTimeouts(removeFds);
 				if (cgi->isFinished())
 					signalClientReady(client);
 			}
@@ -95,7 +93,7 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 			}
 			else {
 				client->httpRes->parseResponse();
-				pfd.events |= POLLOUT;
+				pfd.events = POLLOUT;
 				return ;
 			}
 		} else if (ret == READ_ERROR)
@@ -108,7 +106,7 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 			return ;
 		if (!client->connectionShouldClose()) {
 			client->resetClient();
-			pfd.events |= POLLIN;
+			pfd.events = POLLIN;
 			return;
 		}
 		removeFds.push_back(pfd.fd);
