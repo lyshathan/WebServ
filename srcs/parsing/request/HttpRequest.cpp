@@ -24,7 +24,8 @@ int HttpRequest::requestHeaderParser(std::string data) {
 		return 1;
 
 	if (!extractUntil(firstLine, data, "\r\n") || !parseFirstLine(firstLine)) {
-		_status = BAD_REQUEST;
+		if (!_status)
+			_status = BAD_REQUEST;
 		return -1;
 	}
 	if (!extractUntil(headers, data, "\r\n\r\n") || !parseHeaders(headers)) {
@@ -72,8 +73,10 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	if (!ss.eof() || i < NUM_TOKENS)
 		return false;
 	if (firstLineTokens[1].size() > 8000
-		|| !validateVersion(firstLineTokens[2]))
-		return false;
+		|| !validateVersion(firstLineTokens[2])) {
+			_status = HTTP_NOT_SUPPORTED;
+			return false;
+		}
 	_method = firstLineTokens[0];
 	_uri = firstLineTokens[1];
 	_version = firstLineTokens[2];

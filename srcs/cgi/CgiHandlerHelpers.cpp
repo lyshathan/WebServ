@@ -10,8 +10,9 @@ void	CgiHandler::markDone() {
 }
 
 void	CgiHandler::markError(const std::string &err) {
+	(void)err;
 	_cgiStage = CGI_ERROR;
-	std::cerr << "[CGI ERROR] " << err << std::endl;
+	// std::cerr << "[CGI ERROR] " << err << std::endl;
 }
 
 bool	CgiHandler::isFinished() const {

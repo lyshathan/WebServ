@@ -77,6 +77,7 @@ int	Client::readAndParseRequest() {
 				return READ_INCOMPLETE; // there's still some headers to be parsed
 			else if (status == -1) {
 				// std::cerr << "\033[31m[DEBUG] Header parse error, marking READ_COMPLETE for fd " << _fd << "\033[0m" << std::endl;
+				_state = REQUEST_READY;
 				return READ_HEADER_ERROR;  // there was an error so we need to stop parsing and send response back to client
 			} else {
 				// std::cerr << "\033[32m[DEBUG] Headers parsed, switching to READING_BODY for fd " << _fd << "\033[0m" << std::endl;
