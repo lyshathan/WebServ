@@ -73,10 +73,25 @@ void CgiHandler::handleCompletion() {
 
 void	CgiHandler::parseBodySendResponse(int result) {
 	_client->httpReq->setStatus(result);
-	if (_headersParsed && _headerPos != std::string::npos)
-		_finalResponse = _outputBuffer.substr(_headerPos);
-	else
+	if (_headersParsed && _headerPos != std::string::npos) {
+		std::map<std::string, std::string>::iterator it = _cgiHeaders.find("content-length");
+		if (it != _cgiHeaders.end()) {
+			size_t expected = static_cast<size_t>(atoi(it->second.c_str()));
+			if (_outputBuffer.size() > _headerPos) {
+				// Truncate to expected length if body is longer
+				if (_outputBuffer.size() - _headerPos > expected)
+					_finalResponse = _outputBuffer.substr(_headerPos, expected);
+				else
+					_finalResponse = _outputBuffer.substr(_headerPos);
+			} else {
+				_finalResponse = "";
+			}
+		} else {
+			_finalResponse = _outputBuffer.substr(_headerPos);
+		}
+	} else {
 		_finalResponse = _outputBuffer;
+	}
 	_client->httpReq->setCGIResult(_finalResponse);
 	_client->httpRes->parseResponse();
 }

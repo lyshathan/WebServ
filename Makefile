@@ -1,4 +1,4 @@
-NAME = Webserv
+NAME = webserv
 CC = c++
 FLAGS =  -Iincludes -Wall -Wextra -Werror -std=c++98 -MMD -MP
 TEST_FLAGS = -Iincludes -std=c++98 -MMD -MP

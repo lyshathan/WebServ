@@ -41,8 +41,10 @@ void HttpResponse::parseResponse() {
 }
 
 void HttpResponse::successParseResponse(int status) {
-	if (!handleCookie(status))
-		setBody(status);
+	if (!handleCookie(status)) {
+		if (!setBody(status))
+			return ;
+	}
 	setContentHeaders();
 	setStatusSpecificHeaders(status);
 	setConnectionHeader(status);
@@ -78,7 +80,7 @@ void HttpResponse::cgiParseResponse(int status) {
 
 void HttpResponse::errorParseResponse(int status) {
 	_isTextContent = true;
-	_res = _htmlResponses[_request->getStatus()];
+	_res = _htmlResponses[status];
 	setContentHeaders();
 	setConnectionHeader(status);
 }
