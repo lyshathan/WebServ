@@ -30,6 +30,25 @@ char **CgiHandler::getArgvArray() {
 	for (size_t i = 0; i < argc; ++i)
 		argv[i] = strdup(args[i].c_str());
 	argv[argc] = NULL;
+
+	std::string scriptPath(argv[1]);
+	size_t slashPos = scriptPath.find_last_of('/');
+	if (slashPos != std::string::npos) {
+		std::string scriptDir = scriptPath.substr(0, slashPos);
+		if (chdir(scriptDir.c_str()) == -1)
+			exit(1);
+	}
+
+	std::string fileName;
+	size_t pos = scriptPath.find_last_of('/');
+	if (pos != std::string::npos)
+		fileName = scriptPath.substr(pos + 1);
+	else
+		fileName = scriptPath;
+
+	free(argv[1]);
+	argv[1] = strdup(fileName.c_str());
+
 	return argv;
 }
 
