@@ -45,13 +45,18 @@ void HttpResponse::setContentHeaders() {
 	addHeader("Content-Length: ", ss.str());
 }
 
-void HttpResponse::setBody(int status) {
+bool HttpResponse::setBody(int status) {
 	_mimeType = getMimeType();
 	addHeader("Last-Modified: ", getLastModifiedTime());
-	if (isTextContent())
-		setTextContent(status);
-	else
-		setBinContent();
+	if (isTextContent()) {
+		if (!setTextContent(status))
+			return false;
+	}
+	else {
+		if (!setBinContent())
+			return false;
+	}
+	return true;
 }
 
 void HttpResponse::setAutoIndex() {
@@ -80,16 +85,21 @@ void HttpResponse::setAutoIndex() {
 	closedir(dir);
 }
 
-void HttpResponse::setTextContent(int status) {
+bool HttpResponse::setTextContent(int status) {
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
 	if (!file.is_open()) {
-		if (_request->getAutoIndex() && status == 200)
+		if (_request->getAutoIndex() && status == 200) {
 			setAutoIndex();
+			return true;
+		}
 		else if (!_htmlResponses[_request->getStatus()].empty()){
 			_res = _htmlResponses[_request->getStatus()];
+			return true;
 		}
-		return ;
+		setStatusLine(500);
+		errorParseResponse(500);
+		return false;
 	}
 	_res.clear();
 	char buffer[4096];
@@ -102,14 +112,23 @@ void HttpResponse::setTextContent(int status) {
 		chunk.assign(buffer, file.gcount());
 		_res += chunk;
 	}
+	if (file.bad() || (file.fail() && !file.eof())) {
+		setStatusLine(500);
+		errorParseResponse(500);
+		return false;
+	}
 	file.close();
+	return true;
 }
 
-void	HttpResponse::setBinContent() {
+bool	HttpResponse::setBinContent() {
 	std::string uri = _request->getUri();
 	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
-	if (!file.is_open())
-		return ;
+	if (!file.is_open()) {
+		setStatusLine(500);
+		errorParseResponse(500);
+		return false;
+	}
 
 	char buffer[4096];
 	while (file.read(buffer, sizeof(buffer))) {
@@ -118,4 +137,11 @@ void	HttpResponse::setBinContent() {
 	if (file.gcount() > 0) {
 		_binRes.insert(_binRes.end(), buffer, buffer + file.gcount());
 	}
+	if (file.bad() || (file.fail() && !file.eof())) {
+		setStatusLine(500);
+		errorParseResponse(500);
+		return false;
+	}
+	file.close();
+	return true;
 }

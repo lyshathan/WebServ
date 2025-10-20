@@ -39,6 +39,7 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 
 		if (pfd.revents == 0) continue;
 
+		checkClientTimeouts(removeFds);
 		// --- Server sockets ---
 		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), pfd.fd);
 		if (find != _serverFds.end()) {

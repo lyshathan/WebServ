@@ -43,9 +43,9 @@ class HttpResponse {
 		void	initHtmlResponses();
 		void	initStatusPhrases();
 
-		void	setTextContent(int);
-		void	setBinContent();
-		void	setBody(int);
+		bool	setTextContent(int);
+		bool	setBinContent();
+		bool	setBody(int);
 		void	addHeader(const std::string &, const std::string &);
 		void	setContentHeaders();
 		void	setStatusLine(int);
