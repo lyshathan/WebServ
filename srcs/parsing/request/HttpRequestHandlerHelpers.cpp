@@ -5,6 +5,7 @@
 /******************************************************************************/
 
 bool HttpRequest::validateMethods() {
+	std::cerr << "Validate method check\n";
 	if (!_location) {
 		_status = NOT_ALLOWED;
 		return false;
