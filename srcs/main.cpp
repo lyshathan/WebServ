@@ -21,17 +21,20 @@ int main(int arc, char **arv)
 	g_running = 1;
 	signal(SIGINT, sigint_handler);
 	signal(SIGPIPE, SIG_IGN);
+	std::string filename;
 
-
-	if (arc != 2)
+	if (arc > 2)
 	{
-		if (arc > 2)
-			std::cerr << "Too many arguments" << std::endl;
-		else if (arc < 2)
-			std::cerr << "Missing argument" << std::endl;
+		std::cerr << "Too many arguments" << std::endl;
 		return (0);
 	}
-	std::string filename = arv[1];
+	if (arc < 2)
+	{
+		std::cout << BLUE << "Default configuration file selected" << RESET << std::endl;
+		filename = "./conf/default.conf";
+	}
+	if (filename.empty())
+		filename = arv[1];
 	int checkValid = isValidFile(filename);
 	if (checkValid != VALID)
 	{
