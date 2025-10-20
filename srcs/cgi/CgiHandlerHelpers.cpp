@@ -6,13 +6,11 @@
 
 void	CgiHandler::markDone() {
 	_cgiStage = CGI_DONE;
-	// std::cerr << "[DEBUG] CGI " << _pid << " completed successfully.\n";
 }
 
 void	CgiHandler::markError(const std::string &err) {
 	(void)err;
 	_cgiStage = CGI_ERROR;
-	// std::cerr << "[CGI ERROR] " << err << std::endl;
 }
 
 bool	CgiHandler::isFinished() const {
@@ -31,7 +29,6 @@ void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 
 	if (_stdoutFd > 0) {
 		removeFd.push_back(_stdoutFd);
-		// should we keep the close here? CHECK_OUT
 		_stdoutFd = -1;
 	}
 
@@ -47,7 +44,5 @@ void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 
 	if (_cgiStage != CGI_ERROR)
 		_cgiStage = CGI_DONE;
-
-	// std::cerr << "[CGI CLEANUP] Completed cleanup" << std::endl;
 }
 

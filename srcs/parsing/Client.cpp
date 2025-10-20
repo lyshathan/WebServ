@@ -100,7 +100,6 @@ void		Client::cgiInitEnv() {
 	std::map<std::string, std::string> body = httpReq->getBody();
 	if (!body.empty()) {
 		std::stringstream contentLengthSs;
-		// Calculate total body length from all body parts
 		size_t totalLength = 0;
 		for (std::map<std::string, std::string>::const_iterator bodyIt = body.begin(); bodyIt != body.end(); ++bodyIt) {
 			totalLength += bodyIt->second.length();

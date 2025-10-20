@@ -43,7 +43,7 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 		// --- Server sockets ---
 		std::vector<int>::iterator find = std::find(_serverFds.begin(), _serverFds.end(), pfd.fd);
 		if (find != _serverFds.end()) {
-			acceptNewConnection(pfd.fd, newPollFds);  // Do we need to treat this return value?
+			acceptNewConnection(pfd.fd, newPollFds);
 			continue;
 		}
 
