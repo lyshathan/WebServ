@@ -32,7 +32,7 @@ void HttpResponse::parseResponse() {
 	}
 	else if (status == 204)
 		deleteParseResponse();
-	else if (status == 400 || status == 500 || status == 408)
+	else if (status == 400 || status == 500 || status == 408 || status == 301 || status == 302)
 		errorParseResponse(status);
 	else if (status == 200 && _request->isCGIActive())
 		cgiParseResponse(status);
@@ -83,6 +83,7 @@ void HttpResponse::errorParseResponse(int status) {
 	_res = _htmlResponses[status];
 	setContentHeaders();
 	setConnectionHeader(status);
+	setStatusSpecificHeaders(status);
 }
 
 void HttpResponse::deleteParseResponse() {
