@@ -7,10 +7,12 @@
 
 bool HttpRequest::isCGIPath() {
 	struct stat buf;
+	if (!_location)
+		return false;
 	std::string	path = _location->getRoot() + _uri;
 	std::string tmp = _uri;
 
-	if (!stat(path.c_str(),&buf)) {
+	if (_location && !stat(path.c_str(),&buf)) {
 		if (S_ISREG(buf.st_mode)) {
 			if (access(path.c_str(),  R_OK) != 0) {
 				_status = FORBIDDEN;
@@ -42,6 +44,8 @@ bool HttpRequest::isCGIPath() {
 }
 
 bool	HttpRequest::checkCGI() {
+	if (!_location)
+		return false;
 	std::map<std::string, std::string>	cgiData = _location->getCGIData();
 
 	if (!cgiData.empty()) {

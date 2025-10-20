@@ -6,7 +6,7 @@
 
 void	CgiHandler::markDone() {
 	_cgiStage = CGI_DONE;
-	std::cerr << "[DEBUG] CGI " << _pid << " completed successfully.\n";
+	// std::cerr << "[DEBUG] CGI " << _pid << " completed successfully.\n";
 }
 
 void	CgiHandler::markError(const std::string &err) {
@@ -25,26 +25,28 @@ bool	CgiHandler::hasError() const {
 void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 	if (_stdinFd > 0) {
 		removeFd.push_back(_stdinFd);
-		close(_stdinFd);
 		_stdinFd = -1;
 	}
 
 	if (_stdoutFd > 0) {
 		removeFd.push_back(_stdoutFd);
-		close(_stdoutFd);
+		// should we keep the close here? CHECK_OUT
 		_stdoutFd = -1;
 	}
 
 	if (_pid > 0) {
 		int status;
-		// Reap if possible, don't block
-		waitpid(_pid, &status, WNOHANG);
+		pid_t result = waitpid(_pid, &status, WNOHANG);
+		if (result == 0) {
+			kill(_pid, SIGKILL);
+			waitpid(_pid, &status, 0);
+		}
 		_pid = -1;
 	}
 
 	if (_cgiStage != CGI_ERROR)
 		_cgiStage = CGI_DONE;
 
-	std::cerr << "[CGI CLEANUP] Completed cleanup" << std::endl;
+	// std::cerr << "[CGI CLEANUP] Completed cleanup" << std::endl;
 }
 

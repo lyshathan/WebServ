@@ -27,14 +27,12 @@ class CgiHandler {
 		pid_t								_pid;
 		int									_stdinFd;
 		int									_stdoutFd;
-		std::map<std::string, std::string>	_env;
 		size_t								_bytesWritten;
 		std::map<std::string, std::string>	_cgiHeaders;
 		std::string							_finalResponse;
 		std::string							_outputBuffer;
 		std::string							_inputBuffer;
 		bool								_headersParsed;
-		bool								_stdoutEOF;
 		CgiState							_cgiStage;
 		size_t								_headerPos;
 
@@ -45,27 +43,33 @@ class CgiHandler {
 		void								handleChild(int stdin_fd[2], int stdout_fd[2]);
 		void								handleParent(int stdin_fd[2], int stdout_fd[2]);
 
-		void								markDone();
 		void								markError(const std::string &);
 		char 								**getEnvArray();
 		char 								**getArgvArray();
+
+		void								tryParseCGIHeaders();
+		void								parseCGIHeaders();
+		void								parseBodySendResponse(int);
 
 	public:
 		CgiHandler(Client *);
 		~CgiHandler();
 
 		void								handleEvent(struct pollfd &, std::vector<int> &);
-		void								cgiInitEnv();
 		void								cgiStart();
 
 		bool								isFinished() const;
 		bool								hasError() const;
 		void								cleanUp(std::vector<int>&);
+		void								markDone();
 
 		const std::string					&getResponse() const;
 		int									getStdinFd() const;
 		int									getStdoutFd() const;
+		bool								headersParsed() const;
+		std::map<std::string, std::string>	getCgiHeaders() const;
 		CgiState							getCgiStage() const;
+		pid_t								getPid() const;
 };
 
 #endif

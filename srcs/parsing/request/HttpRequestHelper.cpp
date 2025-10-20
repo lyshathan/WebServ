@@ -17,7 +17,6 @@ void HttpRequest::cleanReqInfo() {
 	_isCGI = false;
 	_rawBody.clear();
 	_extensions.clear();
-	_env.clear();
 	_status = 0;
 }
 

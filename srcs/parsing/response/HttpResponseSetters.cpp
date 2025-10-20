@@ -65,7 +65,7 @@ void HttpResponse::setAutoIndex() {
 	std::string path = _request->getRoot() + _request->getUri();
 	DIR *dir = opendir(path.c_str());
 	if (!dir) {
-		std::cout << "Error opening directory\n";
+		// std::cerr << "Error opening directory\n";
 		return ;
 	}
 

@@ -5,7 +5,7 @@
 /******************************************************************************/
 
 bool HttpRequest::deleteHandler() {
-	if (!isDeletePathValid()) {
+	if (!_location || !isDeletePathValid()) {
 		setErrorPage();
 		return false;
 	}
@@ -25,6 +25,10 @@ bool HttpRequest::deleteFile() {
 }
 
 bool HttpRequest::isDeletePathValid() {
+	if (!_location) {
+		_status = NOT_FOUND;
+		return false;
+	}
 	std::string	path = _location->getRoot() + _uri;
 
 	struct stat buf;

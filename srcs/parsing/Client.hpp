@@ -3,19 +3,20 @@
 
 #include "../webserv/Webserv.hpp"
 #include "request/HttpRequest.hpp"
-#include "response/HttpResponse.hpp"
+class HttpResponse;
 #include "../cgi/CgiHandler.hpp"
 
 enum ReadState {
-    READ_INCOMPLETE = 0,
-    READ_COMPLETE = 1,
-    READ_ERROR = -1
+	READ_INCOMPLETE = 0,
+	READ_COMPLETE = 1,
+	READ_ERROR = -1,
+	READ_HEADER_ERROR = -2
 };
 
 enum WriteState {
-    WRITE_INCOMPLETE = 0,
-    WRITE_COMPLETE = 1,
-    WRITE_ERROR = -1
+	WRITE_INCOMPLETE = 0,
+	WRITE_COMPLETE = 1,
+	WRITE_ERROR = -1
 };
 
 enum ClientState {
@@ -28,51 +29,60 @@ enum ClientState {
 };
 
 class CgiHandler;
+class HttpResponse;
 
 class Client {
 	private:
-		size_t						_pollIndex;
-		int							_fd;
-		std::string					_reqBuffer;
-		std::string					_resBuffer;
-		size_t						_recvSize;
-		size_t						_bytesSent;
-		std::string					_clientIP;
-		ClientState 				_state;
-		CgiHandler					*_cgi;
-		time_t 						 _lastActivity;
+		size_t								_pollIndex;
+		int									_fd;
+		std::string							_reqBuffer;
+		std::string							_resBuffer;
+		size_t								_recvSize;
+		size_t								_bytesSent;
+		std::string							_clientIP;
+		ClientState 						_state;
+		CgiHandler							*_cgi;
+		std::map<std::string, std::string> 	_env;
+		time_t 						 		_lastActivity;
 
-		static const int CGI_TIMEOUT = 5000;
+		static const time_t HEADER_TIMEOUT = 3;
+		static const time_t BODY_TIMEOUT = 3;
+		static const time_t CGI_TIMEOUT = 3;
+		static const time_t WRITE_TIMEOUT = 5;
+		static const time_t KEEPALIVE_TIMEOUT = 3;
 
 		Client();
 	public:
 		Client(int, const Config &, const std::string &clientIP, size_t);
 		~Client();
 
-		bool				isCGI();
-		int					readAndParseRequest();
-		int					writeResponse();
-		bool				appendBuffer(const char *, size_t);
-		bool				isReqComplete() const;
-		bool				connectionShouldClose() const;
-		void				resetClient();
+		bool								isCGI();
+		int									readAndParseRequest();
+		int									writeResponse();
+		bool								appendBuffer(const char *, size_t);
+		bool								isReqComplete();
+		bool								connectionShouldClose() const;
+		void								resetClient();
+		bool								hasTimedOut(time_t);
+		void								updateActivity();
 
-		void				launchCGI();
+		void								launchCGI();
 
-		const				std::string	&getRes()const;
-		int					getFd() const;
-		size_t				getPollIndex();
-		std::string			getClientIp() const;
-		void				setState(ClientState);
-		CgiHandler			*getCgi() const;
-		void				updateActivity();
-		bool 				hasTimedOut(time_t);
+		std::string 						getStateString() const;
+		ClientState							getClientState() const;
+		const std::string					&getRes()const;
+		int									getFd() const;
+		size_t								getPollIndex();
+		std::string							getClientIp() const;
+		CgiHandler							*getCgi() const;
+		void								cgiInitEnv();
+		std::map<std::string, std::string> 	getCgiEnv() const;
 
-		void				setCgi();
-		std::string getStateString() const;
+		void								setState(ClientState);
+		void								setCgiNull();
 
-		HttpRequest		*httpReq;
-		HttpResponse	*httpRes;
+		HttpRequest							*httpReq;
+		HttpResponse						*httpRes;
 };
 
 #endif

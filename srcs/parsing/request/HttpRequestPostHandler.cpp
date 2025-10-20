@@ -5,7 +5,7 @@
 /******************************************************************************/
 
 bool HttpRequest::postHandler() {
-	if (!isUploadPathValid()) {
+	if (!_location || !isUploadPathValid()) {
 		setErrorPage();
 		return false;
 	}
@@ -17,11 +17,16 @@ bool HttpRequest::postHandler() {
 }
 
 bool HttpRequest::isUploadPathValid() {
+	if (!_location) {
+		if (!_status)
+			_status = NOT_FOUND;
+		return false;
+	}
 	std::string	path = _location->getUploadPath() + _uri;
 	struct stat buf;
 
-	// clearstd::cout << "Upload Path " << path << "\n";
-	if (!stat(path.c_str(),&buf)) {
+	// clear// std::cerr << "Upload Path " << path << "\n";
+	if (_location && !stat(path.c_str(),&buf)) {
 		if (S_ISDIR(buf.st_mode)) {
 			if (access(path.c_str(),  R_OK | X_OK) != 0) {
 				_status = FORBIDDEN;
@@ -84,6 +89,9 @@ void HttpRequest::generateName(std::string &finalName) {
 
 bool HttpRequest::createFile() {
 	std::string path = _location->getUploadPath();
+
+	if (!_location)
+		return false;
 
 	std::map<std::string, std::string>::iterator it = _body.begin();
 	for (; it != _body.end(); ++it) {

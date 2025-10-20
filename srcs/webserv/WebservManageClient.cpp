@@ -1,6 +1,6 @@
 #include "Webserv.hpp"
 #include "../parsing/Client.hpp"
-
+#include "../parsing/response/HttpResponse.hpp"
 
 void Webserv::addClient(int newClientFd, const std::string &clientIP, std::vector<struct pollfd> &newPollFds)
 {
@@ -14,6 +14,18 @@ void Webserv::addClient(int newClientFd, const std::string &clientIP, std::vecto
 
 	size_t index = _pollFds.size() - 1;
 	_clients[newClientFd] = new Client(newClientFd, _config, clientIP, index);
+	_clients[newClientFd]->updateActivity();
+}
+
+void Webserv::handleClientCGI(Client *client, std::vector<struct pollfd> &newPollFds, struct pollfd &pfd) {
+	client->launchCGI();
+	CgiHandler *cgi = client->getCgi();
+	if (cgi) {
+		addCGIToPoll(client, cgi, newPollFds);
+		pfd.events &= ~POLLIN;
+		client->setState(CGI_PROCESSING);
+		return ;
+	}
 }
 
 int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newPollFds)
@@ -37,26 +49,33 @@ int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newP
 	return (0);
 }
 
-void Webserv::disconnectClient(int &fd)
-{
-	// // Check if client has active CGI and clean it up
-	// if (_clients.find(clientFd) != _clients.end() &&
-	// 	_clients[clientFd]->httpReq->getCGIState() != NULL) {
-	// 	cleanupCGI(clientFd, _clients[clientFd]->httpReq->getCGIState());
-	// }
+void Webserv::signalClientReady(Client *client) {
+	// std::cerr << "\033[36m[DEBUG] Client finished, ready to exit\033[0m" << std::endl;
+	std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();
+	for (; clientIt != _pollFds.end(); ++clientIt)
+		if (clientIt->fd == client->getFd())
+			break;
+	if (clientIt != _pollFds.end())
+		clientIt->events = POLLOUT;
+	delete (client->getCgi());
+	client->setCgiNull();
+	client->setState(REQUEST_READY);
+}
 
-	std::stringstream msg;
-	msg << "Client #" << fd << " disconnected";
-	printLog(BLUE, "INFO", msg.str());
-	close (fd);
-	delete _clients[fd];
-	_clients.erase(fd);
+void Webserv::checkClientTimeouts(std::vector<int> &removeFds) {
+	time_t now = time(NULL);
 
-	for (std::vector<struct pollfd>::iterator it = _pollFds.begin();
-		it != _pollFds.end(); ++it) {
-			if (it->fd == fd) {
-				_pollFds.erase(it);
-				break;
-			}
+	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+		Client *client = it->second;
+		if (client->hasTimedOut(now))
+		{
+			client->httpReq->setStatus(REQUEST_TIMEOUT);
+			client->httpRes->parseResponse();
+			// std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
+			CgiHandler *cgi = client->getCgi();
+			if (cgi)
+				cgi->cleanUp(removeFds);
+			signalClientReady(client);
 		}
+	}
 }

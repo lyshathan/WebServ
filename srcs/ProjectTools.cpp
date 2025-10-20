@@ -53,6 +53,6 @@ std::string	getCurrentTimeLocal() {
 }
 
 void printLog(std::string color, std::string type, std::string str) {
-	std::cout << color << "[" << getCurrentTimeLocal() << "] "
+	std::cerr << color << "[" << getCurrentTimeLocal() << "] "
 	<< "[" << type << "] " << str << RESET << std::endl;
 }

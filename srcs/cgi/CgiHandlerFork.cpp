@@ -5,9 +5,9 @@
 /******************************************************************************/
 
 void		CgiHandler::cgiStart() {
-	_headersParsed = false;
 	int		stdinFd[2];
 	int		stdoutFd[2];
+	_client->cgiInitEnv();
 
 	if (pipe(stdinFd) < 0 || pipe(stdoutFd) < 0) {
 		_client->httpReq->setStatus(INTERNAL_ERROR);
@@ -49,6 +49,7 @@ void		CgiHandler::handleChild(int stdinFd[2], int stdoutFd[2]) {
 }
 
 void		CgiHandler::handleParent(int stdinFd[2], int stdoutFd[2]) {
+	size_t bodySize = 0;
 	_stdinFd = stdinFd[1];
 	_stdoutFd = stdoutFd[0];
 	_headerPos = 0;
@@ -60,11 +61,13 @@ void		CgiHandler::handleParent(int stdinFd[2], int stdoutFd[2]) {
 	std::map<std::string, std::string> body = _client->httpReq->getBody();
 	if (!body.empty()) {
 		_inputBuffer = "";
-		for (std::map<std::string, std::string>::const_iterator it = body.begin(); it != body.end(); ++it)
+		for (std::map<std::string, std::string>::const_iterator it = body.begin(); it != body.end(); ++it) {
 			_inputBuffer += it->second;
+			bodySize += it->second.size();
+		}
 		_bytesWritten = 0;
 		_cgiStage = CGI_WRITING;
-	} else {
+	} if (!bodySize){
 		close(_stdinFd);
 		_stdinFd = -1;
 		_cgiStage = CGI_READING;

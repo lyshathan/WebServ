@@ -53,6 +53,7 @@ void HttpResponse::initStatusPhrases(){
 	_statusPhrases[500] = "Internal Server Error";
 	_statusPhrases[204] = "No Content";
 	_statusPhrases[413] = "Request Entity Too Large";
+	_statusPhrases[408] = "Request Timeout";
 }
 
 void HttpResponse::initHtmlResponses(){
@@ -78,4 +79,6 @@ void HttpResponse::initHtmlResponses(){
 		"<body><h1>500 Internal Server Error</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[413] = "<!DOCTYPE html><html><head><title>413 Request Entity Too Large</title></head>"
 		"<body><h1>413 Request Entity Too Large</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[408] = "<!DOCTYPE html><html><head><title>408 Request Timeout</title></head>"
+		"<body><h1>408 Request Timeout</h1><p>The server encountered an unexpected condition.</p></body></html>";
 }

@@ -113,7 +113,9 @@ void Config::initToken(std::ifstream &configFile)
 
 	if (_level != GLOBAL)
 		throwErrorToken(" Level error ", token);
-	if (_tokens.back().type != SEMICOLON && _tokens.back().type != CLOSE_BRACE)
+	if (_tokens.empty())
+		throwError(" Empty config file ");
+	else if (_tokens.back().type != SEMICOLON && _tokens.back().type != CLOSE_BRACE)
 		throwErrorToken(" Unexpected end of file ", token);
 }
 
@@ -151,7 +153,7 @@ void	Config::printTokens()
 
 	for (size_t i = 0 ; i < _tokens.size() ; i++)
 	{
-		std::cout << "#" << i
+		std::cerr << "#" << i
 			<< "	l:" << _tokens[i].line
 			<< PURPLE << "	lvl:" << _tokens[i].level << RESET
 			<< "	[" << _tokens[i].content << "]"

@@ -6,6 +6,10 @@
 
 void HttpRequest::pickLocationConfig() {
 	const std::vector<LocationConfig> &locations = _server->getLocations();
+	if (locations.empty()) {
+		_location = NULL;
+		return ;
+	}
 	std::vector<LocationConfig>::const_iterator it = locations.begin();
 	std::vector<LocationConfig>::const_iterator bestMatch = locations.end();
 	size_t longestMatch = 0;
