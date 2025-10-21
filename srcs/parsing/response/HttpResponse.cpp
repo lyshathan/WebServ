@@ -54,6 +54,11 @@ void HttpResponse::buildBody() {
 		return;
 	}
 
+	if (_status == 204) {
+		_binRes.clear();  
+		throw NO_CONTENT;
+	}
+
 	struct stat buf;
 	if (!stat(uri.c_str(),&buf)) {
 		if (S_ISDIR(buf.st_mode) && _status < 400) {

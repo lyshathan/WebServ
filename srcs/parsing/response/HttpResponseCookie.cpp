@@ -122,6 +122,7 @@ bool	HttpResponse::handleCookiePost(std::map<std::string, std::string>::iterator
 		userData.age = bodyIt->second;
 
 	_sessions[sessionId] = userData;
+	_status = 302;
 	addHeader("Location: ", "/cookie/");
 	return true;
 }

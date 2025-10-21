@@ -45,11 +45,11 @@ class Client {
 		std::map<std::string, std::string> 	_env;
 		time_t 						 		_lastActivity;
 
-		static const time_t HEADER_TIMEOUT = 10;
-		static const time_t BODY_TIMEOUT = 10;
-		static const time_t CGI_TIMEOUT = 3;
-		static const time_t WRITE_TIMEOUT = 5;
-		static const time_t KEEPALIVE_TIMEOUT = 10;
+		static const time_t HEADER_TIMEOUT = 60;
+		static const time_t BODY_TIMEOUT = 60;
+		static const time_t CGI_TIMEOUT = 5;
+		static const time_t WRITE_TIMEOUT = 60;
+		static const time_t KEEPALIVE_TIMEOUT = 60;
 
 		Client();
 	public:
