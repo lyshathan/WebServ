@@ -46,10 +46,8 @@ void HttpResponse::buildBody() {
 	std::string uri = _request->getUri();
 	_mimeType = getMimeType(uri);
 
-	if (uri.find("/cookie") != std::string::npos) {
-		handleCookie();
+	if (handleCookie())
 		return;
-	}
 
 	if (_status == 200 && _request->isCGIActive()) {
 		cgiParseResponse();

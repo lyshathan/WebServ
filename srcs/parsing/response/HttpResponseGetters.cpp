@@ -23,7 +23,6 @@ std::string HttpResponse::getMimeType(std::string path) const {
 	if (_status >= 300)
         return "text/html";
 
-    std::cerr << "Path " << path << "\n";
     size_t pos = path.find_last_of('.');
     if (pos == std::string::npos)
         return "application/octet-stream";
@@ -31,7 +30,6 @@ std::string HttpResponse::getMimeType(std::string path) const {
     std::string ext = path.substr(pos + 1);
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-    std::cerr << "Ext " << ext << "\n";
     std::map<std::string, std::string>::const_iterator it = _mimeTypes.find(ext);
     if (it != _mimeTypes.end())
         return it->second;

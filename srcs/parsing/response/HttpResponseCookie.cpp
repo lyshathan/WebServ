@@ -65,6 +65,10 @@ std::string	HttpResponse::buildSimpleHTML(const UserData& data) {
 }
 
 bool	HttpResponse::handleCookie() {
+	std::string uri = _request->getUri();
+	if (uri.find("/cookie") == std::string::npos)
+		return false;
+
 	cleanupOldSessions();
 
 	std::map<std::string, std::string>::iterator it = _request->getHeaders().find("cookie");
@@ -86,7 +90,7 @@ bool	HttpResponse::handleCookieGet(std::map<std::string, std::string>::iterator&
 	if (sessionIt != _sessions.end()) {
 		std::string html = buildSimpleHTML(sessionIt->second);
 		addHeader("Content-Type:", "text/html");
-		_res = html;
+		_binRes.assign(html.begin(), html.end());
 		return true;
 	}
 	return false;
@@ -95,6 +99,7 @@ bool	HttpResponse::handleCookieGet(std::map<std::string, std::string>::iterator&
 bool	HttpResponse::handleCookiePost(std::map<std::string, std::string>::iterator& cookieIt) {
 	std::string sessionId;
 
+	std::cerr << "Post cookie\n";
 	if (cookieIt != _request->getHeaders().end()) {
 		sessionId = extractSessionId(cookieIt->second);
 	} else {

@@ -87,6 +87,8 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 
 		if (ret == READ_COMPLETE) {
 			client->httpReq->requestHandler();
+			if (!client->httpReq->getStatus())
+				return;
 
 			if (client->isCGI()) {
 				handleClientCGI(client, newPollFds, pfd);
