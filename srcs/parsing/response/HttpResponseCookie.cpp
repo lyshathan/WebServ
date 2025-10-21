@@ -64,14 +64,11 @@ std::string	HttpResponse::buildSimpleHTML(const UserData& data) {
 	return html;
 }
 
-bool	HttpResponse::handleCookie(int status) {
-	std::string uri = _request->getUri();
-	if (uri.find("/cookie") == std::string::npos)
-		return false;
+bool	HttpResponse::handleCookie() {
 	cleanupOldSessions();
 
 	std::map<std::string, std::string>::iterator it = _request->getHeaders().find("cookie");
-	if (status == 200)
+	if (_status == 200)
 		return handleCookieGet(it);
 	else
 		return handleCookiePost(it);
@@ -90,7 +87,6 @@ bool	HttpResponse::handleCookieGet(std::map<std::string, std::string>::iterator&
 		std::string html = buildSimpleHTML(sessionIt->second);
 		addHeader("Content-Type:", "text/html");
 		_res = html;
-		_isTextContent = true;
 		return true;
 	}
 	return false;
@@ -121,8 +117,6 @@ bool	HttpResponse::handleCookiePost(std::map<std::string, std::string>::iterator
 		userData.age = bodyIt->second;
 
 	_sessions[sessionId] = userData;
-	setStatusLine(302);
 	addHeader("Location: ", "/cookie/");
-	_isTextContent = false;
 	return true;
 }

@@ -6,7 +6,6 @@
 
 const std::string& HttpResponse::getRes() const {return _res;}
 const std::vector<char>& HttpResponse::getBinRes() const {return _binRes;}
-bool	HttpResponse::getIsTextContent() const {return _isTextContent;}
 
 const std::string& HttpResponse::getResHeaders() {
 	std::ostringstream	headers;
@@ -20,43 +19,23 @@ const std::string& HttpResponse::getResHeaders() {
 	return _resHeaders;
 }
 
-std::string HttpResponse::getMimeType() const {
-	std::string uri = _request->getUri();
+std::string HttpResponse::getMimeType(std::string path) const {
+	if (_status >= 300)
+        return "text/html";
 
-	if (_request->getStatus() >= 400)
-		return "text/html";
-	size_t pos = uri.find_last_of(".");
-	if (pos == std::string::npos) {
-		return "text/html";
-	}
-	else {
-		std::string extension = uri.substr(pos + 1);
-		if (extension == "html" || extension == "htm")
-			return "text/html";
-		else if (extension == "css")
-			return "text/css";
-		else if (extension == "js")
-			return "text/javascript";
-		else if (extension == "json")
-			return "application/json";
-		else if (extension == "png")
-			return "image/png";
-		else if (extension == "jpg" || extension == "jpeg")
-			return "image/jpeg";
-		else if (extension == "gif")
-			return "image/gif";
-		else if (extension == "svg")
-			return "image/svg+xml";
-		else if (extension == "ico")
-			return "image/x-icon";
-		else if (extension == "txt")
-			return "text/plain";
-		else if (extension == "xml")
-			return "text/xml";
-		else if (extension == "pdf")
-			return "application/pdf";
-	}
-	return "application/octet-stream";
+    std::cerr << "Path " << path << "\n";
+    size_t pos = path.find_last_of('.');
+    if (pos == std::string::npos)
+        return "application/octet-stream";
+
+    std::string ext = path.substr(pos + 1);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    std::cerr << "Ext " << ext << "\n";
+    std::map<std::string, std::string>::const_iterator it = _mimeTypes.find(ext);
+    if (it != _mimeTypes.end())
+        return it->second;
+    return "application/octet-stream";
 }
 
 std::map<std::string, UserData>& HttpResponse::getSessions() {

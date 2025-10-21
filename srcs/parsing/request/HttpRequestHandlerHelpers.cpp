@@ -5,7 +5,6 @@
 /******************************************************************************/
 
 bool HttpRequest::validateMethods() {
-	std::cerr << "Validate method check\n";
 	if (!_location) {
 		_status = NOT_ALLOWED;
 		return false;
@@ -46,8 +45,10 @@ bool HttpRequest::setUri(std::string &path) {
 			}
 		}
 	}
-	if (_location && _location->getAutoIndex())
-		return true;
+	if (_location && _location->getAutoIndex()) {
+		_uri = path;
+ 		return true;
+	}
 	if (!_status)
 		_status = NOT_FOUND;
 	return false;

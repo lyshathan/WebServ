@@ -38,6 +38,8 @@ int HttpRequest::requestHeaderParser(std::string data) {
 	}
 	pickServerConfig();
 	pickLocationConfig();
+	if (!validateMethods())
+		return -1;
 	_areHeadersParsed = true;
 	return 0;
 }

@@ -88,7 +88,6 @@ class HttpRequest {
 		bool		validateVersion(std::string);
 
 		bool		setUri(std::string &);
-		void		setErrorPage();
 		void		setExtensions();
 		bool		validateMethods();
 		bool		checkReturn();
@@ -132,6 +131,7 @@ class HttpRequest {
 		bool								isCGIActive() const;
 		size_t								getMaxBody() const;
 		std::vector<std::string>			getArgv() const;
+		void								setErrorPage();
 
 		bool								checkCGI();
 

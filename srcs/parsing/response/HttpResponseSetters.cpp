@@ -8,29 +8,25 @@ void HttpResponse::addHeader(const std::string &key, const std::string &value) {
 	_headers[key] = value + "\r\n";
 }
 
-void HttpResponse::setConnectionHeader(int status) {
-	if (status >= 400) {
+void HttpResponse::setStatusLine() {
+	std::stringstream ss;
+
+	ss << _status;
+	_responseStatus = _request->getVersion() + " " +
+		ss.str() + " " + _statusPhrases[_status] + "\r\n";
+}
+
+void HttpResponse::setConnectionHeader() {
+	if (_status >= 400) {
 		addHeader("Connection: ", "close");
 	} else {
 		addHeader("Connection: ", "keep-alive");
 	}
 }
 
-void HttpResponse::setStatusSpecificHeaders(int status) {
-	switch(status) {
-		case MOVED_PERMANENTLY:
-		case MOVED_PERMANENTLY_302:
-			addHeader("Location: ", _request->getUri());
-			break;
-	}
-}
-
-void HttpResponse::setStatusLine(int status) {
-	std::stringstream ss;
-
-	ss << status;
-	_responseStatus = _request->getVersion() + " " +
-		ss.str() + " " + _statusPhrases[status] + "\r\n";
+void HttpResponse::setStatusSpecificHeaders() {
+	if (_status == MOVED_PERMANENTLY || _status == MOVED_PERMANENTLY_302)
+		addHeader("Location: ", _request->getUri());
 }
 
 void HttpResponse::setContentHeaders() {
@@ -38,41 +34,23 @@ void HttpResponse::setContentHeaders() {
 
 	addHeader("Server: ", "webserv");
 	addHeader("Date: ", getTime());
+	ss << _binRes.size();
+	addHeader("Content-Length: ", ss.str());
 	if (!_mimeType.empty())
 		addHeader("Content-Type: ", _mimeType);
-	if (_isTextContent) ss << _res.size();
-	else ss << _binRes.size();
-	addHeader("Content-Length: ", ss.str());
 }
 
-bool HttpResponse::setBody(int status) {
-	_mimeType = getMimeType();
-	addHeader("Last-Modified: ", getLastModifiedTime());
-	if (isTextContent()) {
-		if (!setTextContent(status))
-			return false;
-	}
-	else {
-		if (!setBinContent())
-			return false;
-	}
-	return true;
-}
-
-void HttpResponse::setAutoIndex() {
-	std::string	uri = _request->getUri();
+void HttpResponse::setAutoIndex(std::string uri) {
 	std::stringstream ss;
 
 	ss << "<html><head><title>Index of " << uri
 	<< "</title></head><body> <h1>Index of " << uri
 	<< "</h1><hr><pre>";
 
-	std::string path = _request->getRoot() + _request->getUri();
+	std::string path = uri;
 	DIR *dir = opendir(path.c_str());
-	if (!dir) {
-		// std::cerr << "Error opening directory\n";
-		return ;
-	}
+	if (!dir)
+		throw INTERNAL_ERROR;
 
 	struct dirent *entry;
 	while ((entry = readdir(dir)) != NULL) {
@@ -81,67 +59,7 @@ void HttpResponse::setAutoIndex() {
 		ss << "<a href=\"" << entry->d_name << "\">" << entry->d_name << "</a><br>\n";
 	}
 	ss << "</pre><hr></body></html>";
-	_res = ss.str();
+	std::string response = ss.str();
+	_binRes.assign(response.begin(), response.end());
 	closedir(dir);
-}
-
-bool HttpResponse::setTextContent(int status) {
-	std::string uri = _request->getUri();
-	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
-	if (!file.is_open()) {
-		if (_request->getAutoIndex() && status == 200) {
-			setAutoIndex();
-			return true;
-		}
-		else if (!_htmlResponses[_request->getStatus()].empty()){
-			_res = _htmlResponses[_request->getStatus()];
-			return true;
-		}
-		setStatusLine(500);
-		errorParseResponse(500);
-		return false;
-	}
-	_res.clear();
-	char buffer[4096];
-	std::string chunk;
-	while (file.read(buffer, sizeof(buffer))) {
-		chunk.assign(buffer, file.gcount());
-		_res += chunk;
-	}
-	if (file.gcount() > 0) {
-		chunk.assign(buffer, file.gcount());
-		_res += chunk;
-	}
-	if (file.bad() || (file.fail() && !file.eof())) {
-		setStatusLine(500);
-		errorParseResponse(500);
-		return false;
-	}
-	file.close();
-	return true;
-}
-
-bool	HttpResponse::setBinContent() {
-	std::string uri = _request->getUri();
-	std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
-	if (!file.is_open()) {
-		setStatusLine(500);
-		errorParseResponse(500);
-		return false;
-	}
-
-	char buffer[4096];
-	while (file.read(buffer, sizeof(buffer))) {
-		_binRes.insert(_binRes.end(), buffer, buffer + file.gcount());
-	}
-	if (file.gcount() > 0) {
-		_binRes.insert(_binRes.end(), buffer, buffer + file.gcount());
-	}
-	if (file.bad() || (file.fail() && !file.eof())) {
-		setStatusLine(500);
-		errorParseResponse(500);
-		return false;
-	}
-	file.close();
-	return true;
 }
