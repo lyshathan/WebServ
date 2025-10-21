@@ -60,6 +60,7 @@ void HttpResponse::setAutoIndex(std::string uri) {
 	}
 	ss << "</pre><hr></body></html>";
 	std::string response = ss.str();
+	_mimeType = "text/html";
 	_binRes.assign(response.begin(), response.end());
 	closedir(dir);
 }

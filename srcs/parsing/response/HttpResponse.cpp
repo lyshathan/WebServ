@@ -25,6 +25,7 @@ HttpResponse::~HttpResponse() {};
 
 void HttpResponse::parseResponse() {
 	_status = _request->getStatus();
+	std::string uri = _request->getUri();
 
 	try {
 		buildBody();
@@ -46,17 +47,21 @@ void HttpResponse::buildBody() {
 	std::string uri = _request->getUri();
 	_mimeType = getMimeType(uri);
 
+	if (_status == 500)
+		throw INTERNAL_ERROR;
+	if (_status == 408)
+		throw REQUEST_TIMEOUT;
+	if (_status == 204) {
+		_binRes.clear();  
+		throw NO_CONTENT;
+	}
+
 	if (handleCookie())
 		return;
 
 	if (_status == 200 && _request->isCGIActive()) {
 		cgiParseResponse();
 		return;
-	}
-
-	if (_status == 204) {
-		_binRes.clear();  
-		throw NO_CONTENT;
 	}
 
 	struct stat buf;

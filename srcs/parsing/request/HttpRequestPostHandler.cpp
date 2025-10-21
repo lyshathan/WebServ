@@ -77,15 +77,23 @@ void HttpRequest::generateName(std::string &finalName) {
 	std::ostringstream filename;
 	setExtensions();
 
-	std::map<std::string, std::string>::iterator contentType = _headers.find("content-type");
 	std::string extension = ".bin";
 
-	if (_extensions.count(contentType->second))
-		extension = _extensions[contentType->second];
+	std::map<std::string, std::string>::iterator it = _headers.find("content-type");
+	if (it != _headers.end()) {
+		std::string contentType = it->second;
+		std::transform(contentType.begin(), contentType.end(), contentType.begin(), ::tolower);
+
+		if (_extensions.count(contentType))
+			extension = _extensions[contentType];
+		else if (contentType.find("text/") == 0 || contentType.find("application/x-www-form-urlencoded") != std::string::npos)
+			extension = ".txt";
+	}
 
 	filename << "upload_" << std::time(NULL) << extension;
 	finalName = filename.str();
 }
+
 
 bool HttpRequest::createFile() {
 	std::string path = _location->getUploadPath();

@@ -20,7 +20,13 @@ const std::string& HttpResponse::getResHeaders() {
 }
 
 std::string HttpResponse::getMimeType(std::string path) const {
+    if (_status == 201) {
+        return "text/html";
+    }
 	if (_status >= 300)
+        return "text/html";
+
+    if (!path.empty() && path[path.size() - 1] == '/')
         return "text/html";
 
     size_t pos = path.find_last_of('.');
@@ -35,6 +41,7 @@ std::string HttpResponse::getMimeType(std::string path) const {
         return it->second;
     return "application/octet-stream";
 }
+
 
 std::map<std::string, UserData>& HttpResponse::getSessions() {
 	return _sessions;

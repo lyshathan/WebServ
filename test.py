@@ -51,10 +51,10 @@ def edge_tests():
     check("Unsupported version", "GET / HTTP/2.0\r\nHost: localhost\r\n\r\n", 504)
     check("Header without colon", "GET / HTTP/1.1\r\nHost: localhost\r\nFooBar\r\n\r\n", 400)
     check("Empty request line", "\r\n", 400)
-    check("Invalid chunk size", "POST / HTTP/1.1\r\nHost: localhost\r\nTransfer-Encoding: chunked\r\n\r\nZZ\r\nX\r\n", 400)
+    check("Invalid chunk size", "POST /uploads HTTP/1.1\r\nHost: localhost\r\nTransfer-Encoding: chunked\r\n\r\nZZ\r\nX\r\n", 400)
     check("Unsupported method TRACE", "TRACE / HTTP/1.1\r\nHost: localhost\r\n\r\n", 405)
     check("Double Content-Length", "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 5\r\nContent-Length: 10\r\n\r\n", 400)
-    check("Missing body", "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 5\r\n\r\n", 400)
+    check("Missing body", "POST /uploads HTTP/1.1\r\nHost: localhost\r\nContent-Length: 5\r\n\r\n", 400)
     long_url = "/" + "a"*9000
     check("Long URI", f"GET {long_url} HTTP/1.1\r\nHost: localhost\r\n\r\n", 414)
 
