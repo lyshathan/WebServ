@@ -54,7 +54,6 @@ int	Client::readAndParseRequest() {
 			if (status == 1)
 				return READ_INCOMPLETE;
 			else if (status == -1) {
-				httpReq->setErrorPage();
 				_state = REQUEST_READY;
 				return READ_HEADER_ERROR;
 			} else {

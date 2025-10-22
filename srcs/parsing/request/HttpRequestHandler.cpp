@@ -26,8 +26,7 @@ void HttpRequest::requestHandler() {
 }
 
 void HttpRequest::getHandler() {
-	if (!isLocationPathValid())
-		setErrorPage();
+	isLocationPathValid();
 	if (!_status)
 		_status = OK;
 }

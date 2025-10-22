@@ -27,34 +27,35 @@ void HttpResponse::parseResponse() {
 	_status = _request->getStatus();
 	std::string uri = _request->getUri();
 
-	try {
-		buildBody();
-	} catch (int code) {
-		_status = code;
-		if (!_htmlResponses[_status].empty())
-			_binRes.assign(_htmlResponses[_status].begin(),
-               _htmlResponses[_status].end());
+	if (_status >= 300) {
+		_client->httpReq->setErrorPage();
+		_status = _request->getStatus();
+		uri = _request->getUri();
 	}
+
+	try {
+    	buildBody();
+	} catch (int code) {
+		_status = code; 
+		if (!_htmlResponses[_status].empty()) 
+			_binRes.assign(_htmlResponses[_status].begin(), 
+				_htmlResponses[_status].end());
+		else {
+			_status = 500;
+			_binRes.assign(_htmlResponses[500].begin(), 
+				_htmlResponses[500].end());
+		}
+	}
+
 	setStatusLine();
 	setContentHeaders();
 	setStatusSpecificHeaders();
 	setConnectionHeader();
-
-	// std::cout << std::string(_binRes.begin(), _binRes.end()) << std::endl;
 }
 
 void HttpResponse::buildBody() {
 	std::string uri = _request->getUri();
 	_mimeType = getMimeType(uri);
-
-	if (_status == 500)
-		throw INTERNAL_ERROR;
-	if (_status == 408)
-		throw REQUEST_TIMEOUT;
-	if (_status == 204) {
-		_binRes.clear();  
-		throw NO_CONTENT;
-	}
 
 	if (handleCookie())
 		return;
@@ -62,6 +63,15 @@ void HttpResponse::buildBody() {
 	if (_status == 200 && _request->isCGIActive()) {
 		cgiParseResponse();
 		return;
+	}
+	
+	if (_status >= 300 && !_client->httpReq->getErrorAvailable()) {
+		if (!_htmlResponses[_status].empty()) {
+			_binRes.assign(_htmlResponses[_status].begin(),
+               	_htmlResponses[_status].end());
+			return ;
+		} else
+			throw INTERNAL_ERROR;
 	}
 
 	struct stat buf;
@@ -85,12 +95,6 @@ void HttpResponse::buildBody() {
 			return;
 		}
 	}
-	if (!_htmlResponses[_status].empty()) {
-		_binRes.assign(_htmlResponses[_status].begin(),
-               _htmlResponses[_status].end());
-	}
-	else
-		throw INTERNAL_ERROR;
 }
 
 void HttpResponse::cgiParseResponse() {

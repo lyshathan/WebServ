@@ -5,10 +5,8 @@
 /******************************************************************************/
 
 bool HttpRequest::postHandler() {
-	if (!_location || !isUploadPathValid()) {
-		setErrorPage();
+	if (!_location || !isUploadPathValid())
 		return false;
-	}
 	if (_uri.find("/cookie") == std::string::npos && _status < 400)
 		createFile();
 	if (!_status)
@@ -25,7 +23,6 @@ bool HttpRequest::isUploadPathValid() {
 	std::string	path = _location->getUploadPath() + _uri;
 	struct stat buf;
 
-	// clear// std::cerr << "Upload Path " << path << "\n";
 	if (_location && !stat(path.c_str(),&buf)) {
 		if (S_ISDIR(buf.st_mode)) {
 			if (access(path.c_str(),  R_OK | X_OK) != 0) {

@@ -78,7 +78,6 @@ void	CgiHandler::parseBodySendResponse(int result) {
 		if (it != _cgiHeaders.end()) {
 			size_t expected = static_cast<size_t>(atoi(it->second.c_str()));
 			if (_outputBuffer.size() > _headerPos) {
-				// Truncate to expected length if body is longer
 				if (_outputBuffer.size() - _headerPos > expected)
 					_finalResponse = _outputBuffer.substr(_headerPos, expected);
 				else

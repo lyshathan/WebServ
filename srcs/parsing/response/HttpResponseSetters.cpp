@@ -25,7 +25,7 @@ void HttpResponse::setConnectionHeader() {
 }
 
 void HttpResponse::setStatusSpecificHeaders() {
-	if (_status == MOVED_PERMANENTLY || _status == MOVED_PERMANENTLY_302)
+	if (_status == MOVED_PERMANENTLY || _status == FOUND)
 		addHeader("Location: ", _request->getUri());
 }
 

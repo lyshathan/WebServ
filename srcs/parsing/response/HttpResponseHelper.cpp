@@ -34,7 +34,7 @@ void HttpResponse::initStatusPhrases(){
 	_statusPhrases[200] = "OK";
 	_statusPhrases[204] = "No Content";
 	_statusPhrases[301] = "Moved Permanently";
-	_statusPhrases[302] = "Moved Permanently";
+	_statusPhrases[302] = "Found";
 	_statusPhrases[403] = "Forbidden";
 	_statusPhrases[404] = "Not Found";
 	_statusPhrases[500] = "Internal Server Error";

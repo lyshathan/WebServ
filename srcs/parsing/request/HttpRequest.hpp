@@ -23,7 +23,7 @@
 #define BAD_REQUEST 400
 #define NOT_FOUND 404
 #define MOVED_PERMANENTLY 301
-#define MOVED_PERMANENTLY_302 302
+#define FOUND 302
 #define OK 200
 #define CREATED 201
 #define FORBIDDEN 403
@@ -67,6 +67,7 @@ class HttpRequest {
 		bool								_isProccessingError;
 		bool								_isCGI;
 		std::string							_clientIP;
+		bool								_isErrorAvailable;
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
@@ -131,6 +132,7 @@ class HttpRequest {
 		bool								isCGIActive() const;
 		size_t								getMaxBody() const;
 		std::vector<std::string>			getArgv() const;
+		bool								getErrorAvailable() const;
 		void								setErrorPage();
 
 		bool								checkCGI();

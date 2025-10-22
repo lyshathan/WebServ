@@ -5,10 +5,8 @@
 /******************************************************************************/
 
 bool HttpRequest::deleteHandler() {
-	if (!_location || !isDeletePathValid()) {
-		setErrorPage();
+	if (!_location || !isDeletePathValid())
 		return false;
-	}
 	deleteFile();
 	if (!_status)
 		_status = NO_CONTENT;

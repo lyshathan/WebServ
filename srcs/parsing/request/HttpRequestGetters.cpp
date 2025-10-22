@@ -28,9 +28,9 @@ bool HttpRequest::isCGIActive() const { return _isCGI; }
 
 bool HttpRequest::getAutoIndex() const { return (_location ? _location->getAutoIndex() : false); }
 
-size_t	HttpRequest::getMaxBody() const { return (_location ? _location->getClientMaxBodySize() : 0); }
+bool HttpRequest::getErrorAvailable() const { return _isErrorAvailable; }
 
-// const std::string HttpRequest::safeStringFallback() const { return std::string(); }
+size_t	HttpRequest::getMaxBody() const { return (_location ? _location->getClientMaxBodySize() : 0); }
 
 std::vector<std::string> HttpRequest::getArgv() const { return _argv; }
 
