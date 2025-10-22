@@ -46,7 +46,7 @@ void		CgiHandler::handleChild(int stdinFd[2], int stdoutFd[2]) {
 	char** envp = getEnvArray();
 	
 	if (execve(argv[0], argv, envp) == -1)
-		exit(EXIT_FAILURE);
+		exit(1);
 }
 
 void		CgiHandler::handleParent(int stdinFd[2], int stdoutFd[2]) {

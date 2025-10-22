@@ -99,7 +99,6 @@ bool	HttpResponse::handleCookieGet(std::map<std::string, std::string>::iterator&
 bool	HttpResponse::handleCookiePost(std::map<std::string, std::string>::iterator& cookieIt) {
 	std::string sessionId;
 
-	std::cerr << "Post cookie\n";
 	if (cookieIt != _request->getHeaders().end()) {
 		sessionId = extractSessionId(cookieIt->second);
 	} else {

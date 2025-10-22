@@ -42,7 +42,7 @@ void HttpResponse::initStatusPhrases(){
 	_statusPhrases[201] = "Created";
 	_statusPhrases[405] = "Method Not Allowed";
 	_statusPhrases[500] = "Internal Server Error";
-	_statusPhrases[504] = "HTTP Version Not Supported";
+	_statusPhrases[505] = "HTTP Version Not Supported";
 	_statusPhrases[204] = "No Content";
 	_statusPhrases[413] = "Request Entity Too Large";
 	_statusPhrases[408] = "Request Timeout";
@@ -72,8 +72,8 @@ void HttpResponse::initHtmlResponses(){
 		"<body><h1>405 Not Allowed</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[500] = "<!DOCTYPE html><html><head><title>500 Internal Server Error</title></head>"
 		"<body><h1>500 Internal Server Error</h1><p>The server encountered an unexpected condition.</p></body></html>";
-	_htmlResponses[504] = "<!DOCTYPE html><html><head><title>504 HTTP Version Not Supported</title></head>"
-		"<body><h1>504 HTTP Version Not Supported</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[505] = "<!DOCTYPE html><html><head><title>505 HTTP Version Not Supported</title></head>"
+		"<body><h1>505 HTTP Version Not Supported</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[413] = "<!DOCTYPE html><html><head><title>413 Request Entity Too Large</title></head>"
 		"<body><h1>413 Request Entity Too Large</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[408] = "<!DOCTYPE html><html><head><title>408 Request Timeout</title></head>"
