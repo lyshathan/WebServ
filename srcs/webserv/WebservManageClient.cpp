@@ -41,7 +41,7 @@ int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newP
 	// Add new client to pollFds and to _client map
 	std::string clientIP = inet_ntoa(clientAddr.sin_addr);
 	addClient(clientFd, clientIP, newPollFds);
-	fcntl(clientFd, F_SETFL, O_NONBLOCK); // CHECK_HERE
+	fcntl(clientFd, F_SETFL, O_NONBLOCK);
 
 	std::stringstream msg;
 	msg << "New Client #" << clientFd << " IP " << clientIP << " connected";
@@ -50,14 +50,15 @@ int Webserv::acceptNewConnection(int &serverFd, std::vector<struct pollfd> &newP
 }
 
 void Webserv::signalClientReady(Client *client) {
-	// std::cerr << "\033[36m[DEBUG] Client finished, ready to exit\033[0m" << std::endl;
 	std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();
-	for (; clientIt != _pollFds.end(); ++clientIt)
-		if (clientIt->fd == client->getFd())
+	for (; clientIt != _pollFds.end(); ++clientIt) {
+		if (clientIt->fd == client->getFd()) {
+			clientIt->events = POLLOUT;
 			break;
-	if (clientIt != _pollFds.end())
-		clientIt->events = POLLOUT;
-	delete (client->getCgi());
+		}
+	}
+	if (client->getCgi())
+		delete (client->getCgi());
 	client->setCgiNull();
 	client->setState(REQUEST_READY);
 }
@@ -67,12 +68,22 @@ void Webserv::checkClientTimeouts(std::vector<int> &removeFds) {
 
 	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		Client *client = it->second;
-		if (client->hasTimedOut(now))
-		{
+		if (!client->hasTimedOut(now))
+			continue;
+		if (client->getClientState() == CONNECTION_IDLE) {
+			std::vector<struct pollfd>::iterator clientIt = _pollFds.begin();
+			for (; clientIt != _pollFds.end(); ++clientIt) {
+				if (clientIt->fd == client->getFd()) {
+					removeFds.push_back(clientIt->fd);
+					clientIt->events = POLLOUT;
+					break;
+				}
+			}
+			continue;
+		} else {
+			CgiHandler *cgi = client->getCgi();
 			client->httpReq->setStatus(REQUEST_TIMEOUT);
 			client->httpRes->parseResponse();
-			// std::cerr << "Client #" << it->first << " timed out in state " << it->second->getStateString() << std::endl;
-			CgiHandler *cgi = client->getCgi();
 			if (cgi)
 				cgi->cleanUp(removeFds);
 			signalClientReady(client);

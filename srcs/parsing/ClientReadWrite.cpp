@@ -48,7 +48,7 @@ int	Client::readAndParseRequest() {
 
 	appendBuffer(buffer, bytesRead);
 
-	if (_state == READING_HEADERS) {
+	if (_state == READING_HEADERS || _state == CONNECTION_IDLE) {
 		if (!httpReq->getHeadersParsed()) {
 			int status = httpReq->requestHeaderParser(_reqBuffer);
 			if (status == 1)
