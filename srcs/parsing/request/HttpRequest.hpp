@@ -34,7 +34,10 @@
 #define PAYLOAD_TOO_LARGE 413
 #define REQUEST_TIMEOUT 408
 #define GATEWAY_TIMEOUT 504
+#define BAD_GATEWAY 502
+#define REQUEST_URI_TOO_LONG 414
 #define CGI_PENDING 1000
+#define MAX_URI_LENGTH 8192
 
 typedef enum	e_servState {
 	NO_MATCH,

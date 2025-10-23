@@ -5,6 +5,9 @@
 /******************************************************************************/
 
 const std::string& HttpResponse::getRes() const {return _res;}
+
+int HttpResponse::getResStatus() const {return _status;}
+
 const std::vector<char>& HttpResponse::getBinRes() const {return _binRes;}
 
 const std::string& HttpResponse::getResHeaders() {

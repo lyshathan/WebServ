@@ -62,11 +62,11 @@ void CgiHandler::handleCompletion() {
 			parseBodySendResponse(OK);
 			markDone();
 		} else {
-			parseBodySendResponse(INTERNAL_ERROR);
+			parseBodySendResponse(BAD_GATEWAY);
 			markError("CGI exited abnormally");
 		}
 	} else if (result == -1) {
-		parseBodySendResponse(INTERNAL_ERROR);
+		parseBodySendResponse(BAD_GATEWAY);
 		markError("waitpid() failed");
 	}
 }
@@ -105,7 +105,7 @@ IOStatus	CgiHandler::handleWrite() {
 	ssize_t written = write(_stdinFd, _inputBuffer.c_str() + _bytesWritten, remaining);
 
 	if (written <= 0) {
-		_client->httpReq->setStatus(INTERNAL_ERROR);
+		_client->httpReq->setStatus(BAD_GATEWAY);
 		return IO_ERROR;
 	}
 
@@ -118,6 +118,7 @@ IOStatus	CgiHandler::handleWrite() {
 
 IOStatus	CgiHandler::handleRead() {
 	_client->updateActivity();
+
 	char buffer[4096];
 
 	ssize_t bytesRead = read(_stdoutFd, buffer, sizeof(buffer));
@@ -125,7 +126,7 @@ IOStatus	CgiHandler::handleRead() {
 	if (bytesRead == 0)
 		return IO_COMPLETE;
 	else if (bytesRead < 0) {
-		_client->httpReq->setStatus(INTERNAL_ERROR);
+		_client->httpReq->setStatus(BAD_GATEWAY);
 		return IO_ERROR;
 	}
 

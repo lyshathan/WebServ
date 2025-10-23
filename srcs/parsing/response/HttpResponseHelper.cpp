@@ -44,8 +44,10 @@ void HttpResponse::initStatusPhrases(){
 	_statusPhrases[500] = "Internal Server Error";
 	_statusPhrases[505] = "HTTP Version Not Supported";
 	_statusPhrases[504] = "Gateway Timeout";
+	_statusPhrases[502] = "Bad Gateway";
 	_statusPhrases[204] = "No Content";
 	_statusPhrases[413] = "Request Entity Too Large";
+	_statusPhrases[414] = "Request-URI Too Long";
 	_statusPhrases[408] = "Request Timeout";
 }
 
@@ -81,6 +83,10 @@ void HttpResponse::initHtmlResponses(){
 		"<body><h1>413 Request Entity Too Large</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[408] = "<!DOCTYPE html><html><head><title>408 Request Timeout</title></head>"
 		"<body><h1>408 Request Timeout</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[414] = "<!DOCTYPE html><html><head><title>414 Request-URI Too Long</title></head>"
+		"<body><h1>414 Request-URI Too Long</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[502] = "<!DOCTYPE html><html><head><title>502 Bad Gateway</title></head>"
+		"<body><h1>502 Bad Gateway</h1><p>The server encountered an unexpected condition.</p></body></html>";
 }
 
 void HttpResponse::initMimeTypes() {

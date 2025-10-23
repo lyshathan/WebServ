@@ -74,11 +74,14 @@ bool HttpRequest::parseFirstLine(std::string data) {
 	}
 	if (!ss.eof() || i < NUM_TOKENS)
 		return false;
-	if (firstLineTokens[1].size() > 8000
-		|| !validateVersion(firstLineTokens[2])) {
+	if (firstLineTokens[1].size() > MAX_URI_LENGTH) {
+		_status = REQUEST_URI_TOO_LONG;
+		return false;
+	}
+	if (!validateVersion(firstLineTokens[2])) {
 			_status = HTTP_NOT_SUPPORTED;
 			return false;
-		}
+	}
 	_method = firstLineTokens[0];
 	_uri = firstLineTokens[1];
 	_version = firstLineTokens[2];
