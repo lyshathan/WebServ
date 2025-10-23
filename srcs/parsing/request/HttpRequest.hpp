@@ -23,16 +23,17 @@
 #define BAD_REQUEST 400
 #define NOT_FOUND 404
 #define MOVED_PERMANENTLY 301
-#define MOVED_PERMANENTLY_302 302
+#define FOUND 302
 #define OK 200
 #define CREATED 201
 #define FORBIDDEN 403
 #define NOT_ALLOWED 405
 #define INTERNAL_ERROR 500
-#define HTTP_NOT_SUPPORTED 504
+#define HTTP_NOT_SUPPORTED 505
 #define NO_CONTENT 204
 #define PAYLOAD_TOO_LARGE 413
 #define REQUEST_TIMEOUT 408
+#define GATEWAY_TIMEOUT 504
 #define CGI_PENDING 1000
 
 typedef enum	e_servState {
@@ -67,6 +68,7 @@ class HttpRequest {
 		bool								_isProccessingError;
 		bool								_isCGI;
 		std::string							_clientIP;
+		bool								_isErrorAvailable;
 
 		bool		parseFirstLine(std::string);
 		bool		parseHeaders(std::string);
@@ -88,7 +90,6 @@ class HttpRequest {
 		bool		validateVersion(std::string);
 
 		bool		setUri(std::string &);
-		void		setErrorPage();
 		void		setExtensions();
 		bool		validateMethods();
 		bool		checkReturn();
@@ -132,6 +133,8 @@ class HttpRequest {
 		bool								isCGIActive() const;
 		size_t								getMaxBody() const;
 		std::vector<std::string>			getArgv() const;
+		bool								getErrorAvailable() const;
+		void								setErrorPage();
 
 		bool								checkCGI();
 

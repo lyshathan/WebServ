@@ -18,8 +18,10 @@ void HttpRequest::setErrorPage() {
 				_uri = it->second;
 				pickLocationConfig();
 				requestHandler();
+				if (access(_uri.c_str(), R_OK) == 0)
+					_isErrorAvailable = true;
 			} else {
-				_status = MOVED_PERMANENTLY_302;
+				_status = FOUND;
 				_uri = it->second;
 			}
 		}

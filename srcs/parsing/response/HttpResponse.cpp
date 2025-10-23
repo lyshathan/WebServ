@@ -10,10 +10,11 @@ std::map<std::string, UserData> HttpResponse::_sessions;
 
 HttpResponse::HttpResponse() {};
 
-HttpResponse::HttpResponse(HttpRequest *req, Client *client) : _request(req), _client(client),
-	_isTextContent(false), _res(""), _mimeType("") {
+HttpResponse::HttpResponse(HttpRequest *req, Client *client) : _request(req), _client(client), 
+	_res(""), _mimeType("") {
 	initStatusPhrases();
 	initHtmlResponses();
+	initMimeTypes();
 };
 
 HttpResponse::~HttpResponse() {};
@@ -23,36 +24,82 @@ HttpResponse::~HttpResponse() {};
 /******************************************************************************/
 
 void HttpResponse::parseResponse() {
-	int	status = _request->getStatus();
+	_status = _request->getStatus();
+	std::string uri = _request->getUri();
 
-	setStatusLine(status);
-	if (status == 201) {
-		if (!handleCookie(status))
-			postParseResponse(status);
+	if (_status >= 300) {
+		_client->httpReq->setErrorPage();
+		_status = _request->getStatus();
+		uri = _request->getUri();
 	}
-	else if (status == 204)
-		deleteParseResponse();
-	else if (status == 400 || status == 500 || status == 408 || status == 301 || status == 302)
-		errorParseResponse(status);
-	else if (status == 200 && _request->isCGIActive())
-		cgiParseResponse(status);
-	else
-		successParseResponse(status);
-}
 
-void HttpResponse::successParseResponse(int status) {
-	if (!handleCookie(status)) {
-		if (!setBody(status))
-			return ;
+	try {
+    	buildBody();
+	} catch (int code) {
+		_status = code; 
+		if (!_htmlResponses[_status].empty()) 
+			_binRes.assign(_htmlResponses[_status].begin(), 
+				_htmlResponses[_status].end());
+		else {
+			_status = 500;
+			_binRes.assign(_htmlResponses[500].begin(), 
+				_htmlResponses[500].end());
+		}
 	}
+
+	setStatusLine();
 	setContentHeaders();
-	setStatusSpecificHeaders(status);
-	setConnectionHeader(status);
+	setStatusSpecificHeaders();
+	setConnectionHeader();
 }
 
-void HttpResponse::cgiParseResponse(int status) {
-	_isTextContent = true;
-	_res = _request->getCGIRes();
+void HttpResponse::buildBody() {
+	std::string uri = _request->getUri();
+	_mimeType = getMimeType(uri);
+
+	if (handleCookie())
+		return;
+
+	if (_status == 200 && _request->isCGIActive()) {
+		cgiParseResponse();
+		return;
+	}
+	
+	if (_status >= 300 && !_client->httpReq->getErrorAvailable()) {
+		if (!_htmlResponses[_status].empty()) {
+			_binRes.assign(_htmlResponses[_status].begin(),
+               	_htmlResponses[_status].end());
+			return ;
+		} else
+			throw INTERNAL_ERROR;
+	}
+
+	struct stat buf;
+	if (!stat(uri.c_str(),&buf)) {
+		if (S_ISDIR(buf.st_mode) && _status < 400) {
+			setAutoIndex(uri);
+			return ;
+		}
+		else if (S_ISREG(buf.st_mode)) {
+			if (access(uri.c_str(),  R_OK) != 0)
+				throw FORBIDDEN;
+			std::fstream file(uri.c_str(), std::ios::in | std::ios::binary);
+			if (!file.is_open())
+				throw INTERNAL_ERROR;
+			char timeStr[100];
+			std::tm *gmt = std::gmtime(&buf.st_mtime);
+			std::strftime(timeStr, sizeof(timeStr), "%a, %d %b %Y %H:%M:%S GMT", gmt);
+			addHeader("Last-Modified: ", timeStr);
+			_binRes.assign(std::istreambuf_iterator<char>(file),
+				std::istreambuf_iterator<char>());
+			return;
+		}
+	}
+}
+
+void HttpResponse::cgiParseResponse() {
+	std::string cgiRes = _request->getCGIRes();
+	_binRes.assign(cgiRes.begin(), cgiRes.end());
 
 	CgiHandler *cgi = _client->getCgi();
 	if (cgi) {
@@ -74,36 +121,4 @@ void HttpResponse::cgiParseResponse(int status) {
 		}
 	} else
 		_mimeType = "text/html";
-	setContentHeaders();
-	setConnectionHeader(status);
-}
-
-void HttpResponse::errorParseResponse(int status) {
-	_isTextContent = true;
-	_res = _htmlResponses[status];
-	setContentHeaders();
-	setConnectionHeader(status);
-	setStatusSpecificHeaders(status);
-}
-
-void HttpResponse::deleteParseResponse() {
-
-	_isTextContent = true;
-	_res = "";
-	addHeader("Server: ", "webserv");
-	addHeader("Date: ", getTime());
-	addHeader("Content-Length: ", "0");
-	addHeader("Connection: ", "close");
-}
-
-void HttpResponse::postParseResponse(int status) {
-	std::stringstream ss;
-
-	_isTextContent = true;
-	_res = _htmlResponses[status];
-	addHeader("Server: ", "webserv");
-	addHeader("Date: ", getTime());
-	addHeader("Content-Type: ", "text/html");
-	ss << _res.size();
-	addHeader("Content-Length: ", ss.str());
 }

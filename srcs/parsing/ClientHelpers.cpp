@@ -7,7 +7,7 @@ void Client::resetClient() {
 	_bytesSent = 0;
 	_recvSize = 0;
 	_clientIP = "";
-	_state = READING_HEADERS;
+	_state = CONNECTION_IDLE;
 	httpReq->setHeadersParsed();
 	httpReq->cleanReqInfo();
 }

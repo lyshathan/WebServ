@@ -5,13 +5,8 @@
 /******************************************************************************/
 
 void HttpRequest::requestHandler() {
-	if (_uri.find("/.well-known/") == 0) {
+	if (_uri.find("/.well-known/") == 0)
 		return ;
-	}
-	if (!validateMethods()) {
-		setErrorPage();
-		return;
-	}
 	if (checkReturn()) {
 		return;
 	}
@@ -31,8 +26,7 @@ void HttpRequest::requestHandler() {
 }
 
 void HttpRequest::getHandler() {
-	if (!isLocationPathValid())
-		setErrorPage();
+	isLocationPathValid();
 	if (!_status)
 		_status = OK;
 }

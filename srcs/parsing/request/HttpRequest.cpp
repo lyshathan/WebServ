@@ -7,7 +7,7 @@
 
 HttpRequest::HttpRequest(const Config& config, int &fd, const std::string& clientIP) :
 _config(config), _location(NULL), _status(0), _clientfd(fd), _areHeadersParsed(false),
-_isProccessingError(false), _isCGI(false), _clientIP(clientIP) {};
+_isProccessingError(false), _isCGI(false), _clientIP(clientIP), _isErrorAvailable(false) {};
 
 HttpRequest::~HttpRequest() {};
 
@@ -38,6 +38,8 @@ int HttpRequest::requestHeaderParser(std::string data) {
 	}
 	pickServerConfig();
 	pickLocationConfig();
+	if (!validateMethods())
+		return -1;
 	_areHeadersParsed = true;
 	return 0;
 }

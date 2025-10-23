@@ -15,6 +15,7 @@ void HttpRequest::cleanReqInfo() {
 	_headers.clear();
 	_isProccessingError = false;
 	_isCGI = false;
+	_isErrorAvailable = false;
 	_rawBody.clear();
 	_extensions.clear();
 	_status = 0;

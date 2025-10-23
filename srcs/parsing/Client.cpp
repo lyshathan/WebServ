@@ -29,6 +29,7 @@ bool	Client::hasTimedOut(time_t now) {
 	time_t elapse = now - _lastActivity;
 
 	switch (_state) {
+		case(CONNECTION_IDLE) : return (elapse > KEEPALIVE_TIMEOUT);
 		case(READING_HEADERS): return (elapse > HEADER_TIMEOUT);
 		case(READING_BODY): return (elapse > BODY_TIMEOUT);
 		case(CGI_PROCESSING): return (elapse > CGI_TIMEOUT);

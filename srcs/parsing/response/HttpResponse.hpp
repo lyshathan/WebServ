@@ -24,7 +24,6 @@ class HttpResponse {
 
 		HttpRequest 							*_request;
 		Client									*_client;
-		bool									_isTextContent;
 		std::map<int, std::string>				_statusPhrases;
 		std::map<int, std::string>				_htmlResponses;
 		std::map<std::string, std::string>		_headers;
@@ -34,48 +33,43 @@ class HttpResponse {
 		std::vector<char>						_binRes;
 		std::string								_mimeType;
 		static std::map<std::string, UserData>	_sessions;
+		int										_status;
+		std::map<std::string, std::string>		_mimeTypes;
 
 	public:
 		HttpResponse(HttpRequest *, Client *);
 		~HttpResponse();
 
-		void	parseResponse();
-		void	initHtmlResponses();
-		void	initStatusPhrases();
+		void		parseResponse();
+		void		initHtmlResponses();
+		void		initStatusPhrases();
+		void 		initMimeTypes();
+		void 		buildBody();
 
-		bool	setTextContent(int);
-		bool	setBinContent();
-		bool	setBody(int);
-		void	addHeader(const std::string &, const std::string &);
-		void	setContentHeaders();
-		void	setStatusLine(int);
-		void	setConnectionHeader(int);
-		void	setStatusSpecificHeaders(int);
-		void	setAutoIndex();
+		void		addHeader(const std::string &, const std::string &);
+		void		setContentHeaders();
+		void		setStatusLine();
+		void		setConnectionHeader();
+		void		setStatusSpecificHeaders();
+		void		setAutoIndex(std::string);
 
 		std::string	generateSession();
 		std::string	buildSimpleHTML(const UserData& data);
 
-		bool	handleCookie(int);
-		bool	handleCookieGet(std::map<std::string, std::string>::iterator& cookieIt);
-		bool	handleCookiePost(std::map<std::string, std::string>::iterator& cookieIt);
-		static std::map<std::string, UserData>& getSessions();
-		void	postParseResponse(int);
-		void	deleteParseResponse();
-		void	errorParseResponse(int);
-		void	cgiParseResponse(int);
-		void	successParseResponse(int);
+		bool		handleCookie();
+		bool		handleCookieGet(std::map<std::string, std::string>::iterator& cookieIt);
+		bool		handleCookiePost(std::map<std::string, std::string>::iterator& cookieIt);
+		void		cgiParseResponse();
 
 		std::string getTime() const;
-		std::string getMimeType() const;
+		std::string getMimeType(std::string) const;
 		std::string getLastModifiedTime() const;
-		bool		getIsTextContent() const;
 
-		const std::string &getRes() const;
-		const std::vector<char> &getBinRes() const;
-		const std::string &getResHeaders();
+		const std::string 						&getRes() const;
+		const std::vector<char> 				&getBinRes() const;
+		const std::string 						&getResHeaders();
+		static std::map<std::string, UserData>	&getSessions();
 
-		bool isTextContent();
 };
 
 #endif

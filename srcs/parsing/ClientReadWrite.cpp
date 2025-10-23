@@ -8,12 +8,9 @@ int	Client::writeResponse() {
 		_resBuffer.clear();
 		_resBuffer += httpRes->getResHeaders();
 
-		if (httpRes->getIsTextContent()) {
-			_resBuffer += httpRes->getRes();
-		} else {
-			std::vector<char> binaryContent = httpRes->getBinRes();
-			_resBuffer.append(binaryContent.begin(), binaryContent.end());
-		}
+		std::vector<char> binaryContent = httpRes->getBinRes();
+		_resBuffer.append(binaryContent.begin(), binaryContent.end());
+		
 		_bytesSent = 0;
 		_state = SENDING_RESPONSE;
 	}
@@ -51,7 +48,7 @@ int	Client::readAndParseRequest() {
 
 	appendBuffer(buffer, bytesRead);
 
-	if (_state == READING_HEADERS) {
+	if (_state == READING_HEADERS || _state == CONNECTION_IDLE) {
 		if (!httpReq->getHeadersParsed()) {
 			int status = httpReq->requestHeaderParser(_reqBuffer);
 			if (status == 1)
