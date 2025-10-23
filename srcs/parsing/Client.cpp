@@ -78,8 +78,8 @@ void		Client::cgiInitEnv() {
 	_env["REQUEST_METHOD"] = httpReq->getMethod();
 	_env["SCRIPT_NAME"] = httpReq->getUri();
 	_env["PATH_INFO"] = httpReq->getUri();
-	_env["REMOTE_ADDR"] = getClientIp();
-	_env["REMOTE_HOST"] = getClientIp();
+	_env["REMOTE_ADDR"] = _clientIP;
+	_env["REMOTE_HOST"] = _clientIP;
 
 	const std::vector<std::string> serverNames = httpReq->getServerName();
 	if (!serverNames.empty())

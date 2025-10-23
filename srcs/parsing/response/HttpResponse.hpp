@@ -67,6 +67,7 @@ class HttpResponse {
 
 		const std::string 						&getRes() const;
 		const std::vector<char> 				&getBinRes() const;
+		int										getResStatus() const;
 		const std::string 						&getResHeaders();
 		static std::map<std::string, UserData>	&getSessions();
 

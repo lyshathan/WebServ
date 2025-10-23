@@ -35,6 +35,7 @@ void	CgiHandler::cleanUp(std::vector<int> &removeFd) {
 	if (_pid > 0) {
 		int status;
 		pid_t result = waitpid(_pid, &status, WNOHANG);
+		
 		if (result == 0) {
 			kill(_pid, SIGKILL);
 			waitpid(_pid, &status, 0);

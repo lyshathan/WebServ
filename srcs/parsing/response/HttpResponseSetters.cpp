@@ -10,9 +10,13 @@ void HttpResponse::addHeader(const std::string &key, const std::string &value) {
 
 void HttpResponse::setStatusLine() {
 	std::stringstream ss;
+	std::string version = _request->getVersion();
+
+	if (version.empty())
+		version = "HTTP/1.0";
 
 	ss << _status;
-	_responseStatus = _request->getVersion() + " " +
+	_responseStatus = version + " " +
 		ss.str() + " " + _statusPhrases[_status] + "\r\n";
 }
 

@@ -11,7 +11,7 @@ std::map<std::string, UserData> HttpResponse::_sessions;
 HttpResponse::HttpResponse() {};
 
 HttpResponse::HttpResponse(HttpRequest *req, Client *client) : _request(req), _client(client), 
-	_res(""), _mimeType("") {
+	_res(""), _mimeType(""), _status(0) {
 	initStatusPhrases();
 	initHtmlResponses();
 	initMimeTypes();

@@ -64,8 +64,11 @@ int	Webserv::connectAndRead(std::vector<struct pollfd> &newPollFds, std::vector<
 				CgiHandler *cgi = client->getCgi();
 				if (!cgi) continue;
 				cgi->handleEvent(pfd, removeFds);
-				if (cgi->isFinished())
+				if (cgi->isFinished()) {
+					if (cgi->getCgiStage() == CGI_ERROR)
+						client->httpRes->parseResponse();
 					signalClientReady(client);
+				}
 			}
 		}
 	}
@@ -108,18 +111,17 @@ void Webserv::handleEvents(Client *client, struct pollfd &pfd, std::vector<struc
 
 	if (pfd.revents & POLLOUT) {
 		int ret = client->writeResponse();
-		if (ret == WRITE_INCOMPLETE)
-			return ;
 		if (ret == WRITE_COMPLETE) {
 			std::stringstream ss;
-			ss << client->httpReq->getStatus();
+			ss << client->httpRes->getResStatus();
 			printLog(PURPLE, "INFO", "Response Sent Status Code: " + ss.str());
-		}
-		if (!client->connectionShouldClose()) {
-			client->resetClient();
-			pfd.events = POLLIN;
+			if (!client->connectionShouldClose()) {
+				client->resetClient();
+				pfd.events = POLLIN;
+				return;
+			}
+		} else if (ret == WRITE_INCOMPLETE)
 			return;
-		}
 		removeFds.push_back(pfd.fd);
 		return;
 	}
