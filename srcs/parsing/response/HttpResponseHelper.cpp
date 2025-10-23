@@ -43,6 +43,7 @@ void HttpResponse::initStatusPhrases(){
 	_statusPhrases[405] = "Method Not Allowed";
 	_statusPhrases[500] = "Internal Server Error";
 	_statusPhrases[505] = "HTTP Version Not Supported";
+	_statusPhrases[504] = "Gateway Timeout";
 	_statusPhrases[204] = "No Content";
 	_statusPhrases[413] = "Request Entity Too Large";
 	_statusPhrases[408] = "Request Timeout";
@@ -64,6 +65,8 @@ void HttpResponse::initHtmlResponses(){
 		"<body><h1>404 Not Found</h1><p>The requested resource could not be found on this server.</p></body></html>";
 	_htmlResponses[500] = "<!DOCTYPE html><html><head><title>Internal Server Error</title></head>"
 		"<body><h1>500 Internal Server Error</h1><p>The server encountered an unexpected condition.</p></body></html>";
+	_htmlResponses[504] = "<!DOCTYPE html><html><head><title>Gateway Timeout</title></head>"
+		"<body><h1>504 Gateway Timeout</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[400] = "<!DOCTYPE html><html><head><title>Bad Request</title></head>"
 		"<body><h1>400 Bad Request</h1><p>The server encountered an unexpected condition.</p></body></html>";
 	_htmlResponses[302] = "<!DOCTYPE html><html><head><title>302 Found</title></head>"

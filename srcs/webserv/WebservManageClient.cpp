@@ -82,7 +82,10 @@ void Webserv::checkClientTimeouts(std::vector<int> &removeFds) {
 			continue;
 		} else {
 			CgiHandler *cgi = client->getCgi();
-			client->httpReq->setStatus(REQUEST_TIMEOUT);
+			if (client->getClientState() == CGI_PROCESSING)
+				client->httpReq->setStatus(GATEWAY_TIMEOUT);
+			else
+				client->httpReq->setStatus(REQUEST_TIMEOUT);
 			client->httpRes->parseResponse();
 			if (cgi)
 				cgi->cleanUp(removeFds);
